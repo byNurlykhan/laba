@@ -227,6 +227,24 @@ select.pick:hover{border-color:#CBD5E1}
 .note svg{width:16px;height:16px;stroke:#1E40AF;fill:none;stroke-width:2;flex-shrink:0;margin-top:3px}
 .src{font-size:11.5px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 
+/* ============ АВТОРЛЫҚ БЕЛГІ ============ */
+.site-foot{
+  margin-top:auto;padding:26px 28px 34px;
+  display:flex;align-items:center;gap:16px;
+}
+.site-foot .sf-line{
+  flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);
+}
+.site-foot .sf-mark{
+  font-size:11px;font-weight:500;color:var(--muted);
+  letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
+}
+.site-foot .sf-mark b{font-weight:600;color:var(--ink);letter-spacing:.14em}
+@media(max-width:520px){
+  .site-foot{padding:22px 16px 28px;gap:10px}
+  .site-foot .sf-mark{font-size:9.5px;letter-spacing:.1em}
+}
+
 /* ============ RESPONSIVE ============ */
 @media(max-width:1200px){
   .g6{grid-template-columns:repeat(3,1fr)}
@@ -300,6 +318,12 @@ select.pick:hover{border-color:#CBD5E1}
   </div>
 
   <div class="content" id="content"></div>
+
+  <footer class="site-foot">
+    <span class="sf-line"></span>
+    <span class="sf-mark">Crafted by <b>Nurlykhan Zhumakhan</b></span>
+    <span class="sf-line"></span>
+  </footer>
 </div>
 
 <script>
@@ -2237,7 +2261,49 @@ P.fund.charts = () => {
   mk("cFundCarrier",donut(f.carriers.map(x=>x.name),f.carriers.map(x=>x.v)));
   mk("cFundSubject",donut(DATA.subjects.map(x=>x.name),DATA.subjects.map(x=>x.fund)));
   const r = DATA.regions.slice().sort((a,b)=>b.fund-a.fund);
-  mk("cFundRegion",hbar(r.map(x=>x.name),r.map(x=>x.fund)));
+  /* Өңірлер бойынша қор — жол саны көп болғандықтан бөлек баптау:
+     биіктік өседі, бағаналар арасы ашылады, реңк мәнге қарай ашықтан қоюға ауысады */
+  (function(){
+    const box = document.getElementById("cFundRegion");
+    if(box && box.parentElement) box.parentElement.style.height = (r.length*27 + 44) + "px";
+    const vals = r.map(x=>x.fund);
+    const mx = Math.max.apply(null,vals), mn = Math.min.apply(null,vals), span = (mx-mn)||1;
+    const cols = vals.map(v=>{
+      const k = 0.18 + 0.82*((v-mn)/span);
+      const a=[191,219,254], b=[29,78,216];
+      return "rgb("+a.map((c,i)=>Math.round(c+(b[i]-c)*k)).join(",")+")";
+    });
+    const endLabel = {
+      id:"fundEndLabel",
+      afterDatasetsDraw(ch){
+        const ctx = ch.ctx;
+        ctx.save();
+        ctx.font = "600 11px Inter, sans-serif";
+        ctx.fillStyle = "#334155";
+        ctx.textBaseline = "middle";
+        ch.getDatasetMeta(0).data.forEach((bar,i)=>ctx.fillText(nf(vals[i]), bar.x+8, bar.y));
+        ctx.restore();
+      }
+    };
+    mk("cFundRegion",{
+      type:"bar",
+      data:{labels:r.map(x=>x.name),datasets:[{
+        data:vals, backgroundColor:cols,
+        borderRadius:5, borderSkipped:false,
+        barPercentage:0.66, categoryPercentage:0.9
+      }]},
+      options:{
+        indexAxis:"y", maintainAspectRatio:false,
+        layout:{padding:{right:16}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+nf(c.raw)+" дана"}}},
+        scales:{
+          x:Object.assign({},GRID,{grace:"14%",ticks:{padding:8,maxTicksLimit:5}}),
+          y:Object.assign({},NOGRID,{ticks:{padding:10,autoSkip:false,font:{size:11.5}}})
+        }
+      },
+      plugins:[endLabel]
+    });
+  })();
   const a = DATA.acq.byRegion.slice().sort((x,y)=>y.total-x.total);
   mk("cAcqRegion",hbar(a.map(x=>x.region),a.map(x=>x.total)));
   mk("cAcqType",donut(DATA.acq.byType.map(x=>x.name),DATA.acq.byType.map(x=>x.v)));
