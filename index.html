@@ -231,6 +231,42 @@ select.pick:hover{border-color:#CBD5E1}
 .note svg{width:16px;height:16px;stroke:#1E40AF;fill:none;stroke-width:2;flex-shrink:0;margin-top:3px}
 .src{font-size:11.5px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 
+/* ============ КІТАПХАНАЛАР ПАСПОРТЫ ============ */
+.p-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.p-search{flex:1;min-width:220px;max-width:460px;position:relative}
+.p-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+.p-search input{
+  width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 36px;transition:border-color .2s ease;
+}
+.p-search input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #DBEAFE}
+.p-count{font-size:12.5px;color:var(--muted)}
+.lib-card{
+  background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  text-decoration:none;display:flex;flex-direction:column;transition:all .2s ease;
+}
+.lib-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#BFDBFE}
+.lib-ph{aspect-ratio:16/9;background:#EFF6FF center/cover no-repeat;display:grid;place-items:center}
+.lib-ph svg{width:38px;height:38px;stroke:#93C5FD;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lib-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lib-body h4{font-size:15px;font-weight:600;letter-spacing:-.015em;line-height:1.35}
+.lib-meta{font-size:12.5px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.lib-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+.lib-stats b{display:block;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.2}
+.lib-stats span{font-size:11.5px;color:var(--muted)}
+.p-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;margin-bottom:16px}
+.pass-hd{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:22px;align-items:start;margin-bottom:20px}
+.pass-hd .lib-ph{border-radius:14px;aspect-ratio:4/3}
+.pass-hd h1{font-size:clamp(22px,2.8vw,30px);margin-bottom:12px}
+.pass-ct{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.pass-ct div{display:flex;gap:10px;align-items:baseline;overflow-wrap:anywhere}
+.pass-ct span{font-size:12px;color:var(--muted);width:110px;flex-shrink:0}
+.pass-ct a{color:var(--blue);text-decoration:none;font-weight:500}
+.pass-tbl td{vertical-align:top}
+.pass-tbl td.c{width:44px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.pass-tbl td.pv{font-weight:600;color:var(--ink);text-align:right;overflow-wrap:anywhere;width:42%}
+.pass-tbl td.pv.none{color:#CBD5E1;font-weight:500}
+
 /* ============ АВТОРЛЫҚ БЕЛГІ ============ */
 .site-foot{
   margin-top:auto;padding:26px 28px 34px;
@@ -270,6 +306,8 @@ select.pick:hover{border-color:#CBD5E1}
   .nav-grid{grid-template-columns:repeat(2,1fr)}
   .hero-stats{grid-template-columns:1fr;gap:14px}
   .ba{grid-template-columns:1fr}
+  .pass-hd{grid-template-columns:1fr}
+  .pass-tbl td.pv{width:auto}
   .bar-row .nm{width:100px}
   .cbox{height:240px}
 }
@@ -3618,6 +3656,66 @@ const TXT = {
 "ru":"Пока нет объявлений.",
 "en":"No announcements yet."
 },
+"s15":{
+"kk":"Кітапханалар паспорты",
+"ru":"Паспорта библиотек",
+"en":"Library passports"
+},
+"s15.desc":{
+"kk":"Кітапханалардың негізгі мәліметтері: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер.",
+"ru":"Основные сведения о библиотеках: контакты, здание, оснащение, фонд, кадры и основные показатели.",
+"en":"Key facts about libraries: contacts, building, equipment, collection, staff and main indicators."
+},
+"s15.search":{
+"kk":"Атауы немесе мекен-жайы бойынша іздеу",
+"ru":"Поиск по названию или адресу",
+"en":"Search by name or address"
+},
+"s15.count":{
+"kk":"Кітапхана саны: {a}",
+"ru":"Библиотек: {a}",
+"en":"Libraries: {a}"
+},
+"s15.loading":{
+"kk":"Деректер Google Sheets-тен жүктелуде…",
+"ru":"Данные загружаются из Google Sheets…",
+"en":"Loading data from Google Sheets…"
+},
+"s15.empty":{
+"kk":"Әзірге кітапхана паспорты енгізілмеген.",
+"ru":"Паспорта библиотек пока не добавлены.",
+"en":"No library passports have been added yet."
+},
+"s15.error":{
+"kk":"Деректерді жүктеу мүмкін болмады. Кейінірек қайталап көріңіз.",
+"ru":"Не удалось загрузить данные. Попробуйте позже.",
+"en":"Could not load data. Please try again later."
+},
+"s15.nofound":{
+"kk":"Сұрау бойынша кітапхана табылмады.",
+"ru":"По запросу библиотеки не найдены.",
+"en":"No libraries match your search."
+},
+"s15.back":{
+"kk":"Барлық кітапханалар",
+"ru":"Все библиотеки",
+"en":"All libraries"
+},
+"s15.open":{
+"kk":"Паспортты ашу",
+"ru":"Открыть паспорт",
+"en":"Open passport"
+},
+"s15.notfound":{
+"kk":"Мұндай кітапхана табылмады.",
+"ru":"Такая библиотека не найдена.",
+"en":"Library not found."
+},
+"s15.src":{
+"kk":"Кітапханалар ұсынған паспорт деректері (Google Sheets)",
+"ru":"Паспортные данные, предоставленные библиотеками (Google Sheets)",
+"en":"Passport data submitted by libraries (Google Sheets)"
+},
 "s14.more":{
 "kk":"Толығырақ",
 "ru":"Подробнее",
@@ -3649,6 +3747,7 @@ function nm(name){
 
 const SECTIONS = [
   {id:"home",    key:"s1",  group:"grpMain"},
+  {id:"passport",key:"s15", group:"grpMain"},
   {id:"iso",     key:"s2",  group:"grpAnalytics"},
   {id:"network", key:"s3",  group:"grpAnalytics"},
   {id:"users",   key:"s4",  group:"grpAnalytics"},
@@ -4365,9 +4464,161 @@ P.events = () => `
   ${srcLine()}`;
 P.events.charts = () => {};
 
+/* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады */
+const PASS = {list:[], status: API_URL ? "loading" : "empty", q:""};
+const PF = [
+  {n:"1", t:{kk:"Кітапхана туралы ақпарат",ru:"Информация о библиотеке",en:"Library information"}, f:[
+    ["1.1",{kk:"Кітапхананың атауы",ru:"Название библиотеки",en:"Library name"}],
+    ["1.2",{kk:"Кітапхананың суреті",ru:"Фотография библиотеки",en:"Library photo"}],
+    ["1.3",{kk:"Кітапхананың мекен-жайы",ru:"Адрес библиотеки",en:"Address"}],
+    ["1.4",{kk:"Байланыс телефоны",ru:"Контактный телефон",en:"Phone"}],
+    ["1.5",{kk:"E-mail",ru:"E-mail",en:"E-mail"}],
+    ["1.6",{kk:"Кітапхана сайты",ru:"Сайт библиотеки",en:"Website"}]]},
+  {n:"2", t:{kk:"Жалпы ақпарат",ru:"Общая информация",en:"General information"}, f:[
+    ["2.1",{kk:"Кітапхананың құрылған жылы",ru:"Год основания библиотеки",en:"Year founded"}],
+    ["2.2",{kk:"Кітапхана орналасқан ғимарат",ru:"Здание, в котором расположена библиотека",en:"Building"}],
+    ["2.3",{kk:"Кітапхана көлемі",ru:"Площадь библиотеки",en:"Library area"}],
+    ["2.4",{kk:"Оқырман залының болуы (иә, жоқ, абонемент бөлімімен біріктірілген)",ru:"Наличие читального зала (да, нет, совмещён с абонементом)",en:"Reading room (yes, no, combined with lending)"}]]},
+  {n:"3", t:{kk:"Материалдық-техникалық жабдықталуы",ru:"Материально-техническое оснащение",en:"Equipment and facilities"}, f:[
+    ["3.1",{kk:"Интернетке қолжетімділік",ru:"Доступ к Интернету",en:"Internet access"}],
+    ["3.2",{kk:"Кітапхананың автоматтандырылған кітапханалық ақпараттық жүйесінің атауы",ru:"Название автоматизированной библиотечно-информационной системы",en:"Integrated library system"}],
+    ["3.3",{kk:"Электрондық кітапханаларға қолжетімділік",ru:"Доступ к электронным библиотекам",en:"Access to e-libraries"}],
+    ["3.4",{kk:"Кітапхана пайдаланатын электронды кітапханалардың ақпараттық ресурстары",ru:"Используемые информационные ресурсы электронных библиотек",en:"E-library resources in use"}],
+    ["3.5",{kk:"Компьютер (дана)",ru:"Компьютеры (шт.)",en:"Computers (units)"}],
+    ["3.6",{kk:"Сканер",ru:"Сканер",en:"Scanner"}],
+    ["3.7",{kk:"Принтер",ru:"Принтер",en:"Printer"}],
+    ["3.8",{kk:"Көпфункционалды құрылғы (МФУ)",ru:"Многофункциональное устройство (МФУ)",en:"Multifunction printer (MFP)"}],
+    ["3.9",{kk:"Телевизор",ru:"Телевизор",en:"TV set"}],
+    ["3.10",{kk:"Бейнекамера",ru:"Видеокамера",en:"Video camera"}],
+    ["3.11",{kk:"Фотоаппарат",ru:"Фотоаппарат",en:"Photo camera"}]]},
+  {n:"4", t:{kk:"Қор туралы ақпарат",ru:"Информация о фонде",en:"Collection"}, f:[
+    ["4.1",{kk:"Кітапхананың жалпы қоры",ru:"Общий фонд библиотеки",en:"Total collection"}],
+    ["4.2",{kk:"Мерзімді басылымдар",ru:"Периодические издания",en:"Periodicals"}],
+    ["4.3",{kk:"Электронды ресурстар",ru:"Электронные ресурсы",en:"Electronic resources"}],
+    ["4.4",{kk:"Электрондық каталогтың болуы",ru:"Наличие электронного каталога",en:"Electronic catalogue"}]]},
+  {n:"5", t:{kk:"Кітапхана кадрлары туралы ақпарат",ru:"Информация о кадрах библиотеки",en:"Library staff"}, f:[
+    ["5.1",{kk:"Штат саны",ru:"Штатная численность",en:"Number of staff"}],
+    ["5.2",{kk:"Кітапхана директорының, кітапхана-филиалының меңгерушісінің аты-жөні, байланыс телефоны",ru:"ФИО директора библиотеки, заведующего библиотекой-филиалом, контактный телефон",en:"Director / branch head: full name, phone"}]]},
+  {n:"6", t:{kk:"Кітапхананың негізгі көрсеткіштері",ru:"Основные показатели библиотеки",en:"Key indicators"}, f:[
+    ["6.1",{kk:"Пайдаланушылар саны",ru:"Число пользователей",en:"Users"}],
+    ["6.2",{kk:"Берілген құжат саны",ru:"Количество выданных документов",en:"Documents issued"}],
+    ["6.3",{kk:"Келушілер саны",ru:"Число посещений",en:"Visits"}]]}
+];
+const PFL = {};
+PF.forEach(g=>g.f.forEach(x=>{ PFL[x[0]] = x[1]; }));
+const pl  = c => (PFL[c] && (PFL[c][LANG] || PFL[c].kk)) || c;
+const pv  = (x,c) => String((x.f && x.f[c]) || "").trim();
+const safeUrl = u => { u = String(u||"").trim(); if(!u) return "";
+  if(!/^https?:\/\//i.test(u)) u = "https://" + u;
+  return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : ""; };
+const PH_ICON = '<svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg>';
+function libPhoto(x){
+  const u = safeUrl(pv(x,"1.2"));
+  return u ? `<div class="lib-ph" style="background-image:url('${esc(u).replace(/'/g,"%27")}')" role="img" aria-label="${esc(pv(x,"1.1"))}"></div>`
+           : `<div class="lib-ph">${PH_ICON}</div>`;
+}
+function libCard(x){
+  const q = [pv(x,"1.1"),pv(x,"1.3")].join(" ").toLowerCase();
+  const st = ["4.1","6.1"].filter(c=>pv(x,c))
+    .map(c=>`<div><b>${esc(pv(x,c))}</b><span>${esc(pl(c))}</span></div>`).join("");
+  return `<a class="lib-card" href="#passport/${esc(x.id)}" data-q="${esc(q)}">
+    ${libPhoto(x)}
+    <div class="lib-body">
+      <h4>${esc(pv(x,"1.1"))}</h4>
+      ${pv(x,"1.3")?`<div class="lib-meta">${esc(pv(x,"1.3"))}</div>`:""}
+      ${pv(x,"1.4")?`<div class="lib-meta">${esc(pv(x,"1.4"))}</div>`:""}
+      ${st?`<div class="lib-stats">${st}</div>`:""}
+    </div></a>`;
+}
+function passList(){
+  const st = PASS.status;
+  let body;
+  if(st==="loading" && !PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.loading")}</div>`;
+  else if(st==="error" && !PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.error")}</div>`;
+  else if(!PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.empty")}</div>`;
+  else body = `
+    <div class="p-bar">
+      <label class="p-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="pSearch" type="search" placeholder="${esc(T("s15.search"))}" value="${esc(PASS.q)}" aria-label="${esc(T("s15.search"))}"></label>
+      <span class="p-count" id="pCount"></span>
+    </div>
+    <div class="grid g3" id="pList">${PASS.list.map(libCard).join("")}</div>
+    <div class="card" id="pNone" style="display:none;text-align:center;color:var(--muted)">${T("s15.nofound")}</div>`;
+  return `${head(T("s15"),T("s15.desc"))}${body}
+  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+}
+function passDetail(x){
+  const tel  = pv(x,"1.4"), mail = pv(x,"1.5"), site = safeUrl(pv(x,"1.6"));
+  const ct = [
+    pv(x,"1.3") ? `<div><span>${esc(pl("1.3"))}</span>${esc(pv(x,"1.3"))}</div>` : "",
+    tel  ? `<div><span>${esc(pl("1.4"))}</span><a href="tel:${esc(tel.replace(/[^\d+]/g,""))}">${esc(tel)}</a></div>` : "",
+    mail ? `<div><span>${esc(pl("1.5"))}</span><a href="mailto:${esc(mail)}">${esc(mail)}</a></div>` : "",
+    site ? `<div><span>${esc(pl("1.6"))}</span><a href="${esc(site)}" target="_blank" rel="noopener">${esc(pv(x,"1.6"))}</a></div>` : ""
+  ].join("");
+  const kp = [["4.1","book"],["6.1","users"],["6.2","doc"],["6.3","globe"]].filter(k=>pv(x,k[0]));
+  const kpis = kp.map(k=>`<div class="card kpi"><div class="lbl"><span>${esc(pl(k[0]))}</span>
+      <span class="ic"><svg viewBox="0 0 24 24">${ICONS[k[1]]}</svg></span></div>
+      <div class="num">${esc(pv(x,k[0]))}</div></div>`).join("");
+  const secs = PF.map(g=>{
+    const rows = g.f.filter(f=>f[0]!=="1.2").map(f=>{
+      const v = pv(x,f[0]);
+      return `<tr><td class="c">${f[0]}</td><td>${esc(pl(f[0]))}</td>
+        <td class="pv${v?"":" none"}">${v?esc(v):"—"}</td></tr>`;
+    }).join("");
+    return panel(null, g.n+". "+(g.t[LANG]||g.t.kk), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
+  }).join("");
+  return `<a class="p-back" href="#passport">← ${T("s15.back")}</a>
+  <div class="card pass-hd">
+    ${libPhoto(x)}
+    <div><div class="ph" style="margin-bottom:0"><div class="eyebrow">${T("s15")}</div></div>
+      <h1>${esc(pv(x,"1.1"))}</h1>
+      <div class="pass-ct">${ct}</div></div>
+  </div>
+  ${kpis?`<div class="grid g4" style="margin-bottom:20px">${kpis}</div>`:""}
+  <div class="grid g2">${secs}</div>
+  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+}
+P.passport = sub => {
+  if(sub){
+    const x = PASS.list.find(r=>String(r.id)===String(sub));
+    if(x) return passDetail(x);
+    if(PASS.status!=="loading") return `<a class="p-back" href="#passport">← ${T("s15.back")}</a>
+      <div class="card" style="text-align:center;color:var(--muted)">${T("s15.notfound")}</div>`;
+  }
+  return passList();
+};
+P.passport.charts = () => filterPass();
+function filterPass(){
+  const list = document.getElementById("pList");
+  if(!list) return;
+  const q = PASS.q.trim().toLowerCase();
+  let n = 0;
+  list.querySelectorAll(".lib-card").forEach(c=>{
+    const on = !q || c.dataset.q.indexOf(q) > -1;
+    c.style.display = on ? "" : "none";
+    if(on) n++;
+  });
+  document.getElementById("pCount").textContent = T("s15.count",{a:nf(n)});
+  document.getElementById("pNone").style.display = n ? "none" : "";
+}
+document.addEventListener("input",e=>{
+  if(e.target.id==="pSearch"){ PASS.q = e.target.value; filterPass(); }
+});
+/* Паспорттарды Google Sheets-тен жүктеу */
+function loadPassports(){
+  const done = () => { if((location.hash.slice(1)||"home").split("/")[0]==="passport") render(location.hash.slice(1)); };
+  jsonp({action:"passports"}, res=>{
+    if(res && res.ok && Array.isArray(res.passports)){
+      PASS.list = res.passports.filter(x=>x && x.f && String(x.f["1.1"]||"").trim());
+      PASS.status = "ok";
+    } else PASS.status = "error";
+    done();
+  }, 20000, ()=>{ PASS.status = "error"; done(); });
+}
+
 /* ─────────────── APPS SCRIPT БАЙЛАНЫСЫ ─────────────── */
 let jsonpSeq = 0;
-function jsonp(params, cb, timeout){
+function jsonp(params, cb, timeout, fail){
   if(!API_URL) return;
   const name = "labaCb" + (++jsonpSeq) + "_" + Date.now();
   const script = document.createElement("script");
@@ -4379,9 +4630,9 @@ function jsonp(params, cb, timeout){
   window[name] = data => { done = true; cleanup(); if(cb) cb(data); };
   const qs = Object.keys(params).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
   script.src = API_URL + "?" + qs + "&callback=" + name;
-  script.onerror = () => { cleanup(); };
+  script.onerror = () => { if(done) return; done = true; cleanup(); if(fail) fail(); };
   document.body.appendChild(script);
-  setTimeout(()=>{ if(!done) cleanup(); }, timeout || 12000);
+  setTimeout(()=>{ if(!done){ done = true; cleanup(); if(fail) fail(); } }, timeout || 12000);
 }
 
 /* Барлық деректі Google Sheets-тен жаңарту */
@@ -4419,9 +4670,11 @@ function buildNav(){
   document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent = T(el.dataset.i18n));
 }
 function render(id){
-  const sec = SECTIONS.find(s=>s.id===id) || SECTIONS[0];
+  const parts = String(id||"").split("/");
+  const sec = SECTIONS.find(s=>s.id===parts[0]) || SECTIONS[0];
+  const sub = sec.id===parts[0] ? decodeURIComponent(parts.slice(1).join("/")) : "";
   Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
-  document.getElementById("content").innerHTML = `<div class="page on">${P[sec.id]()}</div>`;
+  document.getElementById("content").innerHTML = `<div class="page on">${P[sec.id](sub)}</div>`;
   document.getElementById("crumb").textContent = T(sec.key);
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.id===sec.id));
   document.title = T(sec.key)+" · LABA";
@@ -4500,6 +4753,7 @@ buildNav();
 fillPeriods();
 render(location.hash.slice(1)||"home");
 loadRemote();
+loadPassports();
 </script>
 </body>
 </html>
