@@ -5032,7 +5032,11 @@ PF.forEach(g=>g.f.forEach(x=>{ PFL[x[0]] = x[1]; }));
 const PREQ = Object.keys(PFL).filter(c=>c!=="1.2" && c!=="1.6");
 const tx  = o => (o && (o[LANG] || o.kk)) || "";
 const pl  = c => tx(PFL[c]) || c;
-const pv  = (x,c) => String((x && x.f && x.f[c]) || "").trim();
+/* Өріс мәні: орыс/ағылшын тілінде аудармасы болса — соны, болмаса түпнұсқаны береміз */
+const pv  = (x,c) => {
+  const t = LANG!=="kk" && x && x.tr && x.tr[LANG] && x.tr[LANG][c];
+  return String(t || (x && x.f && x.f[c]) || "").trim();
+};
 const num = v => { const n = parseFloat(String(v||"").replace(/\s/g,"").replace(",",".")); return isNaN(n) ? null : n; };
 const fillOf = f => PREQ.filter(c=>String((f||{})[c]||"").trim()).length / PREQ.length;
 const safeUrl = u => { u = String(u||"").trim(); if(!u) return "";
@@ -5129,10 +5133,16 @@ function cleanVal(c, v){
 }
 /* Apps Script жазбасын беттің құрылымына келтіру */
 function normPass(x){
-  const r = regOf(x.r), f = {};
+  const r = regOf(x.r), f = {}, tr = {ru:{}, en:{}};
   Object.keys(x.f||{}).forEach(c=>{ const v = cleanVal(c, x.f[c]); if(v) f[c] = v; });
+  /* аудармалар: толық паспортта x.tr, тізімде «1.1_ru» сияқты бағандар */
+  ["ru","en"].forEach(l=>{
+    const src = (x.tr && x.tr[l]) || {};
+    Object.keys(src).forEach(c=>{ const v = c==="d" ? String(src[c]).trim() : cleanVal(c, src[c]); if(v) tr[l][c] = v; });
+    ["1.1","1.3","d"].forEach(c=>{ const v = x[c+"_"+l]; if(v && !tr[l][c]) tr[l][c] = c==="d" ? String(v).trim() : cleanVal(c, v); });
+  });
   return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t),
-          cat: String(x.cat||"").trim(), lvl: Number(x.lvl)||99, f: f,
+          cat: String(x.cat||"").trim(), lvl: Number(x.lvl)||99, f: f, tr: tr,
           c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(f)};
 }
 /* Ықшам жауап: {cols:[…], rows:[[…]]} → [{id, r, …, f:{…}}] */
@@ -5148,7 +5158,7 @@ function unpackPass(res){
 }
 function distLabel(x){
   if(typeof x.d === "number") return x.d ? T("p.distN",{a:x.d}) : T("p.center");
-  return x.d || "";
+  return (LANG!=="kk" && x.tr && x.tr[LANG] && x.tr[LANG].d) || x.d || "";
 }
 
 /* ── Демо деректер: облыстағы кітапхана саны — нақты статистика, қалғаны үлгі ── */
@@ -5390,7 +5400,10 @@ function passRegion(r){
   <div id="pList"></div>
   <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
 }
-const qKey = x => x._q || (x._q = (pv(x,"1.1")+" "+pv(x,"1.3")+" "+distLabel(x)).toLowerCase());
+/* Іздеу кілті үш тілде де: қазақша, орысша, ағылшынша атау/мекенжай/аудан */
+const qKey = x => x._q || (x._q = [x.f["1.1"], x.f["1.3"], x.d].concat(
+  ["ru","en"].map(l=>x.tr ? [x.tr[l]["1.1"], x.tr[l]["1.3"], x.tr[l].d].join(" ") : ""),
+  typeof x.d === "number" ? [distLabel(x)] : []).join(" ").toLowerCase());
 function regionRows(){
   let a = passData().filter(x=>x.r===PASS.region);
   if(PASS.type) a = a.filter(x=>x.t===PASS.type);
