@@ -232,40 +232,158 @@ select.pick:hover{border-color:#CBD5E1}
 .src{font-size:11.5px;color:var(--muted);margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 
 /* ============ КІТАПХАНАЛАР ПАСПОРТЫ ============ */
-.p-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.p-search{flex:1;min-width:220px;max-width:460px;position:relative}
+.p-demo{display:flex;gap:10px;align-items:flex-start;background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.5;margin-bottom:18px}
+.p-demo svg{width:17px;height:17px;stroke:#B45309;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:1px}
+.p-hero{
+  background:linear-gradient(135deg,#1E3A8A 0%,#2563EB 62%,#3B82F6 100%);border-radius:20px;
+  padding:clamp(24px,4vw,40px);color:#fff;position:relative;overflow:hidden;margin-bottom:20px;
+}
+.p-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.11) 1.2px,transparent 1.2px);background-size:18px 18px;
+  -webkit-mask-image:linear-gradient(100deg,transparent 35%,#000);mask-image:linear-gradient(100deg,transparent 35%,#000);
+}
+.p-hero::after{content:'';position:absolute;width:380px;height:380px;border-radius:50%;background:rgba(255,255,255,.07);top:-170px;right:-110px}
+.p-hero > *{position:relative;z-index:1}
+.p-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;margin-bottom:16px}
+.p-tag svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
+.p-hero h1{color:#fff;font-size:clamp(26px,3.6vw,38px)}
+.p-hero p{color:rgba(255,255,255,.84);font-size:15px;max-width:640px;margin-top:10px}
+.p-search{flex:1;min-width:220px;max-width:460px;position:relative;display:block}
 .p-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
 .p-search input{
   width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;
-  border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 36px;transition:border-color .2s ease;
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 36px;transition:border-color .2s ease,box-shadow .2s ease;
 }
 .p-search input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #DBEAFE}
-.p-count{font-size:12.5px;color:var(--muted)}
-.lib-card{
-  background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;
-  text-decoration:none;display:flex;flex-direction:column;transition:all .2s ease;
+.p-hero .p-search{max-width:640px;margin-top:22px}
+.p-hero .p-search input{padding:15px 16px 15px 46px;font-size:15px;border:0;border-radius:13px;box-shadow:0 12px 32px rgba(15,23,42,.28)}
+.p-hero .p-search svg{left:16px;width:18px;height:18px}
+.p-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.p-stats > div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.17);border-radius:14px;padding:14px 16px;backdrop-filter:blur(4px)}
+.p-stats b{display:block;font-size:clamp(20px,2.4vw,27px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.p-stats span{font-size:12px;color:rgba(255,255,255,.76)}
+.p-stats i{display:block;height:5px;background:rgba(255,255,255,.2);border-radius:3px;margin-top:9px;overflow:hidden}
+.p-stats i em{display:block;height:100%;background:#fff;border-radius:3px}
+.p-empty{text-align:center;color:var(--muted)}
+.p-count{font-size:12.5px;color:var(--muted);margin-left:auto}
+/* стильдендірілген карта */
+.tmap{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tile{
+  aspect-ratio:1/.82;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between;
+  text-decoration:none;min-width:0;border:1px solid rgba(30,58,138,.08);
+  transition:transform .18s ease,box-shadow .18s ease;position:relative;
 }
-.lib-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#BFDBFE}
-.lib-ph{aspect-ratio:16/9;background:#EFF6FF center/cover no-repeat;display:grid;place-items:center}
-.lib-ph svg{width:38px;height:38px;stroke:#93C5FD;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.lib-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
-.lib-body h4{font-size:15px;font-weight:600;letter-spacing:-.015em;line-height:1.35}
-.lib-meta{font-size:12.5px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
-.lib-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
-.lib-stats b{display:block;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.2}
-.lib-stats span{font-size:11.5px;color:var(--muted)}
-.p-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;margin-bottom:16px}
-.pass-hd{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:22px;align-items:start;margin-bottom:20px}
-.pass-hd .lib-ph{border-radius:14px;aspect-ratio:4/3}
-.pass-hd h1{font-size:clamp(22px,2.8vw,30px);margin-bottom:12px}
-.pass-ct{display:flex;flex-direction:column;gap:8px;font-size:13.5px}
-.pass-ct div{display:flex;gap:10px;align-items:baseline;overflow-wrap:anywhere}
-.pass-ct span{font-size:12px;color:var(--muted);width:110px;flex-shrink:0}
-.pass-ct a{color:var(--blue);text-decoration:none;font-weight:500}
+.tile:hover{transform:translateY(-3px) scale(1.04);box-shadow:var(--shadow-mid);z-index:2}
+.tile b{font-size:11.5px;font-weight:600;line-height:1.15;overflow-wrap:anywhere}
+.tile span{font-size:clamp(13px,1.45vw,19px);font-weight:700;letter-spacing:-.03em;line-height:1}
+.tile.dk{color:#fff}.tile.lt{color:var(--blue-900)}
+.tmap-legend{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-top:14px}
+.tmap-legend i{width:180px;height:8px;border-radius:4px;background:linear-gradient(90deg,#DBEAFE,#1D4ED8)}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-shrink:0}
+.seg button{font-family:inherit;font-size:12px;font-weight:600;padding:6px 10px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.seg button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.seg button.on{background:#fff;color:var(--blue);box-shadow:0 1px 3px rgba(15,23,42,.12)}
+/* түрлер мен көшбасшылар */
+.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin-bottom:10px}
+.stack i{display:block;height:100%;min-width:3px}
+.tb-row{display:grid;grid-template-columns:10px 1fr auto 52px;gap:10px;align-items:center;padding:7px 0;font-size:13px;border-bottom:1px solid var(--line)}
+.tb-row:last-child{border-bottom:0}
+.tb-row > i{width:10px;height:10px;border-radius:3px}
+.tb-row b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.tb-row .tb-p{font-size:12px;color:var(--muted);text-align:right}
+.lead{display:grid;grid-template-columns:24px 1fr 70px 40px;gap:10px;align-items:center;padding:8px 0;text-decoration:none;font-size:13px;border-bottom:1px solid var(--line)}
+.lead:last-child{border-bottom:0}
+.lead .ld-n{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead b{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.meter{height:6px;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;flex:1}
+.meter em{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));border-radius:4px}
+.meter.ok em{background:linear-gradient(90deg,#22C55E,#16A34A)}
+.meter.warn em{background:linear-gradient(90deg,#FBBF24,#D97706)}
+/* облыс карталары */
+.reg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.reg-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-decoration:none;display:flex;flex-direction:column;gap:10px;transition:all .2s ease}
+.reg-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#BFDBFE}
+.reg-card h4{font-size:14px;font-weight:600;line-height:1.3}
+.rc-n{display:flex;align-items:baseline;gap:6px}
+.rc-n b{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1}
+.rc-n span{font-size:12px;color:var(--muted)}
+.reg-card .meter{flex:none}
+.rc-foot{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted)}
+.rc-foot b{color:var(--ink)}
+/* облыс беті */
+.crumbs{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.crumbs a{color:var(--blue);text-decoration:none;font-weight:600}
+.r-head{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.r-head .eyebrow{font-size:11.5px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.r-head h1{font-size:clamp(22px,2.8vw,30px)}
+.r-head p{margin-top:6px;font-size:14px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-family:inherit;font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--text);cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:all .15s ease}
+.chip:hover{border-color:#BFDBFE}
+.chip i{width:8px;height:8px;border-radius:50%}
+.chip small{font-size:11px;color:var(--muted);font-weight:600}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.on small{color:rgba(255,255,255,.8)}
+.p-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.lib-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:all .2s ease}
+.lib-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-mid);border-color:#BFDBFE}
+.lib-cover{height:112px;position:relative;display:flex;align-items:flex-end;padding:10px 12px;overflow:hidden}
+.lib-cover::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1px);background-size:14px 14px}
+.lib-cover .pill{position:relative;z-index:1;background:rgba(255,255,255,.94);color:var(--blue-900)}
+.cv-ic{position:absolute;right:-8px;top:-6px;width:96px;height:96px;stroke:rgba(255,255,255,.28);fill:none;stroke-width:1.2;transform:rotate(-12deg)}
+.lib-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lib-body h4{font-size:14.5px;font-weight:600;letter-spacing:-.015em;line-height:1.35}
+.lib-meta{font-size:12px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.lib-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px;margin-top:4px;border-top:1px solid var(--line)}
+.lib-stats b{display:block;font-size:14.5px;font-weight:700;color:var(--ink);letter-spacing:-.02em;line-height:1.2}
+.lib-stats span{font-size:11px;color:var(--muted);line-height:1.3;display:block}
+.lib-c{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:auto;padding-top:6px;min-width:90px}
+.lib-tbl td.nm a{color:var(--ink);font-weight:600;text-decoration:none}
+.lib-tbl td.nm a:hover{color:var(--blue)}
+.tdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.more-btn{display:block;margin:20px auto 0;font-family:inherit;font-size:13px;font-weight:600;padding:11px 24px;border-radius:11px;border:1px solid var(--line);background:#fff;color:var(--blue);cursor:pointer;transition:all .15s ease}
+.more-btn:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+/* паспорт беті */
+.pd-cover{height:clamp(170px,22vw,240px);border-radius:20px;position:relative;overflow:hidden}
+.pd-cover::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.14) 1.2px,transparent 1.2px);background-size:18px 18px}
+.pd-cover .cv-ic{width:220px;height:220px;right:30px;top:-20px}
+.pd-card{position:relative;margin:-64px 22px 20px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;box-shadow:var(--shadow-mid);border-radius:18px}
+.pd-card h1{font-size:clamp(22px,2.8vw,30px);margin:10px 0 12px}
+.pd-meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px}
+.pd-meta span{display:inline-flex;gap:7px;align-items:center;overflow-wrap:anywhere}
+.pd-meta svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;flex-shrink:0}
+.pd-meta a{color:var(--blue);text-decoration:none;font-weight:500}
+.pd-side{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.btn-ghost{font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-ghost svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.eq{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.eq div{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,#fff,var(--surface))}
+.eq svg{width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.eq b{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1}
+.eq span{font-size:11.5px;color:var(--muted);line-height:1.3}
+.eq div.none svg{stroke:#CBD5E1}.eq div.none b{color:#CBD5E1}
 .pass-tbl td{vertical-align:top}
 .pass-tbl td.c{width:44px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .pass-tbl td.pv{font-weight:600;color:var(--ink);text-align:right;overflow-wrap:anywhere;width:42%}
 .pass-tbl td.pv.none{color:#CBD5E1;font-weight:500}
+.cmp-row{padding:11px 0;border-bottom:1px solid var(--line)}
+.cmp-row:last-child{border-bottom:0}
+.cmp-row .hd{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:8px}
+.cmp-row .hd b{font-weight:700}
+.cmp-bars{display:grid;gap:6px}
+.cmp-bars div{display:grid;grid-template-columns:110px 1fr 80px;gap:10px;align-items:center;font-size:11.5px;color:var(--muted)}
+.cmp-bars i{display:block;height:9px;border-radius:5px;background:linear-gradient(90deg,var(--blue),var(--blue-dark))}
+.cmp-bars .avg i{background:#CBD5E1}
+.cmp-bars em{font-style:normal;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+@media print{
+  .sidebar,.topbar,.site-foot,.scrim,.btn-ghost,.crumbs,.p-demo{display:none!important}
+  .main{margin-left:0}.content{padding:0}
+  .card{break-inside:avoid;box-shadow:none!important}
+  .pd-cover{height:110px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 
 /* ============ АВТОРЛЫҚ БЕЛГІ ============ */
 .site-foot{
@@ -289,6 +407,7 @@ select.pick:hover{border-color:#CBD5E1}
 @media(max-width:1200px){
   .g6{grid-template-columns:repeat(3,1fr)}
   .nav-grid{grid-template-columns:repeat(3,1fr)}
+  .reg-grid{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:1024px){
   .g4{grid-template-columns:repeat(2,1fr)}
@@ -306,13 +425,30 @@ select.pick:hover{border-color:#CBD5E1}
   .nav-grid{grid-template-columns:repeat(2,1fr)}
   .hero-stats{grid-template-columns:1fr;gap:14px}
   .ba{grid-template-columns:1fr}
-  .pass-hd{grid-template-columns:1fr}
-  .pass-tbl td.pv{width:auto}
+  .p-stats{grid-template-columns:repeat(2,1fr)}
+  .reg-grid{grid-template-columns:repeat(2,1fr)}
+  .pd-card{grid-template-columns:1fr;margin:-48px 10px 18px}
+  .pd-side{align-items:flex-start}
+  .pass-tbl tr{display:grid;grid-template-columns:36px 1fr}
+  .pass-tbl td{border-bottom:0}
+  .pass-tbl tr{border-bottom:1px solid var(--line)}
+  .pass-tbl tr:last-child{border-bottom:0}
+  .pass-tbl td.c{width:auto}
+  .pass-tbl td.pv{grid-column:2;width:auto;text-align:left;padding-top:0}
+  .grid.pd-kpis{grid-template-columns:repeat(2,1fr)}
+  .tmap{gap:5px}
+  .tile{padding:6px 7px;border-radius:9px}
+  .tile b{font-size:9.5px}
+  .cmp-bars div{grid-template-columns:84px 1fr 70px}
+  .p-count{margin-left:0;width:100%}
   .bar-row .nm{width:100px}
   .cbox{height:240px}
 }
 @media(max-width:520px){
   .nav-grid{grid-template-columns:1fr}
+  .reg-grid{grid-template-columns:1fr}
+  .tile b{font-size:8.5px}
+  .tile span{font-size:12px}
   .crumb{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -3662,14 +3798,14 @@ const TXT = {
 "en":"Library passports"
 },
 "s15.desc":{
-"kk":"Кітапханалардың негізгі мәліметтері: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер.",
-"ru":"Основные сведения о библиотеках: контакты, здание, оснащение, фонд, кадры и основные показатели.",
-"en":"Key facts about libraries: contacts, building, equipment, collection, staff and main indicators."
+"kk":"Елдің барлық көпшілік кітапханасының бірыңғай электрондық паспорты: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер — бір жерде.",
+"ru":"Единый электронный паспорт всех публичных библиотек страны: контакты, здание, оснащение, фонд, кадры и основные показатели — в одном месте.",
+"en":"A single electronic passport for every public library in the country: contacts, building, equipment, collection, staff and key indicators in one place."
 },
 "s15.search":{
-"kk":"Атауы немесе мекен-жайы бойынша іздеу",
-"ru":"Поиск по названию или адресу",
-"en":"Search by name or address"
+"kk":"Кітапхана атауы, аудан немесе мекен-жай бойынша іздеу…",
+"ru":"Поиск по названию, району или адресу…",
+"en":"Search by name, district or address…"
 },
 "s15.count":{
 "kk":"Кітапхана саны: {a}",
@@ -3715,6 +3851,246 @@ const TXT = {
 "kk":"Кітапханалар ұсынған паспорт деректері (Google Sheets)",
 "ru":"Паспортные данные, предоставленные библиотеками (Google Sheets)",
 "en":"Passport data submitted by libraries (Google Sheets)"
+},
+"p.demo":{
+"kk":"<b>Демо-режим.</b> Облыстағы кітапхана саны — нақты статистика, ал кітапханалардың атаулары мен көрсеткіштері дизайнды көрсетуге арналған үлгі деректер. Google Sheets-ке нақты паспорттар енгізілгенде, бет оларға автоматты түрде ауысады.",
+"ru":"<b>Демо-режим.</b> Количество библиотек по регионам — реальная статистика, а названия и показатели библиотек — образцы для демонстрации дизайна. Когда реальные паспорта будут внесены в Google Sheets, страница переключится на них автоматически.",
+"en":"<b>Demo mode.</b> Library counts per region are real statistics; library names and figures are sample data for showcasing the design. Once real passports are entered in Google Sheets, the page switches to them automatically."
+},
+"p.tag":{
+"kk":"Электрондық паспорт жүйесі",
+"ru":"Система электронных паспортов",
+"en":"Electronic passport system"
+},
+"p.st.libs":{
+"kk":"кітапхана жүйеде",
+"ru":"библиотек в системе",
+"en":"libraries in the system"
+},
+"p.st.full":{
+"kk":"паспорт толық толтырылған",
+"ru":"паспортов заполнено полностью",
+"en":"passports fully completed"
+},
+"p.st.avg":{
+"kk":"орташа толтырылуы",
+"ru":"средняя заполненность",
+"en":"average completeness"
+},
+"p.st.regions":{
+"kk":"облыс және республикалық маңызы бар қала",
+"ru":"областей и городов республиканского значения",
+"en":"regions and cities of national significance"
+},
+"p.map.t":{
+"kk":"Өңірлер картасы",
+"ru":"Карта регионов",
+"en":"Regional map"
+},
+"p.map.d":{
+"kk":"Өңірді басып, оның кітапханаларын ашыңыз",
+"ru":"Нажмите на регион, чтобы открыть его библиотеки",
+"en":"Click a region to open its libraries"
+},
+"p.m.count":{
+"kk":"Саны",
+"ru":"Количество",
+"en":"Count"
+},
+"p.m.fill":{
+"kk":"Толтырылуы",
+"ru":"Заполненность",
+"en":"Completeness"
+},
+"p.lo":{
+"kk":"аз",
+"ru":"меньше",
+"en":"fewer"
+},
+"p.hi":{
+"kk":"көп",
+"ru":"больше",
+"en":"more"
+},
+"p.types.t":{
+"kk":"Кітапхана түрлері",
+"ru":"Типы библиотек",
+"en":"Library types"
+},
+"p.types.d":{
+"kk":"Жүйедегі кітапханалардың құрылымы",
+"ru":"Структура библиотек в системе",
+"en":"Structure of libraries in the system"
+},
+"p.top.t":{
+"kk":"Толтыру көшбасшылары",
+"ru":"Лидеры заполнения",
+"en":"Completion leaders"
+},
+"p.top.d":{
+"kk":"Паспорттары ең толық толтырылған өңірлер",
+"ru":"Регионы с наиболее полными паспортами",
+"en":"Regions with the most complete passports"
+},
+"p.regs":{
+"kk":"Облыстар мен қалалар",
+"ru":"Области и города",
+"en":"Regions and cities"
+},
+"p.libsW":{
+"kk":"кітапхана",
+"ru":"библиотек",
+"en":"libraries"
+},
+"p.fill":{
+"kk":"Толтырылуы",
+"ru":"Заполненность",
+"en":"Completeness"
+},
+"p.fullN":{
+"kk":"толық: {a}",
+"ru":"полностью: {a}",
+"en":"complete: {a}"
+},
+"p.rsub":{
+"kk":"{a} кітапхана · {b} паспорт толық толтырылған",
+"ru":"{a} библиотек · {b} паспортов заполнено полностью",
+"en":"{a} libraries · {b} passports fully completed"
+},
+"p.ring":{
+"kk":"паспорт толтырылды",
+"ru":"паспорт заполнен",
+"en":"passport completed"
+},
+"p.all":{
+"kk":"Барлығы",
+"ru":"Все",
+"en":"All"
+},
+"p.dist.all":{
+"kk":"Барлық аудандар",
+"ru":"Все районы",
+"en":"All districts"
+},
+"p.sort.name":{
+"kk":"Атауы бойынша",
+"ru":"По названию",
+"en":"By name"
+},
+"p.sort.fill":{
+"kk":"Толтырылуы бойынша",
+"ru":"По заполненности",
+"en":"By completeness"
+},
+"p.sort.fund":{
+"kk":"Қоры бойынша",
+"ru":"По фонду",
+"en":"By collection"
+},
+"p.sort.users":{
+"kk":"Пайдаланушылар бойынша",
+"ru":"По пользователям",
+"en":"By users"
+},
+"p.v.cards":{
+"kk":"Карталар",
+"ru":"Карточки",
+"en":"Cards"
+},
+"p.v.list":{
+"kk":"Тізім",
+"ru":"Список",
+"en":"List"
+},
+"p.more":{
+"kk":"Тағы {a} кітапхана көрсету",
+"ru":"Показать ещё {a}",
+"en":"Show {a} more"
+},
+"p.shown":{
+"kk":"{a} / {b} кітапхана",
+"ru":"{a} из {b} библиотек",
+"en":"{a} of {b} libraries"
+},
+"p.center":{
+"kk":"Облыс орталығы",
+"ru":"Областной центр",
+"en":"Regional centre"
+},
+"p.distN":{
+"kk":"№{a} аудан",
+"ru":"Район №{a}",
+"en":"District {a}"
+},
+"p.col.name":{
+"kk":"Атауы",
+"ru":"Название",
+"en":"Name"
+},
+"p.col.type":{
+"kk":"Түрі",
+"ru":"Тип",
+"en":"Type"
+},
+"p.col.dist":{
+"kk":"Аудан",
+"ru":"Район",
+"en":"District"
+},
+"p.col.reg":{
+"kk":"Өңір",
+"ru":"Регион",
+"en":"Region"
+},
+"p.col.fund":{
+"kk":"Қоры",
+"ru":"Фонд",
+"en":"Collection"
+},
+"p.col.users":{
+"kk":"Пайдаланушылар",
+"ru":"Пользователи",
+"en":"Users"
+},
+"p.col.fill":{
+"kk":"Толтырылуы",
+"ru":"Заполненность",
+"en":"Completeness"
+},
+"p.res":{
+"kk":"Іздеу нәтижесі: {a} кітапхана",
+"ru":"Результаты поиска: {a}",
+"en":"Search results: {a}"
+},
+"p.print":{
+"kk":"Басып шығару / PDF",
+"ru":"Печать / PDF",
+"en":"Print / PDF"
+},
+"p.cmp.t":{
+"kk":"Өңір бойынша салыстыру",
+"ru":"Сравнение по региону",
+"en":"Regional comparison"
+},
+"p.cmp.d":{
+"kk":"Өңірдегі {a} кітапханалардың орташа мәнімен",
+"ru":"Со средним значением по библиотекам этого типа в регионе",
+"en":"Against the regional average for this library type"
+},
+"p.cmp.this":{
+"kk":"Осы кітапхана",
+"ru":"Эта библиотека",
+"en":"This library"
+},
+"p.cmp.avg":{
+"kk":"Өңір орташасы",
+"ru":"Среднее по региону",
+"en":"Regional average"
+},
+"p.loadingOne":{
+"kk":"Паспорттың толық деректері жүктелуде…",
+"ru":"Загружаются полные данные паспорта…",
+"en":"Loading full passport data…"
 },
 "s14.more":{
 "kk":"Толығырақ",
@@ -4464,8 +4840,10 @@ P.events = () => `
   ${srcLine()}`;
 P.events.charts = () => {};
 
-/* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады */
-const PASS = {list:[], status: API_URL ? "loading" : "empty", q:""};
+/* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
+   Кестеде дерек әлі болмаса, бет демо (үлгі) деректермен көрсетіледі. */
+const PASS = {list:[], status: API_URL ? "loading" : "empty", full:{}, pending:{},
+  hq:"", q:"", type:"", dist:"", sort:"name", view:"cards", shown:24, metric:"count", region:""};
 const PF = [
   {n:"1", t:{kk:"Кітапхана туралы ақпарат",ru:"Информация о библиотеке",en:"Library information"}, f:[
     ["1.1",{kk:"Кітапхананың атауы",ru:"Название библиотеки",en:"Library name"}],
@@ -4506,114 +4884,484 @@ const PF = [
 ];
 const PFL = {};
 PF.forEach(g=>g.f.forEach(x=>{ PFL[x[0]] = x[1]; }));
-const pl  = c => (PFL[c] && (PFL[c][LANG] || PFL[c].kk)) || c;
-const pv  = (x,c) => String((x.f && x.f[c]) || "").trim();
+/* Толтырылу есебіне кіретін өрістер: сурет (1.2) пен сайт (1.6) міндетті емес */
+const PREQ = Object.keys(PFL).filter(c=>c!=="1.2" && c!=="1.6");
+const tx  = o => (o && (o[LANG] || o.kk)) || "";
+const pl  = c => tx(PFL[c]) || c;
+const pv  = (x,c) => String((x && x.f && x.f[c]) || "").trim();
+const num = v => { const n = parseFloat(String(v||"").replace(/\s/g,"").replace(",",".")); return isNaN(n) ? null : n; };
+const fillOf = f => PREQ.filter(c=>String((f||{})[c]||"").trim()).length / PREQ.length;
 const safeUrl = u => { u = String(u||"").trim(); if(!u) return "";
   if(!/^https?:\/\//i.test(u)) u = "https://" + u;
   return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : ""; };
-const PH_ICON = '<svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg>';
-function libPhoto(x){
+
+/* Облыстар мен республикалық маңызы бар қалалар. g — стильдендірілген картадағы орны [жол, баған] */
+const REG = [
+  {k:"wko",       g:[0,0], src:"Батыс Қазақстан",     n:{kk:"Батыс Қазақстан облысы",ru:"Западно-Казахстанская область",en:"West Kazakhstan Region"}, s:{kk:"БҚО",ru:"ЗКО",en:"WKO"}},
+  {k:"kostanay",  g:[0,2], src:"Қостанай",            n:{kk:"Қостанай облысы",ru:"Костанайская область",en:"Kostanay Region"}, s:{kk:"Қостанай",ru:"Костанай",en:"Kostanay"}},
+  {k:"nko",       g:[0,3], src:"Солтүстік Қазақстан", n:{kk:"Солтүстік Қазақстан облысы",ru:"Северо-Казахстанская область",en:"North Kazakhstan Region"}, s:{kk:"СҚО",ru:"СКО",en:"NKO"}},
+  {k:"pavlodar",  g:[0,4], src:"Павлодар",            n:{kk:"Павлодар облысы",ru:"Павлодарская область",en:"Pavlodar Region"}, s:{kk:"Павлодар",ru:"Павлодар",en:"Pavlodar"}},
+  {k:"atyrau",    g:[1,0], src:"Атырау",              n:{kk:"Атырау облысы",ru:"Атырауская область",en:"Atyrau Region"}, s:{kk:"Атырау",ru:"Атырау",en:"Atyrau"}},
+  {k:"aktobe",    g:[1,1], src:"Ақтөбе",              n:{kk:"Ақтөбе облысы",ru:"Актюбинская область",en:"Aktobe Region"}, s:{kk:"Ақтөбе",ru:"Актобе",en:"Aktobe"}},
+  {k:"akmola",    g:[1,3], src:"Ақмола",              n:{kk:"Ақмола облысы",ru:"Акмолинская область",en:"Akmola Region"}, s:{kk:"Ақмола",ru:"Акмола",en:"Akmola"}},
+  {k:"astana",    g:[1,4], src:"Астана қалалық ОКЖ",  n:{kk:"Астана қаласы",ru:"город Астана",en:"Astana city"}, s:{kk:"Астана",ru:"Астана",en:"Astana"}, city:1},
+  {k:"eko",       g:[1,5], src:"Шығыс Қазақстан",     n:{kk:"Шығыс Қазақстан облысы",ru:"Восточно-Казахстанская область",en:"East Kazakhstan Region"}, s:{kk:"ШҚО",ru:"ВКО",en:"EKO"}},
+  {k:"mangystau", g:[2,0], src:"Маңғыстау",           n:{kk:"Маңғыстау облысы",ru:"Мангистауская область",en:"Mangystau Region"}, s:{kk:"Маңғыстау",ru:"Мангистау",en:"Mangystau"}},
+  {k:"ulytau",    g:[2,2], src:"Ұлытау",              n:{kk:"Ұлытау облысы",ru:"Улытауская область",en:"Ulytau Region"}, s:{kk:"Ұлытау",ru:"Улытау",en:"Ulytau"}},
+  {k:"karaganda", g:[2,3], src:"Қарағанды",           n:{kk:"Қарағанды облысы",ru:"Карагандинская область",en:"Karaganda Region"}, s:{kk:"Қарағанды",ru:"Караганда",en:"Karaganda"}},
+  {k:"abai",      g:[2,5], src:"Абай",                n:{kk:"Абай облысы",ru:"Абайская область",en:"Abai Region"}, s:{kk:"Абай",ru:"Абай",en:"Abai"}},
+  {k:"kyzylorda", g:[3,1], src:"Қызылорда",           n:{kk:"Қызылорда облысы",ru:"Кызылординская область",en:"Kyzylorda Region"}, s:{kk:"Қызылорда",ru:"Кызылорда",en:"Kyzylorda"}},
+  {k:"turkistan", g:[3,2], src:"Түркістан",           n:{kk:"Түркістан облысы",ru:"Туркестанская область",en:"Turkistan Region"}, s:{kk:"Түркістан",ru:"Туркестан",en:"Turkistan"}},
+  {k:"zhambyl",   g:[3,3], src:"Жамбыл",              n:{kk:"Жамбыл облысы",ru:"Жамбылская область",en:"Zhambyl Region"}, s:{kk:"Жамбыл",ru:"Жамбыл",en:"Zhambyl"}},
+  {k:"almatyr",   g:[3,4], src:"Алматы",              n:{kk:"Алматы облысы",ru:"Алматинская область",en:"Almaty Region"}, s:{kk:"Алматы обл.",ru:"Алматин. обл.",en:"Almaty reg."}},
+  {k:"zhetisu",   g:[3,5], src:"Жетісу",              n:{kk:"Жетісу облысы",ru:"Жетысуская область",en:"Zhetysu Region"}, s:{kk:"Жетісу",ru:"Жетысу",en:"Zhetysu"}},
+  {k:"shymkent",  g:[4,2], src:"Шымкент қ., кітапх.", n:{kk:"Шымкент қаласы",ru:"город Шымкент",en:"Shymkent city"}, s:{kk:"Шымкент",ru:"Шымкент",en:"Shymkent"}, city:1},
+  {k:"almaty",    g:[4,4], src:"Алматы қалалық ОКЖ",  n:{kk:"Алматы қаласы",ru:"город Алматы",en:"Almaty city"}, s:{kk:"Алматы",ru:"Алматы",en:"Almaty"}, city:1}
+];
+/* Кітапхана түрлері */
+const LT = [
+  {k:"rep",   kk:"Республикалық",ru:"Республиканская",en:"National",  c:"#1E3A8A", g:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
+  {k:"obl",   kk:"Облыстық",     ru:"Областная",      en:"Regional",  c:"#2563EB", g:"linear-gradient(135deg,#1D4ED8,#60A5FA)"},
+  {k:"city",  kk:"Қалалық",      ru:"Городская",      en:"City",      c:"#0EA5E9", g:"linear-gradient(135deg,#0369A1,#38BDF8)"},
+  {k:"dist",  kk:"Аудандық",     ru:"Районная",       en:"District",  c:"#14B8A6", g:"linear-gradient(135deg,#0F766E,#2DD4BF)"},
+  {k:"rural", kk:"Ауылдық",      ru:"Сельская",       en:"Rural",     c:"#93C5FD", g:"linear-gradient(135deg,#3B82F6,#A5C8FD)"}
+];
+const LTM = {}; LT.forEach(t=>{ LTM[t.k] = t; });
+
+const normName = s => String(s||"").toLowerCase().replace(/облысы|обл\.?|қаласы|қ\./g," ").replace(/\s+/g," ").trim();
+function regOf(s){
+  const n = normName(s);
+  if(!n) return null;
+  return REG.find(r=>normName(r.n.kk)===n || normName(r.s.kk)===n) || null;
+}
+function typeOf(s){
+  const n = String(s||"").toLowerCase();
+  if(n.indexOf("республика")>-1) return "rep";
+  if(n.indexOf("облыс")>-1) return "obl";
+  if(n.indexOf("қала")>-1) return "city";
+  if(n.indexOf("аудан")>-1) return "dist";
+  return "rural";
+}
+/* Apps Script жазбасын беттің құрылымына келтіру */
+function normPass(x){
+  const r = regOf(x.r);
+  return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t), f: x.f || {},
+          c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(x.f)};
+}
+function distLabel(x){
+  if(typeof x.d === "number") return x.d ? T("p.distN",{a:x.d}) : T("p.center");
+  return x.d || "";
+}
+
+/* ── Демо деректер: облыстағы кітапхана саны — нақты статистика, қалғаны үлгі ── */
+function rng(seed){ let s = seed >>> 0; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 100000) / 100000; }; }
+function demoPassports(){
+  const R = rng(20251), pick = a => a[Math.floor(R()*a.length)], int = (a,b) => Math.round(a + R()*(b-a));
+  const TR = {rep:{area:[8000,30000],fund:[1000000,7000000],comp:[150,400],staff:[100,300],users:[40000,90000]},
+              obl:{area:[2000,9000],fund:[300000,1200000],comp:[40,120],staff:[40,120],users:[15000,40000]},
+              city:{area:[150,1200],fund:[20000,120000],comp:[5,25],staff:[4,20],users:[2000,9000]},
+              dist:{area:[200,900],fund:[30000,90000],comp:[8,25],staff:[6,20],users:[3000,8000]},
+              rural:{area:[30,150],fund:[3000,15000],comp:[1,4],staff:[1,2],users:[300,1500]}};
+  const streets = ["Абай","Тәуелсіздік","Достық","Бейбітшілік","Мектеп","Жастар","Орталық","Әл-Фараби","Наурыз"];
+  const out = []; let id = 0;
+  REG.forEach(r=>{
+    const src = (DATA.regions||[]).find(x=>x.name===r.src);
+    const n = (src ? src.libs : 40) + (r.k==="almaty" ? 2 : r.k==="astana" ? 1 : 0);
+    const types = [];
+    if(r.k==="almaty") types.push("rep","rep");
+    if(r.k==="astana") types.push("rep");
+    let D = 4;
+    if(!r.city){
+      types.push("obl","obl");
+      D = Math.max(3, Math.round(n*0.05));
+      for(let i=0;i<D;i++) types.push("dist");
+      const cn = Math.round(n*0.08);
+      for(let i=0;i<cn;i++) types.push("city");
+    }
+    while(types.length < n) types.push(r.city ? "city" : "rural");
+    let no = {rep:0,obl:0,city:0,dist:0,rural:0};
+    types.forEach(t=>{
+      const k = ++no[t];
+      let d, name;
+      if(t==="rep"){ d = 0; name = "Республикалық кітапхана №"+k; }
+      else if(t==="obl"){ d = 0; name = k===1 ? "Облыстық әмбебап ғылыми кітапхана" : "Облыстық балалар мен жасөспірімдер кітапханасы"; }
+      else if(t==="dist"){ d = k; name = "Аудандық орталық кітапхана (№"+k+" аудан)"; }
+      else if(t==="city"){ d = r.city ? int(1,D) : (k%3===0 ? int(1,D) : 0);
+        name = k%4===0 ? "№"+k+" қалалық балалар кітапханасы" : "№"+k+" қалалық кітапхана"; }
+      else { d = int(1,D); name = "№"+k+" ауылдық кітапхана-филиалы"; }
+      const z = TR[t], fund = int(z.fund[0],z.fund[1]), users = int(z.users[0],z.users[1]), comp = int(z.comp[0],z.comp[1]);
+      const tel = () => "+7 7"+int(10,29)+" "+int(100,999)+" "+int(10,99)+" "+int(10,99);
+      const v = {
+        "1.1":name,
+        "1.3":r.n.kk+", "+(d ? "№"+d+" аудан" : (r.city ? "" : "облыс орталығы, "))+(d?", ":"")+pick(streets)+" к-сі, "+int(1,120),
+        "1.4":tel(), "1.5":"library"+(id+1)+"@example.kz",
+        "2.1":String(int(1925,2018)),
+        "2.2":pick(["Үлгілік ғимарат","Бейімделген ғимарат","Мектеп ғимаратында","Мәдениет үйінің ғимаратында"]),
+        "2.3":nf(int(z.area[0],z.area[1]))+" м²",
+        "2.4":pick(["иә","иә","жоқ","абонемент бөлімімен біріктірілген"]),
+        "3.1":R()<0.78?"иә":"жоқ",
+        "3.2":pick(["РАБИС","РАБИС","WEB-RABIS","КАБИС","Ирбис","Мега Про","жоқ"]),
+        "3.3":R()<0.7?"иә":"жоқ",
+        "3.4":pick(["Kazneb.kz","Kazneb.kz, «Әділет» АҚЖ","Kazneb.kz, ҚР ҰК электрондық каталогы"]),
+        "3.5":String(comp), "3.6":String(int(0,Math.max(1,comp/8))), "3.7":String(int(1,Math.max(1,comp/4))),
+        "3.8":String(int(0,Math.max(1,comp/6))), "3.9":String(int(0,t==="rural"?1:4)),
+        "3.10":String(int(0,t==="rural"?0:2)), "3.11":String(int(0,t==="rural"?1:3)),
+        "4.1":nf(fund), "4.2":String(int(3,Math.max(5,fund/2500))), "4.3":nf(int(0,fund*0.02)),
+        "4.4":R()<0.55?"иә":"жоқ",
+        "5.1":String(int(z.staff[0],z.staff[1])), "5.2":"Т.А.Ә. (үлгі), "+tel(),
+        "6.1":nf(users), "6.2":nf(users*int(12,22)), "6.3":nf(users*int(7,14))
+      };
+      const p = pick([1,1,1,0.95,0.9,0.85,0.7,0.5,0.3,0]);
+      const f = {};
+      Object.keys(v).forEach(c=>{ if(c==="1.1" || c==="1.3" || R()<p) f[c] = v[c]; });
+      out.push({id:"d"+(++id), r:r.k, d:d, t:t, f:f, c:fillOf(f), demo:true});
+    });
+  });
+  return out;
+}
+const isDemo = () => !PASS.list.length;
+function passData(){
+  if(PASS.list.length) return PASS.list;
+  if(!PASS.demoList) PASS.demoList = demoPassports();
+  return PASS.demoList;
+}
+/* Өңір бойынша жиынтық (кэштеледі) */
+function regStats(){
+  const data = passData();
+  if(PASS._statsFor === data) return PASS._stats;
+  const S = {};
+  REG.forEach(r=>{ S[r.k] = {n:0, sum:0, full:0, types:{}, fill:0}; });
+  data.forEach(x=>{
+    const s = S[x.r]; if(!s) return;
+    s.n++; s.sum += x.c; if(x.c>=0.8) s.full++;
+    s.types[x.t] = (s.types[x.t]||0) + 1;
+  });
+  REG.forEach(r=>{ const s = S[r.k]; s.fill = s.n ? s.sum/s.n : 0; });
+  PASS._statsFor = data; PASS._stats = S;
+  return S;
+}
+
+const PI = {
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5z"/><path d="M4 19.5A2.5 2.5 0 006.5 22H20v-5"/>',
+  pin:'<path d="M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  link:'<path d="M10 14a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 10a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/>',
+  print:'<path d="M7 9V3h10v6M7 17H5a2 2 0 01-2-2v-4a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2h-2M7 14h10v7H7z"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  "3.5":'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  "3.6":'<rect x="3" y="11" width="18" height="7" rx="2"/><path d="M5 11l12-6M7 15h4"/>',
+  "3.7":'<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  "3.8":'<rect x="3" y="8" width="18" height="9" rx="2"/><path d="M7 8V4h10v4M7 17v3h10v-3M16 12h2"/>',
+  "3.9":'<rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8M9 2l3 3 3-3"/>',
+  "3.10":'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/>',
+  "3.11":'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13.5" r="3.5"/>'
+};
+const svg = (p,cls) => `<svg${cls?` class="${cls}"`:""} viewBox="0 0 24 24">${p}</svg>`;
+const pct0 = c => Math.round(c*100);
+const mcls = c => c>=0.8 ? "ok" : (c<0.4 ? "warn" : "");
+const meter = c => `<div class="meter ${mcls(c)}"><em style="width:${pct0(c)}%"></em></div>`;
+function mixColor(a,b,t){
+  const p = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const A = p(a), B = p(b);
+  return "rgb(" + A.map((x,i)=>Math.round(x+(B[i]-x)*t)).join(",") + ")";
+}
+function coverBg(x){
   const u = safeUrl(pv(x,"1.2"));
-  return u ? `<div class="lib-ph" style="background-image:url('${esc(u).replace(/'/g,"%27")}')" role="img" aria-label="${esc(pv(x,"1.1"))}"></div>`
-           : `<div class="lib-ph">${PH_ICON}</div>`;
+  return u ? `url('${esc(u).replace(/'/g,"%27")}') center/cover` : (LTM[x.t]||LTM.rural).g;
+}
+function demoBanner(){
+  return isDemo() ? `<div class="p-demo">${svg(PI.info)}<span>${T("p.demo")}</span></div>` : "";
+}
+const regLink = r => `<a href="#passport/r/${r.k}">${esc(tx(r.n))}</a>`;
+
+/* ── 1-деңгей: атлас ── */
+function tileMap(){
+  const S = regStats(), m = PASS.metric;
+  const vals = REG.map(r=> m==="fill" ? S[r.k].fill*100 : S[r.k].n);
+  const lo = Math.min.apply(null,vals), hi = Math.max.apply(null,vals);
+  return REG.map((r,i)=>{
+    const v = vals[i], q = hi>lo ? (v-lo)/(hi-lo) : 1;
+    const lbl = m==="fill" ? Math.round(v)+"%" : nf(v);
+    return `<a class="tile ${q>0.42?"dk":"lt"}" href="#passport/r/${r.k}"
+      style="grid-row:${r.g[0]+1};grid-column:${r.g[1]+1};background:${mixColor("#DBEAFE","#1D4ED8",q)}"
+      title="${esc(tx(r.n))} — ${lbl}"><b>${esc(tx(r.s))}</b><span>${lbl}</span></a>`;
+  }).join("");
+}
+function typeBlock(rows){
+  const tot = rows.reduce((s,r)=>s+r[1],0) || 1;
+  return `<div class="stack">${rows.map(r=>`<i style="width:${(r[1]/tot*100).toFixed(2)}%;background:${LTM[r[0]].c}" title="${esc(tx(LTM[r[0]]))}: ${nf(r[1])}"></i>`).join("")}</div>
+    ${rows.map(r=>`<div class="tb-row"><i style="background:${LTM[r[0]].c}"></i><span>${esc(tx(LTM[r[0]]))}</span>
+      <b>${nf(r[1])}</b><span class="tb-p">${pf(r[1]/tot*100)}</span></div>`).join("")}`;
+}
+function passHome(){
+  const data = passData(), S = regStats();
+  const total = data.length, full = data.filter(x=>x.c>=0.8).length;
+  const avg = total ? data.reduce((s,x)=>s+x.c,0)/total : 0;
+  const tc = {}; data.forEach(x=>{ tc[x.t] = (tc[x.t]||0) + 1; });
+  const leaders = REG.slice().sort((a,b)=>S[b.k].fill-S[a.k].fill).slice(0,5);
+  const regCards = REG.slice().sort((a,b)=>tx(a.n).localeCompare(tx(b.n),LANG)).map(r=>{
+    const s = S[r.k];
+    return `<a class="reg-card" href="#passport/r/${r.k}">
+      <h4>${esc(tx(r.n))}</h4>
+      <div class="rc-n"><b>${nf(s.n)}</b><span>${T("p.libsW")}</span></div>
+      ${meter(s.fill)}
+      <div class="rc-foot"><span>${T("p.fill")}: <b>${pct0(s.fill)}%</b></span><span>${T("p.fullN",{a:nf(s.full)})}</span></div></a>`;
+  }).join("");
+  return `${demoBanner()}
+  <div class="p-hero">
+    <span class="p-tag">${svg(PI.book)}${T("p.tag")}</span>
+    <h1>${T("s15")}</h1>
+    <p>${esc(T("s15.desc"))}</p>
+    <label class="p-search">${svg(PI.search)}
+      <input id="pSearch" type="search" autocomplete="off" placeholder="${esc(T("s15.search"))}" value="${esc(PASS.hq)}" aria-label="${esc(T("s15.search"))}"></label>
+    <div class="p-stats">
+      <div><b>${nf(total)}</b><span>${T("p.st.libs")}</span></div>
+      <div><b>${nf(full)}</b><span>${T("p.st.full")}</span><i><em style="width:${total?(full/total*100).toFixed(1):0}%"></em></i></div>
+      <div><b>${pct0(avg)}%</b><span>${T("p.st.avg")}</span><i><em style="width:${pct0(avg)}%"></em></i></div>
+      <div><b>${REG.length}</b><span>${T("p.st.regions")}</span></div>
+    </div>
+  </div>
+  <div id="pRes"></div>
+  <div class="grid g-2-1" style="margin-bottom:20px">
+    <div class="card">
+      <div class="panel-hd"><div><h3>${T("p.map.t")}</h3><p>${T("p.map.d")}</p></div>
+        <div class="seg" data-seg="metric">
+          <button data-pmetric="count" class="${PASS.metric==="count"?"on":""}">${T("p.m.count")}</button>
+          <button data-pmetric="fill" class="${PASS.metric==="fill"?"on":""}">${T("p.m.fill")}</button></div></div>
+      <div class="tmap" id="pMap">${tileMap()}</div>
+      <div class="tmap-legend"><span>${T("p.lo")}</span><i></i><span>${T("p.hi")}</span></div>
+    </div>
+    <div class="grid" style="align-content:start">
+      ${panel(null,T("p.types.t"),T("p.types.d"),typeBlock(LT.filter(t=>tc[t.k]).map(t=>[t.k,tc[t.k]])))}
+      ${panel(null,T("p.top.t"),T("p.top.d"),leaders.map((r,i)=>`<a class="lead" href="#passport/r/${r.k}">
+        <span class="medal ${i<3?"m"+(i+1):""}">${i+1}</span><span class="ld-n">${esc(tx(r.n))}</span>
+        ${meter(S[r.k].fill)}<b>${pct0(S[r.k].fill)}%</b></a>`).join(""))}
+    </div>
+  </div>
+  <div class="ph"><h2>${T("p.regs")}</h2></div>
+  <div class="reg-grid">${regCards}</div>
+  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+}
+
+/* ── 2-деңгей: облыс ── */
+function passRegion(r){
+  const S = regStats()[r.k];
+  const all = passData().filter(x=>x.r===r.k);
+  const dists = [];
+  all.forEach(x=>{ const k = String(x.d); if(dists.indexOf(k)<0) dists.push(k); });
+  dists.sort((a,b)=>a.localeCompare(b,LANG,{numeric:true}));
+  const dl = k => { const x = all.find(z=>String(z.d)===k); return x ? distLabel(x) : k; };
+  const chips = [["",S.n]].concat(LT.filter(t=>S.types[t.k]).map(t=>[t.k,S.types[t.k]]));
+  return `${demoBanner()}
+  <div class="crumbs"><a href="#passport">${T("s15")}</a><span>›</span><span>${esc(tx(r.n))}</span></div>
+  <div class="card r-head">
+    <div><div class="eyebrow">${T("s15")}</div><h1>${esc(tx(r.n))}</h1>
+      <p>${T("p.rsub",{a:nf(S.n),b:nf(S.full)})}</p>
+      <div class="stack" style="max-width:420px;margin-top:14px">${LT.filter(t=>S.types[t.k]).map(t=>`<i style="width:${(S.types[t.k]/S.n*100).toFixed(2)}%;background:${t.c}" title="${esc(tx(t))}: ${nf(S.types[t.k])}"></i>`).join("")}</div></div>
+    ${radial(S.fill*100,T("p.ring"))}
+  </div>
+  <div class="chips">${chips.map(c=>`<button class="chip ${PASS.type===c[0]?"on":""}" data-ptype="${c[0]}">
+    ${c[0]?`<i style="background:${LTM[c[0]].c}"></i>${esc(tx(LTM[c[0]]))}`:T("p.all")}<small>${nf(c[1])}</small></button>`).join("")}</div>
+  <div class="p-tools">
+    <label class="p-search">${svg(PI.search)}
+      <input id="pRSearch" type="search" autocomplete="off" placeholder="${esc(T("s15.search"))}" value="${esc(PASS.q)}" aria-label="${esc(T("s15.search"))}"></label>
+    <select class="pick" id="pDist" aria-label="${esc(T("p.col.dist"))}"><option value="">${T("p.dist.all")}</option>
+      ${dists.map(k=>`<option value="${esc(k)}" ${PASS.dist===k?"selected":""}>${esc(dl(k))}</option>`).join("")}</select>
+    <select class="pick" id="pSort" aria-label="Sort">
+      ${["name","fill","fund","users"].map(k=>`<option value="${k}" ${PASS.sort===k?"selected":""}>${T("p.sort."+k)}</option>`).join("")}</select>
+    <div class="seg" data-seg="view">
+      <button data-pview="cards" class="${PASS.view==="cards"?"on":""}" title="${esc(T("p.v.cards"))}" aria-label="${esc(T("p.v.cards"))}">${svg(PI.grid)}</button>
+      <button data-pview="list" class="${PASS.view==="list"?"on":""}" title="${esc(T("p.v.list"))}" aria-label="${esc(T("p.v.list"))}">${svg(PI.list)}</button></div>
+    <span class="p-count" id="pCount"></span>
+  </div>
+  <div id="pList"></div>
+  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+}
+const qKey = x => x._q || (x._q = (pv(x,"1.1")+" "+pv(x,"1.3")+" "+distLabel(x)).toLowerCase());
+function regionRows(){
+  let a = passData().filter(x=>x.r===PASS.region);
+  if(PASS.type) a = a.filter(x=>x.t===PASS.type);
+  if(PASS.dist!=="") a = a.filter(x=>String(x.d)===PASS.dist);
+  const q = PASS.q.trim().toLowerCase();
+  if(q) a = a.filter(x=>qKey(x).indexOf(q)>-1);
+  const byNum = c => (x,y) => (num(pv(y,c))||0) - (num(pv(x,c))||0);
+  const s = PASS.sort;
+  a = a.slice().sort(s==="fill" ? (x,y)=>y.c-x.c : s==="fund" ? byNum("4.1") : s==="users" ? byNum("6.1")
+    : (x,y)=>pv(x,"1.1").localeCompare(pv(y,"1.1"),"kk",{numeric:true}));
+  return a;
 }
 function libCard(x){
-  const q = [pv(x,"1.1"),pv(x,"1.3")].join(" ").toLowerCase();
-  const st = ["4.1","6.1"].filter(c=>pv(x,c))
-    .map(c=>`<div><b>${esc(pv(x,c))}</b><span>${esc(pl(c))}</span></div>`).join("");
-  return `<a class="lib-card" href="#passport/${esc(x.id)}" data-q="${esc(q)}">
-    ${libPhoto(x)}
+  const ty = LTM[x.t] || LTM.rural;
+  const st = ["4.1","6.1"].filter(c=>pv(x,c)).map(c=>`<div><b>${esc(pv(x,c))}</b><span>${esc(pl(c))}</span></div>`).join("");
+  return `<a class="lib-card" href="#passport/${encodeURIComponent(x.id)}">
+    <div class="lib-cover" style="background:${coverBg(x)}">${safeUrl(pv(x,"1.2"))?"":svg(PI.book,"cv-ic")}
+      <span class="pill">${esc(tx(ty))}</span></div>
     <div class="lib-body">
       <h4>${esc(pv(x,"1.1"))}</h4>
-      ${pv(x,"1.3")?`<div class="lib-meta">${esc(pv(x,"1.3"))}</div>`:""}
-      ${pv(x,"1.4")?`<div class="lib-meta">${esc(pv(x,"1.4"))}</div>`:""}
+      <div class="lib-meta">${esc(pv(x,"1.3") || distLabel(x))}</div>
       ${st?`<div class="lib-stats">${st}</div>`:""}
+      <div class="lib-c">${meter(x.c)}<span>${pct0(x.c)}%</span></div>
     </div></a>`;
 }
-function passList(){
-  const st = PASS.status;
-  let body;
-  if(st==="loading" && !PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.loading")}</div>`;
-  else if(st==="error" && !PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.error")}</div>`;
-  else if(!PASS.list.length) body = `<div class="card" style="text-align:center;color:var(--muted)">${T("s15.empty")}</div>`;
-  else body = `
-    <div class="p-bar">
-      <label class="p-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-        <input id="pSearch" type="search" placeholder="${esc(T("s15.search"))}" value="${esc(PASS.q)}" aria-label="${esc(T("s15.search"))}"></label>
-      <span class="p-count" id="pCount"></span>
-    </div>
-    <div class="grid g3" id="pList">${PASS.list.map(libCard).join("")}</div>
-    <div class="card" id="pNone" style="display:none;text-align:center;color:var(--muted)">${T("s15.nofound")}</div>`;
-  return `${head(T("s15"),T("s15.desc"))}${body}
-  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+function libTable(rows, withRegion){
+  return `<div class="card scroll-x" style="padding:8px 8px 4px"><table class="tbl lib-tbl"><thead><tr>
+    <th>${T("p.col.name")}</th><th>${T("p.col.type")}</th><th>${withRegion?T("p.col.reg"):T("p.col.dist")}</th>
+    <th style="text-align:right">${T("p.col.fund")}</th><th style="text-align:right">${T("p.col.users")}</th><th>${T("p.col.fill")}</th></tr></thead>
+    <tbody>${rows.map(x=>{ const r = REG.find(z=>z.k===x.r);
+      return `<tr><td class="nm"><a href="#passport/${encodeURIComponent(x.id)}">${esc(pv(x,"1.1"))}</a></td>
+      <td><span class="tdot" style="background:${(LTM[x.t]||LTM.rural).c}"></span>${esc(tx(LTM[x.t]||LTM.rural))}</td>
+      <td>${esc(withRegion ? (r?tx(r.s):"") : distLabel(x))}</td>
+      <td class="v">${esc(pv(x,"4.1")||"—")}</td><td class="v">${esc(pv(x,"6.1")||"—")}</td>
+      <td><div class="lib-c">${meter(x.c)}<span>${pct0(x.c)}%</span></div></td></tr>`; }).join("")}</tbody></table></div>`;
+}
+function drawList(){
+  const el = document.getElementById("pList");
+  if(!el) return;
+  const a = regionRows(), s = a.slice(0, PASS.shown);
+  el.innerHTML = a.length
+    ? (PASS.view==="list" ? libTable(s) : `<div class="lib-grid">${s.map(libCard).join("")}</div>`)
+      + (a.length>s.length ? `<button class="more-btn" data-pmore>${T("p.more",{a:nf(Math.min(48,a.length-s.length))})}</button>` : "")
+    : `<div class="card p-empty">${T("s15.nofound")}</div>`;
+  document.getElementById("pCount").textContent = T("p.shown",{a:nf(s.length),b:nf(a.length)});
+}
+function drawRes(){
+  const el = document.getElementById("pRes");
+  if(!el) return;
+  const q = PASS.hq.trim().toLowerCase();
+  if(q.length<2){ el.innerHTML = ""; return; }
+  const a = passData().filter(x=>qKey(x).indexOf(q)>-1);
+  el.innerHTML = `<div class="ph" style="margin-bottom:12px"><h2 style="font-size:18px">${T("p.res",{a:nf(a.length)})}</h2></div>`
+    + (a.length ? libTable(a.slice(0,40), true) : `<div class="card p-empty">${T("s15.nofound")}</div>`)
+    + `<div style="height:20px"></div>`;
+}
+
+/* ── 3-деңгей: паспорт ── */
+function secTable(g, skip){
+  const rows = g.f.filter(f=>(skip||[]).indexOf(f[0])<0).map(f=>{
+    const v = pv(PASS._cur,f[0]);
+    return `<tr><td class="c">${f[0]}</td><td>${esc(pl(f[0]))}</td><td class="pv${v?"":" none"}">${v?esc(v):"—"}</td></tr>`;
+  }).join("");
+  return panel(null, g.n+". "+tx(g.t), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
+}
+function requestFull(id){
+  if(PASS.pending[id]) return;
+  PASS.pending[id] = 1;
+  jsonp({action:"passport", id:id}, res=>{
+    PASS.pending[id] = 0;
+    if(res && res.ok && res.passport){
+      PASS.full[id] = normPass(res.passport);
+      if(location.hash.slice(1)==="passport/"+encodeURIComponent(id)) render(location.hash.slice(1));
+    }
+  }, 20000, ()=>{ PASS.pending[id] = 0; });
 }
 function passDetail(x){
-  const tel  = pv(x,"1.4"), mail = pv(x,"1.5"), site = safeUrl(pv(x,"1.6"));
-  const ct = [
-    pv(x,"1.3") ? `<div><span>${esc(pl("1.3"))}</span>${esc(pv(x,"1.3"))}</div>` : "",
-    tel  ? `<div><span>${esc(pl("1.4"))}</span><a href="tel:${esc(tel.replace(/[^\d+]/g,""))}">${esc(tel)}</a></div>` : "",
-    mail ? `<div><span>${esc(pl("1.5"))}</span><a href="mailto:${esc(mail)}">${esc(mail)}</a></div>` : "",
-    site ? `<div><span>${esc(pl("1.6"))}</span><a href="${esc(site)}" target="_blank" rel="noopener">${esc(pv(x,"1.6"))}</a></div>` : ""
+  const full = x.demo ? x : PASS.full[x.id];
+  if(!full && !isDemo()) requestFull(x.id);
+  const f = full || x;
+  PASS._cur = f;
+  const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
+  const tel = pv(f,"1.4"), mail = pv(f,"1.5"), site = safeUrl(pv(f,"1.6"));
+  const meta = [
+    pv(f,"1.3") ? `<span>${svg(PI.pin)}${esc(pv(f,"1.3"))}</span>` : "",
+    tel  ? `<span>${svg(PI.phone)}<a href="tel:${esc(tel.replace(/[^\d+]/g,""))}">${esc(tel)}</a></span>` : "",
+    mail ? `<span>${svg(PI.mail)}<a href="mailto:${esc(mail)}">${esc(mail)}</a></span>` : "",
+    site ? `<span>${svg(PI.link)}<a href="${esc(site)}" target="_blank" rel="noopener">${esc(pv(f,"1.6"))}</a></span>` : ""
   ].join("");
-  const kp = [["4.1","book"],["6.1","users"],["6.2","doc"],["6.3","globe"]].filter(k=>pv(x,k[0]));
+  const kp = [["4.1","book"],["6.1","users"],["6.2","doc"],["6.3","globe"]].filter(k=>pv(f,k[0]));
   const kpis = kp.map(k=>`<div class="card kpi"><div class="lbl"><span>${esc(pl(k[0]))}</span>
       <span class="ic"><svg viewBox="0 0 24 24">${ICONS[k[1]]}</svg></span></div>
-      <div class="num">${esc(pv(x,k[0]))}</div></div>`).join("");
-  const secs = PF.map(g=>{
-    const rows = g.f.filter(f=>f[0]!=="1.2").map(f=>{
-      const v = pv(x,f[0]);
-      return `<tr><td class="c">${f[0]}</td><td>${esc(pl(f[0]))}</td>
-        <td class="pv${v?"":" none"}">${v?esc(v):"—"}</td></tr>`;
-    }).join("");
-    return panel(null, g.n+". "+(g.t[LANG]||g.t.kk), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
+      <div class="num">${esc(pv(f,k[0]))}</div></div>`).join("");
+  const eq = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11"].map(c=>{ const v = pv(f,c);
+    return `<div class="${v?"":"none"}">${svg(PI[c])}<b>${v?esc(v):"—"}</b><span>${esc(pl(c))}</span></div>`; }).join("");
+  const eqRows = ["3.1","3.2","3.3","3.4"].map(c=>{ const v = pv(f,c);
+    return `<tr><td class="c">${c}</td><td>${esc(pl(c))}</td><td class="pv${v?"":" none"}">${v?esc(v):"—"}</td></tr>`; }).join("");
+  /* облыс орташасымен салыстыру */
+  const peers = passData().filter(z=>z.r===x.r && z.t===x.t);
+  const cmp = ["4.1","6.1","6.2","6.3"].map(c=>{
+    const me = num(pv(f,c)); if(me===null) return "";
+    const vs = peers.map(z=>num(pv(z,c))).filter(v=>v!==null);
+    if(vs.length<2) return "";
+    const avg = vs.reduce((s,v)=>s+v,0)/vs.length, mx = Math.max(me,avg) || 1, ratio = avg ? me/avg : 0;
+    return `<div class="cmp-row"><div class="hd"><span>${esc(pl(c))}</span>
+      <b class="${ratio>=1?"up":"down"}">${ratio>=1?"▲":"▼"} ${df(ratio)}×</b></div>
+      <div class="cmp-bars"><div><span>${T("p.cmp.this")}</span><i style="width:${(me/mx*100).toFixed(1)}%"></i><em>${nf(me)}</em></div>
+      <div class="avg"><span>${T("p.cmp.avg")}</span><i style="width:${(avg/mx*100).toFixed(1)}%"></i><em>${nf(avg)}</em></div></div></div>`;
   }).join("");
-  return `<a class="p-back" href="#passport">← ${T("s15.back")}</a>
-  <div class="card pass-hd">
-    ${libPhoto(x)}
-    <div><div class="ph" style="margin-bottom:0"><div class="eyebrow">${T("s15")}</div></div>
-      <h1>${esc(pv(x,"1.1"))}</h1>
-      <div class="pass-ct">${ct}</div></div>
+  return `${demoBanner()}
+  <div class="crumbs"><a href="#passport">${T("s15")}</a><span>›</span>${r?regLink(r)+"<span>›</span>":""}<span>${esc(pv(f,"1.1"))}</span></div>
+  <div class="pd-cover" style="background:${coverBg(f)}">${safeUrl(pv(f,"1.2"))?"":svg(PI.book,"cv-ic")}</div>
+  <div class="card pd-card">
+    <div><span class="pill">${esc(tx(ty))}</span>${r?` <span class="pill gray">${esc(tx(r.n))}</span>`:""}
+      <h1>${esc(pv(f,"1.1"))}</h1><div class="pd-meta">${meta}</div></div>
+    <div class="pd-side">${radial(f.c*100,T("p.ring"))}
+      <button class="btn-ghost" data-print>${svg(PI.print)}${T("p.print")}</button></div>
   </div>
-  ${kpis?`<div class="grid g4" style="margin-bottom:20px">${kpis}</div>`:""}
-  <div class="grid g2">${secs}</div>
+  ${!full && !isDemo() ? `<div class="card p-empty" style="margin-bottom:20px">${T("p.loadingOne")}</div>` : ""}
+  ${kpis?`<div class="grid g4 pd-kpis" style="margin-bottom:20px">${kpis}</div>`:""}
+  <div class="grid g2" style="margin-bottom:16px">${secTable(PF[0],["1.1","1.2"])}${secTable(PF[1])}</div>
+  <div style="margin-bottom:16px">${panel(null,"3. "+tx(PF[2].t),"",`<div class="eq">${eq}</div>
+    <table class="tbl pass-tbl" style="margin-top:14px"><tbody>${eqRows}</tbody></table>`)}</div>
+  <div class="grid g2" style="margin-bottom:16px">${secTable(PF[3])}${secTable(PF[4])}</div>
+  <div class="grid ${cmp?"g2":""}">${secTable(PF[5])}
+    ${cmp?panel(null,T("p.cmp.t"),T("p.cmp.d",{a:tx(ty).toLowerCase()}),cmp):""}</div>
   <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
 }
+
 P.passport = sub => {
-  if(sub){
-    const x = PASS.list.find(r=>String(r.id)===String(sub));
+  if(PASS.status==="loading" && !PASS.list.length)
+    return `${head(T("s15"),T("s15.desc"))}<div class="card p-empty">${T("s15.loading")}</div>`;
+  const parts = String(sub||"").split("/");
+  if(parts[0]==="r"){
+    const r = REG.find(z=>z.k===parts[1]);
+    if(r){
+      if(PASS.region!==r.k){ PASS.region = r.k; PASS.type = ""; PASS.dist = ""; PASS.q = ""; PASS.shown = 24; }
+      return passRegion(r);
+    }
+  } else if(sub){
+    const x = passData().find(z=>z.id===sub);
     if(x) return passDetail(x);
-    if(PASS.status!=="loading") return `<a class="p-back" href="#passport">← ${T("s15.back")}</a>
-      <div class="card" style="text-align:center;color:var(--muted)">${T("s15.notfound")}</div>`;
+    return `<div class="crumbs"><a href="#passport">${T("s15")}</a></div><div class="card p-empty">${T("s15.notfound")}</div>`;
   }
-  return passList();
+  return passHome();
 };
-P.passport.charts = () => filterPass();
-function filterPass(){
-  const list = document.getElementById("pList");
-  if(!list) return;
-  const q = PASS.q.trim().toLowerCase();
-  let n = 0;
-  list.querySelectorAll(".lib-card").forEach(c=>{
-    const on = !q || c.dataset.q.indexOf(q) > -1;
-    c.style.display = on ? "" : "none";
-    if(on) n++;
-  });
-  document.getElementById("pCount").textContent = T("s15.count",{a:nf(n)});
-  document.getElementById("pNone").style.display = n ? "none" : "";
-}
+P.passport.charts = () => { drawList(); drawRes(); };
+
 document.addEventListener("input",e=>{
-  if(e.target.id==="pSearch"){ PASS.q = e.target.value; filterPass(); }
+  if(e.target.id==="pSearch"){ PASS.hq = e.target.value; drawRes(); }
+  if(e.target.id==="pRSearch"){ PASS.q = e.target.value; PASS.shown = 24; drawList(); }
 });
-/* Паспорттарды Google Sheets-тен жүктеу */
+document.addEventListener("change",e=>{
+  if(e.target.id==="pDist"){ PASS.dist = e.target.value; PASS.shown = 24; drawList(); }
+  if(e.target.id==="pSort"){ PASS.sort = e.target.value; drawList(); }
+});
+document.addEventListener("click",e=>{
+  const b = e.target.closest("[data-ptype],[data-pview],[data-pmore],[data-pmetric],[data-print]");
+  if(!b) return;
+  const seg = () => b.parentNode.querySelectorAll("button").forEach(c=>c.classList.toggle("on",c===b));
+  if(b.hasAttribute("data-pmore")){ PASS.shown += 48; drawList(); }
+  else if(b.hasAttribute("data-print")) window.print();
+  else if(b.dataset.ptype!==undefined){ PASS.type = b.dataset.ptype; PASS.shown = 24; seg(); drawList(); }
+  else if(b.dataset.pview){ PASS.view = b.dataset.pview; seg(); drawList(); }
+  else if(b.dataset.pmetric){ PASS.metric = b.dataset.pmetric; seg(); document.getElementById("pMap").innerHTML = tileMap(); }
+});
+/* Паспорттар тізімін Google Sheets-тен жүктеу (толық паспорт — ашқанда бөлек жүктеледі) */
 function loadPassports(){
-  const done = () => { if((location.hash.slice(1)||"home").split("/")[0]==="passport") render(location.hash.slice(1)); };
+  const done = () => {
+    PASS._statsFor = null;
+    if((location.hash.slice(1)||"home").split("/")[0]==="passport") render(location.hash.slice(1));
+  };
+  if(!API_URL){ PASS.status = "empty"; return; }
   jsonp({action:"passports"}, res=>{
     if(res && res.ok && Array.isArray(res.passports)){
-      PASS.list = res.passports.filter(x=>x && x.f && String(x.f["1.1"]||"").trim());
+      PASS.list = res.passports.map(normPass).filter(x=>pv(x,"1.1"));
       PASS.status = "ok";
     } else PASS.status = "error";
     done();
-  }, 20000, ()=>{ PASS.status = "error"; done(); });
+  }, 25000, ()=>{ PASS.status = "error"; done(); });
 }
 
 /* ─────────────── APPS SCRIPT БАЙЛАНЫСЫ ─────────────── */
