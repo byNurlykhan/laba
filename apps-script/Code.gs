@@ -11,7 +11,7 @@
  *    Тізімдер      — диаграммалардың тізімді деректері
  *    Ведомстволар  — 13-бөлімнің салыстыру кестесі
  *    Оқиғалар      — 14-бөлім: жаңалық және хабарландыру
- *    Паспорттар    — «Кітапханалар паспорты» бөлімі (әр жол — бір кітапхана)
+ *    Паспорттар / Тізілім — «Кітапханалар паспорты» бөлімі (әр жол — бір кітапхана)
  *    Мәтіндер      — сайттағы кез келген жазуды өзгерту
  *    Аудармалар    — атаулардың ru/en нұсқасы
  *    Статистика    — қолданушылардың қаралымы (автоматты)
@@ -97,16 +97,34 @@ const PASSPORT_FIELDS = [
   ['6.3',  'Келушілер саны']
 ];
 
-/** Навигацияға арналған қосымша бағандар */
-const PASSPORT_REGIONS = ['Абай облысы', 'Ақмола облысы', 'Ақтөбе облысы', 'Алматы облысы', 'Атырау облысы',
-  'Батыс Қазақстан облысы', 'Жамбыл облысы', 'Жетісу облысы', 'Қарағанды облысы', 'Қостанай облысы',
-  'Қызылорда облысы', 'Маңғыстау облысы', 'Павлодар облысы', 'Солтүстік Қазақстан облысы', 'Түркістан облысы',
-  'Ұлытау облысы', 'Шығыс Қазақстан облысы', 'Астана қаласы', 'Алматы қаласы', 'Шымкент қаласы'];
-const PASSPORT_TYPES = ['Республикалық', 'Облыстық', 'Қалалық', 'Аудандық', 'Ауылдық'];
+/** «Кітапханалар паспорты»: тізілімнің бағандары және олардың сайттағы кодтары.
+ *  Бағандар тақырып атауы бойынша танылады, сондықтан ретін өзгертуге болады.
+ *  Тізімде жоқ бағандар (мысалы, «Ескерту», «Дереккөз файл») сайтқа жіберілмейді. */
+const PASSPORT_HEAD = [
+  ['№', 'id'], ['Деңгей коды', 'lvl'], ['Мәртебесі', 't'], ['Санаты', 'cat'], ['Өңір', 'r'], ['Аудан / қала', 'd'],
+  ['Кітапхана атауы', '1.1'], ['Сурет (сілтеме)', '1.2'], ['Мекенжайы', '1.3'], ['Телефон', '1.4'], ['E-mail', '1.5'], ['Сайт', '1.6'],
+  ['Құрылған жылы', '2.1'], ['Ғимарат', '2.2'], ['Көлемі, м²', '2.3'], ['Оқу залы', '2.4'],
+  ['Интернет', '3.1'], ['АКАЖ атауы', '3.2'], ['Электрондық кітапханаларға қолжетімділік', '3.3'],
+  ['Пайдаланатын электрондық ресурстар', '3.4'], ['Компьютер', '3.5'], ['Сканер', '3.6'], ['Принтер', '3.7'],
+  ['МФУ', '3.8'], ['Теледидар', '3.9'], ['Бейнекамера', '3.10'], ['Фотоаппарат', '3.11'],
+  ['Жалпы қор', '4.1'], ['Мерзімді басылымдар', '4.2'], ['Электронды ресурстар', '4.3'], ['Электрондық каталог', '4.4'],
+  ['Штат саны', '5.1'], ['Басшысы (аты-жөні, байланыс)', '5.2'],
+  ['Пайдаланушылар саны', '6.1'], ['Берілген құжаттар', '6.2'], ['Келушілер саны', '6.3']
+];
+/** Баған атауының балама жазылуы */
+const PASSPORT_ALIAS = { 'id': 'id', 'облыс': 'r', 'түрі': 't', 'сурет': '1.2', 'сурет (url)': '1.2', 'фото': '1.2' };
+/** Паспорттар осы парақтардың біріне жазылады (бірінші табылғаны оқылады) */
+const PASSPORT_SHEETS = ['Паспорттар', 'Тізілім'];
+const PASSPORT_REGIONS = ['Республикалық деңгей', 'Абай облысы', 'Ақмола облысы', 'Ақтөбе облысы', 'Алматы облысы',
+  'Атырау облысы', 'Батыс Қазақстан облысы', 'Жамбыл облысы', 'Жетісу облысы', 'Қарағанды облысы',
+  'Қостанай облысы', 'Қызылорда облысы', 'Маңғыстау облысы', 'Павлодар облысы', 'Солтүстік Қазақстан облысы',
+  'Түркістан облысы', 'Ұлытау облысы', 'Шығыс Қазақстан облысы', 'Астана қаласы', 'Алматы қаласы', 'Шымкент қаласы'];
+const PASSPORT_TYPES = ['Республикалық', 'Облыстық', 'Республикалық маңызы бар қала', 'Қалалық', 'Аудандық', 'Ауылдық'];
 /** Толтырылу есебіне кірмейтін өрістер (сурет пен сайт міндетті емес) */
 const PASSPORT_OPTIONAL = ['1.2', '1.6'];
-/** Тізімде (жеңіл нұсқада) жіберілетін өрістер */
-const PASSPORT_INDEX_FIELDS = ['1.1', '1.2', '1.3', '1.4', '4.1', '6.1', '6.2', '6.3'];
+/** Сайттағы тізімге (жеңіл нұсқаға) жіберілетін бағандар */
+const PASSPORT_INDEX_COLS = ['id', 'r', 'd', 't', 'cat', 'lvl', 'c', '1.1', '1.2', '1.3', '4.1', '6.1', '6.2', '6.3'];
+const PASSPORT_CACHE_SEC = 21600;
 
 // ═══════════════ ВЕБ-ҚОСЫМША ═══════════════
 
@@ -118,10 +136,8 @@ function doGet(e) {
     if (action === 'hit') { logHit_(p); out = { ok: true }; }
     else if (action === 'stats') { out = { ok: true, stats: statsSummary_(Number(p.days) || 30) }; }
     else if (action === 'ping') { out = { ok: true, time: new Date().toISOString() }; }
-    else if (action === 'passports') { out = { ok: true, passports: passportIndex_() }; }
-    else if (action === 'passport') {
-      out = { ok: true, passport: getPassports_().find(x => x.id === String(p.id || '')) || null };
-    }
+    else if (action === 'passports') { out = Object.assign({ ok: true }, passportIndex_()); }
+    else if (action === 'passport') { out = { ok: true, passport: passportById_(p.id) }; }
     else { out = getPayload_(); }
   } catch (err) {
     out = { ok: false, error: String(err && err.message || err) };
@@ -297,7 +313,7 @@ function setPathArr_(obj, parts, arr) {
   cur[parts[parts.length - 1]] = arr;
 }
 
-function clearCache_() { CacheService.getScriptCache().remove('payload'); }
+function clearCache_() { CacheService.getScriptCache().removeAll(['payload', 'pidx_n']); }
 
 function refreshCache() {
   clearCache_();
@@ -305,85 +321,148 @@ function refreshCache() {
 }
 
 // ═══════════════ КІТАПХАНАЛАР ПАСПОРТЫ ═══════════════
-//  «Паспорттар» парағы: әр жол — бір кітапхана.
-//  Бағандар: ID, Облыс, Аудан / қала, Түрі (тізімнен таңдалады), 1.1 … 6.3.
-//  1.1 (атауы) бос жол сайтқа шықпайды.
-//  1.2 — суреттің сілтемесі; Google Drive сілтемесі де болады
+//  Дерек «Паспорттар» немесе «Тізілім» парағынан оқылады: әр жол — бір кітапхана.
+//  Тақырып жолы парақтың алғашқы 10 жолының ішінен ізделеді («Кітапхана атауы» бағаны бар жол).
+//  Тізім 6 сағатқа кэштеледі; парақты өзгерткенде кэш өзі тазарады (onEdit),
+//  «LABA → Кэшті тазарту» мәзірі де тазартады.
+//  «Сурет (сілтеме)» бағанына суреттің сілтемесі жазылады; Google Drive сілтемесі де болады
 //  (файл «Сілтемесі бар кез келген адам — Көруші» болуы керек).
-//  Кэштелмейді: кестеге енгізгеніңіз сайтта бірден көрінеді.
 
-/** «Паспорттар» парағын құру. Парақ бар болса — тек тақырып жолы жаңарады, дерек өшпейді. */
+/** Бос «Паспорттар» парағын тізілім пішімінде құру. «Тізілім» не «Паспорттар» бар болса — ештеңе өзгермейді. */
 function setupPassportSheet() {
   const ss = SpreadsheetApp.getActive();
-  const sh = ss.getSheetByName(CFG.SH.PASSPORTS) || ss.insertSheet(CFG.SH.PASSPORTS);
-  const headers = ['ID', 'Облыс', 'Аудан / қала', 'Түрі'].concat(PASSPORT_FIELDS.map(f => f[0] + ' ' + f[1]));
+  const has = passportSheet_();
+  if (has) { ss.toast('«' + has.getName() + '» парағы бар — сайт соны оқиды.', 'LABA', 6); return; }
+  const sh = ss.insertSheet(CFG.SH.PASSPORTS);
+  const headers = PASSPORT_HEAD.map(h => h[0]);
   sh.getRange(1, 1, 1, headers.length).setValues([headers])
     .setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF')
     .setVerticalAlignment('middle').setWrap(true);
   sh.setFrozenRows(1);
-  sh.setFrozenColumns(5);
-  sh.setRowHeight(1, 64);
-  sh.setColumnWidth(1, 50);
-  sh.setColumnWidths(2, headers.length - 1, 190);
+  sh.setFrozenColumns(7);
+  sh.setRowHeight(1, 52);
+  sh.setColumnWidths(1, headers.length, 160);
   const rows = Math.max(sh.getMaxRows() - 1, 1);
   sh.getRange(2, 1, rows, headers.length).setNumberFormat('@');
-  sh.getRange(2, 2, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
-    .requireValueInList(PASSPORT_REGIONS, true).build());
-  sh.getRange(2, 4, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+  sh.getRange(2, 3, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInList(PASSPORT_TYPES, true).build());
-  sh.getRange(1, 1).setNote('Бос қалдыруға болады — онда жол нөмірі ID болады.');
-  sh.getRange(1, 3).setNote('Аудан немесе қаланың атауы, мысалы: Сайрам ауданы. Облыс орталығындағы кітапхана үшін: Облыс орталығы.');
-  sh.getRange(1, 7).setNote('Суреттің сілтемесі (URL). Google Drive сілтемесі де болады — файл «Сілтемесі бар кез келген адам» үшін ашық болуы керек.');
+  sh.getRange(2, 5, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(PASSPORT_REGIONS, true).build());
   ss.toast('«Паспорттар» парағы дайын.', 'LABA', 5);
 }
 
-/** Парақты оқу → [{id, r:облыс, d:аудан, t:түрі, c:толтырылған өріс саны, f:{"1.1":"…", …}}] */
-function getPassports_() {
-  const sh = SpreadsheetApp.getActive().getSheetByName(CFG.SH.PASSPORTS);
-  if (!sh || sh.getLastRow() < 2) return [];
-  const values = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getDisplayValues();
-  const head = values[0];
-
-  // Бағанды тақырыптың басындағы кодпен анықтаймыз: «1.1 …», «3.10 …»
-  const cols = [];
-  let idCol = -1, rCol = -1, dCol = -1, tCol = -1;
-  head.forEach((h, i) => {
-    const t = String(h).trim();
-    const m = t.match(/^(\d+\.\d+)\.?(\s|$)/);
-    if (m) { cols.push([i, m[1]]); return; }
-    const low = t.toLowerCase();
-    if (/^id$/i.test(t)) idCol = i;
-    else if (low.indexOf('облыс') === 0) rCol = i;
-    else if (low.indexOf('аудан') === 0) dCol = i;
-    else if (low.indexOf('түрі') === 0) tCol = i;
-  });
-  const required = PASSPORT_FIELDS.map(f => f[0]).filter(c => PASSPORT_OPTIONAL.indexOf(c) < 0);
-  const cell = (row, i) => i > -1 ? String(row[i] || '').trim() : '';
-
-  const out = [];
-  for (let r = 1; r < values.length; r++) {
-    const row = values[r];
-    const f = {};
-    cols.forEach(c => {
-      const v = String(row[c[0]] || '').trim();
-      if (v) f[c[1]] = v;
-    });
-    if (!f['1.1']) continue;
-    if (f['1.2']) f['1.2'] = imageUrl_(f['1.2']);
-    const id = cell(row, idCol) || String(r + 1);
-    out.push({ id: id, r: cell(row, rCol), d: cell(row, dCol), t: cell(row, tCol),
-               c: required.filter(c => f[c]).length, f: f });
+function passportSheet_() {
+  const ss = SpreadsheetApp.getActive();
+  for (let i = 0; i < PASSPORT_SHEETS.length; i++) {
+    const sh = ss.getSheetByName(PASSPORT_SHEETS[i]);
+    if (sh) return sh;
   }
+  return null;
+}
+
+/** Баған тақырыбы → өріс коды: «Кітапхана атауы» → 1.1, «1.1 …» → 1.1 */
+function passportKey_(h) {
+  const t = String(h || '').replace(/\s+/g, ' ').trim();
+  const m = t.match(/^(\d+\.\d+)\.?(\s|$)/);
+  if (m) return m[1];
+  const low = t.toLowerCase();
+  const hit = PASSPORT_HEAD.find(x => x[0].toLowerCase() === low);
+  return hit ? hit[1] : (PASSPORT_ALIAS[low] || '');
+}
+
+/** Тақырып жолы мен бағандардың орнын табу → {sh, headRow (1-ден), map:{код: баған индексі}} */
+function passportLayout_() {
+  const sh = passportSheet_();
+  if (!sh || sh.getLastRow() < 2) return null;
+  const n = Math.min(10, sh.getLastRow());
+  const top = sh.getRange(1, 1, n, sh.getLastColumn()).getDisplayValues();
+  for (let r = 0; r < top.length; r++) {
+    const map = {};
+    top[r].forEach((h, i) => { const k = passportKey_(h); if (k && !(k in map)) map[k] = i; });
+    if ('1.1' in map) return { sh: sh, headRow: r + 1, map: map };
+  }
+  return null;
+}
+
+const PASSPORT_REQUIRED_ = () => PASSPORT_FIELDS.map(f => f[0]).filter(c => PASSPORT_OPTIONAL.indexOf(c) < 0);
+
+function passportRow_(row, map, rowNum, required) {
+  const g = k => (k in map) ? String(row[map[k]] == null ? '' : row[map[k]]).trim() : '';
+  const f = {};
+  PASSPORT_FIELDS.forEach(x => { const v = g(x[0]); if (v) f[x[0]] = v; });
+  if (!f['1.1']) return null;
+  if (f['1.2']) f['1.2'] = imageUrl_(f['1.2']);
+  return { id: g('id') || String(rowNum), r: g('r'), d: g('d'), t: g('t'), cat: g('cat'), lvl: g('lvl'),
+           c: required.filter(c => f[c]).length, f: f };
+}
+
+/** Барлық паспорт → [{id, r, d, t, cat, lvl, c, f:{"1.1":"…", …}}] */
+function getPassports_() {
+  const L = passportLayout_();
+  if (!L) return [];
+  const last = L.sh.getLastRow();
+  if (last <= L.headRow) return [];
+  const values = L.sh.getRange(L.headRow + 1, 1, last - L.headRow, L.sh.getLastColumn()).getDisplayValues();
+  const required = PASSPORT_REQUIRED_();
+  const out = [];
+  values.forEach((row, i) => {
+    const x = passportRow_(row, L.map, L.headRow + 1 + i, required);
+    if (x) out.push(x);
+  });
   return out;
 }
 
-/** Сайттағы тізімге арналған жеңіл нұсқа: толық паспорт кітапхананы ашқанда бөлек жүктеледі */
+/** Бір кітапхананың толық паспорты (ID бойынша) */
+function passportById_(id) {
+  id = String(id || '').trim();
+  const L = passportLayout_();
+  if (!L || !id) return null;
+  const last = L.sh.getLastRow(), lastCol = L.sh.getLastColumn();
+  let rowNum = 0;
+  if ('id' in L.map && last > L.headRow) {
+    const cell = L.sh.getRange(L.headRow + 1, L.map.id + 1, last - L.headRow, 1)
+      .createTextFinder(id).matchEntireCell(true).findNext();
+    if (cell) rowNum = cell.getRow();
+  }
+  if (!rowNum && /^\d+$/.test(id) && Number(id) > L.headRow && Number(id) <= last) rowNum = Number(id);
+  if (!rowNum) return null;
+  const row = L.sh.getRange(rowNum, 1, 1, lastCol).getDisplayValues()[0];
+  return passportRow_(row, L.map, rowNum, PASSPORT_REQUIRED_());
+}
+
+/** Сайттағы тізімге арналған ықшам нұсқа: {cols:[…], rows:[[…]]}. Толық паспорт ашқанда бөлек жүктеледі. */
 function passportIndex_() {
-  return getPassports_().map(x => {
-    const f = {};
-    PASSPORT_INDEX_FIELDS.forEach(c => { if (x.f[c]) f[c] = x.f[c]; });
-    return { id: x.id, r: x.r, d: x.d, t: x.t, c: x.c, f: f };
-  });
+  const cache = CacheService.getScriptCache();
+  try {
+    const n = Number(cache.get('pidx_n') || 0);
+    if (n) {
+      const keys = [];
+      for (let i = 0; i < n; i++) keys.push('pidx_' + i);
+      const got = cache.getAll(keys);
+      if (keys.every(k => got[k] != null)) return JSON.parse(keys.map(k => got[k]).join(''));
+    }
+  } catch (err) { /* кэш бүлінсе, қайта құрамыз */ }
+
+  const cols = PASSPORT_INDEX_COLS;
+  const rows = getPassports_().map(x => cols.map(k => /^\d+\.\d+$/.test(k) ? (x.f[k] || '') : x[k]));
+  const out = { cols: cols, rows: rows };
+  try {
+    const s = JSON.stringify(out), size = 40000, parts = {};
+    let n = 0;
+    for (let i = 0; i < s.length; i += size) parts['pidx_' + (n++)] = s.slice(i, i + size);
+    cache.putAll(parts, PASSPORT_CACHE_SEC);
+    cache.put('pidx_n', String(n), PASSPORT_CACHE_SEC);
+  } catch (err) { /* кэшке сыймаса, кэшсіз жұмыс істейміз */ }
+  return out;
+}
+
+/** Паспорт парағы өзгергенде тізімнің кэшін тазарту (қарапайым триггер — өзі іске қосылады) */
+function onEdit(e) {
+  try {
+    if (e && e.range && PASSPORT_SHEETS.indexOf(e.range.getSheet().getName()) > -1) {
+      CacheService.getScriptCache().remove('pidx_n');
+    }
+  } catch (err) { /* елемейміз */ }
 }
 
 /** Google Drive сілтемесін сайтта көрінетін сурет сілтемесіне айналдыру */
@@ -554,8 +633,8 @@ function setup() {
     .requireValueInList(['иә', 'жоқ'], true).build());
   ev.getRange(2, 1, 300, 13).setVerticalAlignment('top').setWrap(true);
 
-  // Паспорттар парағы жоқ болса — құрамыз (бар болса, деректі сақтаймыз)
-  if (!ss.getSheetByName(CFG.SH.PASSPORTS)) setupPassportSheet();
+  // Паспорттар парағы («Паспорттар» не «Тізілім») жоқ болса — құрамыз; бар болса, тимейміз
+  if (!passportSheet_()) setupPassportSheet();
 
   // Мәтіндер парағы бар болса — сақтаймыз
   if (!ss.getSheetByName(CFG.SH.TXT)) {
