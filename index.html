@@ -4092,6 +4092,21 @@ const TXT = {
 "ru":"Загружаются полные данные паспорта…",
 "en":"Loading full passport data…"
 },
+"p.reps":{
+"kk":"Республикалық кітапханалар",
+"ru":"Республиканские библиотеки",
+"en":"National libraries"
+},
+"p.cat.all":{
+"kk":"Барлық санаттар",
+"ru":"Все категории",
+"en":"All categories"
+},
+"p.sort.lvl":{
+"kk":"Мәртебесі бойынша",
+"ru":"По статусу",
+"en":"By status"
+},
 "s14.more":{
 "kk":"Толығырақ",
 "ru":"Подробнее",
@@ -4843,7 +4858,7 @@ P.events.charts = () => {};
 /* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
    Кестеде дерек әлі болмаса, бет демо (үлгі) деректермен көрсетіледі. */
 const PASS = {list:[], status: API_URL ? "loading" : "empty", full:{}, pending:{},
-  hq:"", q:"", type:"", dist:"", sort:"name", view:"cards", shown:24, metric:"count", region:""};
+  hq:"", q:"", type:"", cat:"", dist:"", sort:"lvl", view:"cards", shown:24, metric:"count", region:""};
 const PF = [
   {n:"1", t:{kk:"Кітапхана туралы ақпарат",ru:"Информация о библиотеке",en:"Library information"}, f:[
     ["1.1",{kk:"Кітапхананың атауы",ru:"Название библиотеки",en:"Library name"}],
@@ -4916,12 +4931,16 @@ const REG = [
   {k:"almatyr",   g:[3,4], src:"Алматы",              n:{kk:"Алматы облысы",ru:"Алматинская область",en:"Almaty Region"}, s:{kk:"Алматы обл.",ru:"Алматин. обл.",en:"Almaty reg."}},
   {k:"zhetisu",   g:[3,5], src:"Жетісу",              n:{kk:"Жетісу облысы",ru:"Жетысуская область",en:"Zhetysu Region"}, s:{kk:"Жетісу",ru:"Жетысу",en:"Zhetysu"}},
   {k:"shymkent",  g:[4,2], src:"Шымкент қ., кітапх.", n:{kk:"Шымкент қаласы",ru:"город Шымкент",en:"Shymkent city"}, s:{kk:"Шымкент",ru:"Шымкент",en:"Shymkent"}, city:1},
-  {k:"almaty",    g:[4,4], src:"Алматы қалалық ОКЖ",  n:{kk:"Алматы қаласы",ru:"город Алматы",en:"Almaty city"}, s:{kk:"Алматы",ru:"Алматы",en:"Almaty"}, city:1}
+  {k:"almaty",    g:[4,4], src:"Алматы қалалық ОКЖ",  n:{kk:"Алматы қаласы",ru:"город Алматы",en:"Almaty city"}, s:{kk:"Алматы",ru:"Алматы",en:"Almaty"}, city:1},
+  {k:"rep", special:1, n:{kk:"Республикалық деңгей",ru:"Республиканский уровень",en:"National level"}, s:{kk:"Республикалық",ru:"Республиканские",en:"National"}}
 ];
+/* Картада және облыстар тізімінде көрсетілетін 20 өңір */
+const REGS = REG.filter(r=>!r.special);
 /* Кітапхана түрлері */
 const LT = [
   {k:"rep",   kk:"Республикалық",ru:"Республиканская",en:"National",  c:"#1E3A8A", g:"linear-gradient(135deg,#1E3A8A,#2563EB)"},
   {k:"obl",   kk:"Облыстық",     ru:"Областная",      en:"Regional",  c:"#2563EB", g:"linear-gradient(135deg,#1D4ED8,#60A5FA)"},
+  {k:"rcity", kk:"Республикалық маңызы бар қала", ru:"Город республиканского значения", en:"City of national significance", c:"#6366F1", g:"linear-gradient(135deg,#4338CA,#818CF8)"},
   {k:"city",  kk:"Қалалық",      ru:"Городская",      en:"City",      c:"#0EA5E9", g:"linear-gradient(135deg,#0369A1,#38BDF8)"},
   {k:"dist",  kk:"Аудандық",     ru:"Районная",       en:"District",  c:"#14B8A6", g:"linear-gradient(135deg,#0F766E,#2DD4BF)"},
   {k:"rural", kk:"Ауылдық",      ru:"Сельская",       en:"Rural",     c:"#93C5FD", g:"linear-gradient(135deg,#3B82F6,#A5C8FD)"}
@@ -4930,23 +4949,73 @@ const LTM = {}; LT.forEach(t=>{ LTM[t.k] = t; });
 
 const normName = s => String(s||"").toLowerCase().replace(/облысы|обл\.?|қаласы|қ\./g," ").replace(/\s+/g," ").trim();
 function regOf(s){
-  const n = normName(s);
+  const low = String(s||"").toLowerCase().replace(/\s+/g," ").trim(), n = normName(s);
   if(!n) return null;
-  return REG.find(r=>normName(r.n.kk)===n || normName(r.s.kk)===n) || null;
+  /* алдымен толық атауы бойынша: «Алматы қаласы» мен «Алматы облысы» қысқартқанда бірдей */
+  return REG.find(r=>r.n.kk.toLowerCase()===low)
+      || REG.find(r=>normName(r.n.kk)===n || normName(r.s.kk)===n) || null;
 }
+const TYPE_KK = {"республикалық":"rep","облыстық":"obl","республикалық маңызы бар қала":"rcity",
+  "қалалық":"city","аудандық":"dist","ауылдық":"rural"};
+/* Тізілімдегі санаттардың аудармасы */
+const CAT = {
+  "Ұлттық кітапхана":{ru:"Национальная библиотека",en:"National library"},
+  "Республикалық кітапхана":{ru:"Республиканская библиотека",en:"Republican library"},
+  "Облыстық әмбебап ғылыми кітапхана":{ru:"Областная универсальная научная библиотека",en:"Regional universal research library"},
+  "Облыстық балалар және жасөспірімдер кітапханасы":{ru:"Областная детско-юношеская библиотека",en:"Regional children's and youth library"},
+  "Облыстық арнаулы кітапхана (зағип және нашар көретіндерге)":{ru:"Областная специальная библиотека (для незрячих и слабовидящих)",en:"Regional library for the blind and visually impaired"},
+  "Қаланың орталық кітапханасы / ОКЖ":{ru:"Центральная городская библиотека / ЦБС",en:"City central library / library system"},
+  "Қаланың орталық балалар кітапханасы":{ru:"Центральная городская детская библиотека",en:"City central children's library"},
+  "Қаланың арнаулы кітапханасы":{ru:"Специальная городская библиотека",en:"City special library"},
+  "Қалалық кітапхана-филиал":{ru:"Городская библиотека-филиал",en:"City branch library"},
+  "Қалалық орталық кітапхана / ОКЖ":{ru:"Городская центральная библиотека / ЦБС",en:"Town central library / library system"},
+  "Қалалық балалар кітапханасы":{ru:"Городская детская библиотека",en:"Town children's library"},
+  "Қалалық арнаулы кітапхана":{ru:"Городская специальная библиотека",en:"Town special library"},
+  "Аудандық орталық кітапхана / ОКЖ":{ru:"Районная центральная библиотека / ЦБС",en:"District central library / library system"},
+  "Аудандық балалар кітапханасы":{ru:"Районная детская библиотека",en:"District children's library"},
+  "Кенттік кітапхана":{ru:"Поселковая библиотека",en:"Settlement library"},
+  "Ауылдық кітапхана":{ru:"Сельская библиотека",en:"Rural library"}
+};
+const catName = c => (LANG!=="kk" && CAT[c] && CAT[c][LANG]) || c || "";
 function typeOf(s){
-  const n = String(s||"").toLowerCase();
+  const n = String(s||"").toLowerCase().trim();
+  if(TYPE_KK[n]) return TYPE_KK[n];
+  if(n.indexOf("маңызы бар")>-1) return "rcity";
   if(n.indexOf("республика")>-1) return "rep";
   if(n.indexOf("облыс")>-1) return "obl";
   if(n.indexOf("қала")>-1) return "city";
   if(n.indexOf("аудан")>-1) return "dist";
   return "rural";
 }
+/* Мәнді тазалау: «https: / / сайт» → «https://сайт», «1 796937» → «1 796 937» */
+const NUMF = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11","4.1","4.2","4.3","5.1","6.1","6.2","6.3"];
+function cleanVal(c, v){
+  v = String(v==null ? "" : v).replace(/\s+/g," ").trim();
+  if(!v) return "";
+  v = v.replace(/(https?)\s*:\s*\/\s*\/\s*/gi,"$1://");
+  v = v.replace(/\s+\/\s*\/\s+/g,", ");
+  if(c==="1.5" || c==="1.6") v = v.replace(/\s*\/\s*/g, c==="1.6" ? "/" : " / ").replace(/\s+\.\s*/g,".");
+  if(NUMF.indexOf(c)>-1 && /^\d[\d\s]*$/.test(v)) v = nf(Number(v.replace(/\s/g,"")));
+  return v;
+}
 /* Apps Script жазбасын беттің құрылымына келтіру */
 function normPass(x){
-  const r = regOf(x.r);
-  return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t), f: x.f || {},
-          c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(x.f)};
+  const r = regOf(x.r), f = {};
+  Object.keys(x.f||{}).forEach(c=>{ const v = cleanVal(c, x.f[c]); if(v) f[c] = v; });
+  return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t),
+          cat: String(x.cat||"").trim(), lvl: Number(x.lvl)||99, f: f,
+          c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(f)};
+}
+/* Ықшам жауап: {cols:[…], rows:[[…]]} → [{id, r, …, f:{…}}] */
+function unpackPass(res){
+  if(Array.isArray(res.passports)) return res.passports;
+  if(!Array.isArray(res.rows) || !Array.isArray(res.cols)) return null;
+  return res.rows.map(row=>{
+    const x = {f:{}};
+    res.cols.forEach((k,i)=>{ const v = row[i]; if(v===""||v==null) return;
+      if(/^\d+\.\d+$/.test(k)) x.f[k] = v; else x[k] = v; });
+    return x;
+  });
 }
 function distLabel(x){
   if(typeof x.d === "number") return x.d ? T("p.distN",{a:x.d}) : T("p.center");
@@ -4964,7 +5033,7 @@ function demoPassports(){
               rural:{area:[30,150],fund:[3000,15000],comp:[1,4],staff:[1,2],users:[300,1500]}};
   const streets = ["Абай","Тәуелсіздік","Достық","Бейбітшілік","Мектеп","Жастар","Орталық","Әл-Фараби","Наурыз"];
   const out = []; let id = 0;
-  REG.forEach(r=>{
+  REGS.forEach(r=>{
     const src = (DATA.regions||[]).find(x=>x.name===r.src);
     const n = (src ? src.libs : 40) + (r.k==="almaty" ? 2 : r.k==="astana" ? 1 : 0);
     const types = [];
@@ -5020,6 +5089,7 @@ function demoPassports(){
   return out;
 }
 const isDemo = () => !PASS.list.length;
+const tyName = x => x.cat ? catName(x.cat) : tx(LTM[x.t]||LTM.rural);
 function passData(){
   if(PASS.list.length) return PASS.list;
   if(!PASS.demoList) PASS.demoList = demoPassports();
@@ -5081,9 +5151,9 @@ const regLink = r => `<a href="#passport/r/${r.k}">${esc(tx(r.n))}</a>`;
 /* ── 1-деңгей: атлас ── */
 function tileMap(){
   const S = regStats(), m = PASS.metric;
-  const vals = REG.map(r=> m==="fill" ? S[r.k].fill*100 : S[r.k].n);
+  const vals = REGS.map(r=> m==="fill" ? S[r.k].fill*100 : S[r.k].n);
   const lo = Math.min.apply(null,vals), hi = Math.max.apply(null,vals);
-  return REG.map((r,i)=>{
+  return REGS.map((r,i)=>{
     const v = vals[i], q = hi>lo ? (v-lo)/(hi-lo) : 1;
     const lbl = m==="fill" ? Math.round(v)+"%" : nf(v);
     return `<a class="tile ${q>0.42?"dk":"lt"}" href="#passport/r/${r.k}"
@@ -5102,8 +5172,9 @@ function passHome(){
   const total = data.length, full = data.filter(x=>x.c>=0.8).length;
   const avg = total ? data.reduce((s,x)=>s+x.c,0)/total : 0;
   const tc = {}; data.forEach(x=>{ tc[x.t] = (tc[x.t]||0) + 1; });
-  const leaders = REG.slice().sort((a,b)=>S[b.k].fill-S[a.k].fill).slice(0,5);
-  const regCards = REG.slice().sort((a,b)=>tx(a.n).localeCompare(tx(b.n),LANG)).map(r=>{
+  const leaders = REGS.slice().sort((a,b)=>S[b.k].fill-S[a.k].fill).slice(0,5);
+  const nat = data.filter(x=>x.r==="rep" || x.t==="rep").sort((a,b)=>a.lvl-b.lvl);
+  const regCards = REGS.slice().sort((a,b)=>tx(a.n).localeCompare(tx(b.n),LANG)).map(r=>{
     const s = S[r.k];
     return `<a class="reg-card" href="#passport/r/${r.k}">
       <h4>${esc(tx(r.n))}</h4>
@@ -5122,7 +5193,7 @@ function passHome(){
       <div><b>${nf(total)}</b><span>${T("p.st.libs")}</span></div>
       <div><b>${nf(full)}</b><span>${T("p.st.full")}</span><i><em style="width:${total?(full/total*100).toFixed(1):0}%"></em></i></div>
       <div><b>${pct0(avg)}%</b><span>${T("p.st.avg")}</span><i><em style="width:${pct0(avg)}%"></em></i></div>
-      <div><b>${REG.length}</b><span>${T("p.st.regions")}</span></div>
+      <div><b>${REGS.length}</b><span>${T("p.st.regions")}</span></div>
     </div>
   </div>
   <div id="pRes"></div>
@@ -5142,6 +5213,8 @@ function passHome(){
         ${meter(S[r.k].fill)}<b>${pct0(S[r.k].fill)}%</b></a>`).join(""))}
     </div>
   </div>
+  ${nat.length?`<div class="ph"><h2>${T("p.reps")}</h2></div>
+  <div class="lib-grid" style="margin-bottom:26px">${nat.map(libCard).join("")}</div>`:""}
   <div class="ph"><h2>${T("p.regs")}</h2></div>
   <div class="reg-grid">${regCards}</div>
   <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
@@ -5156,6 +5229,10 @@ function passRegion(r){
   dists.sort((a,b)=>a.localeCompare(b,LANG,{numeric:true}));
   const dl = k => { const x = all.find(z=>String(z.d)===k); return x ? distLabel(x) : k; };
   const chips = [["",S.n]].concat(LT.filter(t=>S.types[t.k]).map(t=>[t.k,S.types[t.k]]));
+  const cats = [];
+  all.forEach(x=>{ if(x.cat && cats.indexOf(x.cat)<0) cats.push(x.cat); });
+  cats.sort((a,b)=>{ const la = (all.find(z=>z.cat===a)||{}).lvl||99, lb = (all.find(z=>z.cat===b)||{}).lvl||99;
+    return la-lb || a.localeCompare(b,"kk"); });
   return `${demoBanner()}
   <div class="crumbs"><a href="#passport">${T("s15")}</a><span>›</span><span>${esc(tx(r.n))}</span></div>
   <div class="card r-head">
@@ -5171,8 +5248,10 @@ function passRegion(r){
       <input id="pRSearch" type="search" autocomplete="off" placeholder="${esc(T("s15.search"))}" value="${esc(PASS.q)}" aria-label="${esc(T("s15.search"))}"></label>
     <select class="pick" id="pDist" aria-label="${esc(T("p.col.dist"))}"><option value="">${T("p.dist.all")}</option>
       ${dists.map(k=>`<option value="${esc(k)}" ${PASS.dist===k?"selected":""}>${esc(dl(k))}</option>`).join("")}</select>
+    ${cats.length>1?`<select class="pick" id="pCat" aria-label="${esc(T("p.cat.all"))}"><option value="">${T("p.cat.all")}</option>
+      ${cats.map(c=>`<option value="${esc(c)}" ${PASS.cat===c?"selected":""}>${esc(catName(c))}</option>`).join("")}</select>`:""}
     <select class="pick" id="pSort" aria-label="Sort">
-      ${["name","fill","fund","users"].map(k=>`<option value="${k}" ${PASS.sort===k?"selected":""}>${T("p.sort."+k)}</option>`).join("")}</select>
+      ${["lvl","name","fill","fund","users"].map(k=>`<option value="${k}" ${PASS.sort===k?"selected":""}>${T("p.sort."+k)}</option>`).join("")}</select>
     <div class="seg" data-seg="view">
       <button data-pview="cards" class="${PASS.view==="cards"?"on":""}" title="${esc(T("p.v.cards"))}" aria-label="${esc(T("p.v.cards"))}">${svg(PI.grid)}</button>
       <button data-pview="list" class="${PASS.view==="list"?"on":""}" title="${esc(T("p.v.list"))}" aria-label="${esc(T("p.v.list"))}">${svg(PI.list)}</button></div>
@@ -5185,21 +5264,23 @@ const qKey = x => x._q || (x._q = (pv(x,"1.1")+" "+pv(x,"1.3")+" "+distLabel(x))
 function regionRows(){
   let a = passData().filter(x=>x.r===PASS.region);
   if(PASS.type) a = a.filter(x=>x.t===PASS.type);
+  if(PASS.cat) a = a.filter(x=>x.cat===PASS.cat);
   if(PASS.dist!=="") a = a.filter(x=>String(x.d)===PASS.dist);
   const q = PASS.q.trim().toLowerCase();
   if(q) a = a.filter(x=>qKey(x).indexOf(q)>-1);
   const byNum = c => (x,y) => (num(pv(y,c))||0) - (num(pv(x,c))||0);
   const s = PASS.sort;
+  const byName = (x,y)=>pv(x,"1.1").localeCompare(pv(y,"1.1"),"kk",{numeric:true});
   a = a.slice().sort(s==="fill" ? (x,y)=>y.c-x.c : s==="fund" ? byNum("4.1") : s==="users" ? byNum("6.1")
-    : (x,y)=>pv(x,"1.1").localeCompare(pv(y,"1.1"),"kk",{numeric:true}));
+    : s==="lvl" ? (x,y)=>(x.lvl||99)-(y.lvl||99) || String(x.d).localeCompare(String(y.d),"kk",{numeric:true}) || byName(x,y)
+    : byName);
   return a;
 }
 function libCard(x){
-  const ty = LTM[x.t] || LTM.rural;
   const st = ["4.1","6.1"].filter(c=>pv(x,c)).map(c=>`<div><b>${esc(pv(x,c))}</b><span>${esc(pl(c))}</span></div>`).join("");
   return `<a class="lib-card" href="#passport/${encodeURIComponent(x.id)}">
     <div class="lib-cover" style="background:${coverBg(x)}">${safeUrl(pv(x,"1.2"))?"":svg(PI.book,"cv-ic")}
-      <span class="pill">${esc(tx(ty))}</span></div>
+      <span class="pill">${esc(tyName(x))}</span></div>
     <div class="lib-body">
       <h4>${esc(pv(x,"1.1"))}</h4>
       <div class="lib-meta">${esc(pv(x,"1.3") || distLabel(x))}</div>
@@ -5213,7 +5294,7 @@ function libTable(rows, withRegion){
     <th style="text-align:right">${T("p.col.fund")}</th><th style="text-align:right">${T("p.col.users")}</th><th>${T("p.col.fill")}</th></tr></thead>
     <tbody>${rows.map(x=>{ const r = REG.find(z=>z.k===x.r);
       return `<tr><td class="nm"><a href="#passport/${encodeURIComponent(x.id)}">${esc(pv(x,"1.1"))}</a></td>
-      <td><span class="tdot" style="background:${(LTM[x.t]||LTM.rural).c}"></span>${esc(tx(LTM[x.t]||LTM.rural))}</td>
+      <td><span class="tdot" style="background:${(LTM[x.t]||LTM.rural).c}"></span>${esc(tyName(x))}</td>
       <td>${esc(withRegion ? (r?tx(r.s):"") : distLabel(x))}</td>
       <td class="v">${esc(pv(x,"4.1")||"—")}</td><td class="v">${esc(pv(x,"6.1")||"—")}</td>
       <td><div class="lib-c">${meter(x.c)}<span>${pct0(x.c)}%</span></div></td></tr>`; }).join("")}</tbody></table></div>`;
@@ -5261,7 +5342,7 @@ function requestFull(id){
 function passDetail(x){
   const full = x.demo ? x : PASS.full[x.id];
   if(!full && !isDemo()) requestFull(x.id);
-  const f = full || x;
+  const f = full ? Object.assign({}, full, {c: full.c, cat: full.cat || x.cat}) : x;
   PASS._cur = f;
   const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
   const tel = pv(f,"1.4"), mail = pv(f,"1.5"), site = safeUrl(pv(f,"1.6"));
@@ -5295,7 +5376,7 @@ function passDetail(x){
   <div class="crumbs"><a href="#passport">${T("s15")}</a><span>›</span>${r?regLink(r)+"<span>›</span>":""}<span>${esc(pv(f,"1.1"))}</span></div>
   <div class="pd-cover" style="background:${coverBg(f)}">${safeUrl(pv(f,"1.2"))?"":svg(PI.book,"cv-ic")}</div>
   <div class="card pd-card">
-    <div><span class="pill">${esc(tx(ty))}</span>${r?` <span class="pill gray">${esc(tx(r.n))}</span>`:""}
+    <div><span class="pill">${esc(tx(ty))}</span>${x.cat?` <span class="pill">${esc(catName(x.cat))}</span>`:""}${r?` <span class="pill gray">${esc(tx(r.n))}${x.d?" · "+esc(x.d):""}</span>`:""}
       <h1>${esc(pv(f,"1.1"))}</h1><div class="pd-meta">${meta}</div></div>
     <div class="pd-side">${radial(f.c*100,T("p.ring"))}
       <button class="btn-ghost" data-print>${svg(PI.print)}${T("p.print")}</button></div>
@@ -5318,7 +5399,7 @@ P.passport = sub => {
   if(parts[0]==="r"){
     const r = REG.find(z=>z.k===parts[1]);
     if(r){
-      if(PASS.region!==r.k){ PASS.region = r.k; PASS.type = ""; PASS.dist = ""; PASS.q = ""; PASS.shown = 24; }
+      if(PASS.region!==r.k){ PASS.region = r.k; PASS.type = ""; PASS.cat = ""; PASS.dist = ""; PASS.q = ""; PASS.shown = 24; }
       return passRegion(r);
     }
   } else if(sub){
@@ -5337,6 +5418,7 @@ document.addEventListener("input",e=>{
 document.addEventListener("change",e=>{
   if(e.target.id==="pDist"){ PASS.dist = e.target.value; PASS.shown = 24; drawList(); }
   if(e.target.id==="pSort"){ PASS.sort = e.target.value; drawList(); }
+  if(e.target.id==="pCat"){ PASS.cat = e.target.value; PASS.shown = 24; drawList(); }
 });
 document.addEventListener("click",e=>{
   const b = e.target.closest("[data-ptype],[data-pview],[data-pmore],[data-pmetric],[data-print]");
@@ -5356,8 +5438,9 @@ function loadPassports(){
   };
   if(!API_URL){ PASS.status = "empty"; return; }
   jsonp({action:"passports"}, res=>{
-    if(res && res.ok && Array.isArray(res.passports)){
-      PASS.list = res.passports.map(normPass).filter(x=>pv(x,"1.1"));
+    const rows = res && res.ok ? unpackPass(res) : null;
+    if(rows){
+      PASS.list = rows.map(normPass).filter(x=>pv(x,"1.1"));
       PASS.status = "ok";
     } else PASS.status = "error";
     done();
