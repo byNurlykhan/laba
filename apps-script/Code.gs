@@ -392,6 +392,7 @@ function passportRow_(row, map, rowNum, required) {
   PASSPORT_FIELDS.forEach(x => { const v = g(x[0]); if (v) f[x[0]] = v; });
   if (!f['1.1']) return null;
   if (f['1.2']) f['1.2'] = imageUrl_(f['1.2']);
+  if (f['5.2']) { f['5.2'] = directorClean_(f['5.2']); if (!f['5.2']) delete f['5.2']; }
   return { id: g('id') || String(rowNum), r: g('r'), d: g('d'), t: g('t'), cat: g('cat'), lvl: g('lvl'),
            c: required.filter(c => f[c]).length, f: f };
 }
@@ -463,6 +464,27 @@ function onEdit(e) {
       CacheService.getScriptCache().remove('pidx_n');
     }
   } catch (err) { /* елемейміз */ }
+}
+
+/** 5.2: тек аты-жөні мен байланыс телефоны (еңбек өтілі, білімі т.б. алынады) */
+function directorClean_(v) {
+  v = String(v || '').replace(/\s+/g, ' ').trim();
+  if (!v) return '';
+  const phoneRe = /\+?\d[\d\s()\-–.]{4,}\d/g;
+  const isYears = m => /^(19|20)\d{2}\s*[-–.]\s*(19|20)?\d{2}$/.test(m.trim()) || /^(19|20)\d{2}$/.test(m.trim());
+  const phones = [];
+  v.replace(phoneRe, m => {
+    const d = m.replace(/\D/g, '');
+    if (d.length >= 6 && d.length <= 12 && !isYears(m)) phones.push(m.trim().replace(/[.]$/, ''));
+    return m;
+  });
+  const first = v.split(/\s+\/\s+|\s*;\s*|\s*\n\s*/)[0];
+  let name = first.replace(phoneRe, m => (isYears(m) ? m : ''))
+    .replace(/\b(тел|телефон|байланыс телефоны|ұялы|сот|моб)\.?\s*:?/gi, '')
+    .replace(/[\s,;:–\-/]+$/, '').trim();
+  if (!/[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүІіҺһ]/.test(name)) name = '';
+  const uniq = phones.filter((p, i) => phones.indexOf(p) === i);
+  return [name].concat(uniq.length ? [uniq.join(', ')] : []).filter(Boolean).join(' / ');
 }
 
 /** Google Drive сілтемесін сайтта көрінетін сурет сілтемесіне айналдыру */

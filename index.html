@@ -5361,14 +5361,18 @@ function splitVal(v){
   return out;
 }
 const isPhone = x => (x.replace(/\D/g,"").length>=7) && /^[\d\s()+\-–,.]+$/.test(x.replace(/тел\.?|ұялы|байланыс телефоны|телефон|:/gi,"").trim());
+/* 5.2 — тек аты-жөні мен телефон: кадрлық мәліметтер (білімі, өтілі т.б.) көрсетілмейді */
 function personHtml(v){
-  const parts = splitVal(v);
-  const name = parts.shift() || v;
+  const phoneRe = /\+?\d[\d\s()\-–.]{4,}\d/g;
+  const isYears = m => /^(19|20)\d{2}(\s*[-–.]\s*(19|20)?\d{2})?$/.test(m.trim());
+  const name = (v.split(/\s+\/\s+|\s*;\s*/)[0] || "").replace(phoneRe, m=>isYears(m) ? m : "")
+    .replace(/\b(тел|телефон|байланыс телефоны)\.?\s*:?/gi,"").replace(/[\s,;:–\-/]+$/,"").trim();
+  const phones = [];
+  (v.match(phoneRe)||[]).forEach(m=>{ const d = m.replace(/\D/g,"");
+    if(d.length>=6 && d.length<=12 && !isYears(m) && phones.indexOf(m.trim())<0) phones.push(m.trim()); });
   const ini = name.split(/\s+/).filter(w=>/^[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүІіҺһ]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join("");
-  const lines = parts.map(x=> isPhone(x)
-    ? `<a class="ps-tel" href="tel:${esc(x.replace(/[^\d+]/g,""))}">${svg(PI.phone)}${esc(x.replace(/тел\.?\s*:?/i,"").trim())}</a>`
-    : `<span>${linkify(x)}</span>`).join("");
-  return `<div class="person"><span class="ps-av">${esc(ini||"•")}</span><div><b>${esc(name)}</b>${lines}</div></div>`;
+  const tels = phones.map(x=>`<a class="ps-tel" href="tel:${esc(x.replace(/[^\d+]/g,""))}">${svg(PI.phone)}${esc(x)}</a>`).join("");
+  return `<div class="person"><span class="ps-av">${esc(ini||"•")}</span><div><b>${esc(name||"—")}</b>${tels}</div></div>`;
 }
 function valBlock(c, v){
   if(c==="5.2") return personHtml(v);
