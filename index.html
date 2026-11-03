@@ -4857,7 +4857,7 @@ P.events.charts = () => {};
 
 /* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
    Кестеде дерек әлі болмаса, бет демо (үлгі) деректермен көрсетіледі. */
-const PASS = {list:[], status: API_URL ? "loading" : "empty", full:{}, pending:{},
+const PASS = {list:[], status:"loading", src:"", full:{}, pending:{},
   hq:"", q:"", type:"", cat:"", dist:"", sort:"lvl", view:"cards", shown:24, metric:"count", region:""};
 const PF = [
   {n:"1", t:{kk:"Кітапхана туралы ақпарат",ru:"Информация о библиотеке",en:"Library information"}, f:[
@@ -5328,14 +5328,29 @@ function secTable(g, skip){
   }).join("");
   return panel(null, g.n+". "+tx(g.t), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
 }
+/* Сайттағы дерек файлдары (тізілім): Google Sheets-тен дерек келмесе, осылар көрсетіледі */
+const PASS_STATIC = "data/passports-index.json";
+const passChunk = id => "data/passports/" + Math.floor(Number(id)/200) + ".json";
+function rerenderIfOpen(id){
+  if(location.hash.slice(1)==="passport/"+encodeURIComponent(id)) render(location.hash.slice(1));
+}
 function requestFull(id){
   if(PASS.pending[id]) return;
   PASS.pending[id] = 1;
+  if(PASS.src==="static"){
+    fetch(passChunk(id)).then(r=>r.ok ? r.json() : null).then(map=>{
+      PASS.pending[id] = 0;
+      if(!map || PASS.src!=="static") return;
+      Object.keys(map).forEach(k=>{ PASS.full[k] = normPass(map[k]); });
+      rerenderIfOpen(id);
+    }).catch(()=>{ PASS.pending[id] = 0; });
+    return;
+  }
   jsonp({action:"passport", id:id}, res=>{
     PASS.pending[id] = 0;
     if(res && res.ok && res.passport){
       PASS.full[id] = normPass(res.passport);
-      if(location.hash.slice(1)==="passport/"+encodeURIComponent(id)) render(location.hash.slice(1));
+      rerenderIfOpen(id);
     }
   }, 20000, ()=>{ PASS.pending[id] = 0; });
 }
@@ -5430,21 +5445,30 @@ document.addEventListener("click",e=>{
   else if(b.dataset.pview){ PASS.view = b.dataset.pview; seg(); drawList(); }
   else if(b.dataset.pmetric){ PASS.metric = b.dataset.pmetric; seg(); document.getElementById("pMap").innerHTML = tileMap(); }
 });
-/* Паспорттар тізімін Google Sheets-тен жүктеу (толық паспорт — ашқанда бөлек жүктеледі) */
+/* Паспорттар тізімін жүктеу: сайттағы дерек файлы бірден көрсетіледі,
+   Google Sheets-тен дерек келсе — соған ауысады. Толық паспорт ашқанда бөлек жүктеледі. */
 function loadPassports(){
   const done = () => {
     PASS._statsFor = null;
     if((location.hash.slice(1)||"home").split("/")[0]==="passport") render(location.hash.slice(1));
   };
-  if(!API_URL){ PASS.status = "empty"; return; }
-  jsonp({action:"passports"}, res=>{
-    const rows = res && res.ok ? unpackPass(res) : null;
-    if(rows){
-      PASS.list = rows.map(normPass).filter(x=>pv(x,"1.1"));
-      PASS.status = "ok";
-    } else PASS.status = "error";
+  const apply = (res, src) => {
+    const rows = res && res.ok!==false ? unpackPass(res) : null;
+    const list = rows ? rows.map(normPass).filter(x=>pv(x,"1.1")) : [];
+    if(!list.length) return false;
+    PASS.list = list; PASS.src = src; PASS.full = {}; PASS.pending = {}; PASS.status = "ok";
     done();
-  }, 25000, ()=>{ PASS.status = "error"; done(); });
+    return true;
+  };
+  let left = 2;
+  const fail = () => { if(--left===0 && !PASS.list.length){ PASS.status = "error"; done(); } };
+  if(window.fetch && location.protocol!=="file:"){
+    fetch(PASS_STATIC).then(r=>r.ok ? r.json() : null)
+      .then(res=>{ if(PASS.src==="live" || !apply(res,"static")) fail(); })
+      .catch(fail);
+  } else fail();
+  if(API_URL) jsonp({action:"passports"}, res=>{ if(!apply(res,"live")) fail(); }, 25000, fail);
+  else fail();
 }
 
 /* ─────────────── APPS SCRIPT БАЙЛАНЫСЫ ─────────────── */
