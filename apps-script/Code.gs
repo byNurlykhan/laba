@@ -97,6 +97,17 @@ const PASSPORT_FIELDS = [
   ['6.3',  'Келушілер саны']
 ];
 
+/** Навигацияға арналған қосымша бағандар */
+const PASSPORT_REGIONS = ['Абай облысы', 'Ақмола облысы', 'Ақтөбе облысы', 'Алматы облысы', 'Атырау облысы',
+  'Батыс Қазақстан облысы', 'Жамбыл облысы', 'Жетісу облысы', 'Қарағанды облысы', 'Қостанай облысы',
+  'Қызылорда облысы', 'Маңғыстау облысы', 'Павлодар облысы', 'Солтүстік Қазақстан облысы', 'Түркістан облысы',
+  'Ұлытау облысы', 'Шығыс Қазақстан облысы', 'Астана қаласы', 'Алматы қаласы', 'Шымкент қаласы'];
+const PASSPORT_TYPES = ['Республикалық', 'Облыстық', 'Қалалық', 'Аудандық', 'Ауылдық'];
+/** Толтырылу есебіне кірмейтін өрістер (сурет пен сайт міндетті емес) */
+const PASSPORT_OPTIONAL = ['1.2', '1.6'];
+/** Тізімде (жеңіл нұсқада) жіберілетін өрістер */
+const PASSPORT_INDEX_FIELDS = ['1.1', '1.2', '1.3', '1.4', '4.1', '6.1', '6.2', '6.3'];
+
 // ═══════════════ ВЕБ-ҚОСЫМША ═══════════════
 
 function doGet(e) {
@@ -107,7 +118,10 @@ function doGet(e) {
     if (action === 'hit') { logHit_(p); out = { ok: true }; }
     else if (action === 'stats') { out = { ok: true, stats: statsSummary_(Number(p.days) || 30) }; }
     else if (action === 'ping') { out = { ok: true, time: new Date().toISOString() }; }
-    else if (action === 'passports') { out = { ok: true, passports: getPassports_() }; }
+    else if (action === 'passports') { out = { ok: true, passports: passportIndex_() }; }
+    else if (action === 'passport') {
+      out = { ok: true, passport: getPassports_().find(x => x.id === String(p.id || '')) || null };
+    }
     else { out = getPayload_(); }
   } catch (err) {
     out = { ok: false, error: String(err && err.message || err) };
@@ -291,7 +305,8 @@ function refreshCache() {
 }
 
 // ═══════════════ КІТАПХАНАЛАР ПАСПОРТЫ ═══════════════
-//  «Паспорттар» парағы: әр жол — бір кітапхана, бағандар — 1.1 … 6.3.
+//  «Паспорттар» парағы: әр жол — бір кітапхана.
+//  Бағандар: ID, Облыс, Аудан / қала, Түрі (тізімнен таңдалады), 1.1 … 6.3.
 //  1.1 (атауы) бос жол сайтқа шықпайды.
 //  1.2 — суреттің сілтемесі; Google Drive сілтемесі де болады
 //  (файл «Сілтемесі бар кез келген адам — Көруші» болуы керек).
@@ -301,22 +316,28 @@ function refreshCache() {
 function setupPassportSheet() {
   const ss = SpreadsheetApp.getActive();
   const sh = ss.getSheetByName(CFG.SH.PASSPORTS) || ss.insertSheet(CFG.SH.PASSPORTS);
-  const headers = ['ID'].concat(PASSPORT_FIELDS.map(f => f[0] + ' ' + f[1]));
+  const headers = ['ID', 'Облыс', 'Аудан / қала', 'Түрі'].concat(PASSPORT_FIELDS.map(f => f[0] + ' ' + f[1]));
   sh.getRange(1, 1, 1, headers.length).setValues([headers])
     .setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF')
     .setVerticalAlignment('middle').setWrap(true);
   sh.setFrozenRows(1);
-  sh.setFrozenColumns(2);
+  sh.setFrozenColumns(5);
   sh.setRowHeight(1, 64);
   sh.setColumnWidth(1, 50);
   sh.setColumnWidths(2, headers.length - 1, 190);
-  sh.getRange(2, 1, Math.max(sh.getMaxRows() - 1, 1), headers.length).setNumberFormat('@');
+  const rows = Math.max(sh.getMaxRows() - 1, 1);
+  sh.getRange(2, 1, rows, headers.length).setNumberFormat('@');
+  sh.getRange(2, 2, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(PASSPORT_REGIONS, true).build());
+  sh.getRange(2, 4, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(PASSPORT_TYPES, true).build());
   sh.getRange(1, 1).setNote('Бос қалдыруға болады — онда жол нөмірі ID болады.');
-  sh.getRange(1, 3).setNote('Суреттің сілтемесі (URL). Google Drive сілтемесі де болады — файл «Сілтемесі бар кез келген адам» үшін ашық болуы керек.');
+  sh.getRange(1, 3).setNote('Аудан немесе қаланың атауы, мысалы: Сайрам ауданы. Облыс орталығындағы кітапхана үшін: Облыс орталығы.');
+  sh.getRange(1, 7).setNote('Суреттің сілтемесі (URL). Google Drive сілтемесі де болады — файл «Сілтемесі бар кез келген адам» үшін ашық болуы керек.');
   ss.toast('«Паспорттар» парағы дайын.', 'LABA', 5);
 }
 
-/** Парақты оқу → [{id, f:{"1.1":"…", …}}] */
+/** Парақты оқу → [{id, r:облыс, d:аудан, t:түрі, c:толтырылған өріс саны, f:{"1.1":"…", …}}] */
 function getPassports_() {
   const sh = SpreadsheetApp.getActive().getSheetByName(CFG.SH.PASSPORTS);
   if (!sh || sh.getLastRow() < 2) return [];
@@ -325,13 +346,19 @@ function getPassports_() {
 
   // Бағанды тақырыптың басындағы кодпен анықтаймыз: «1.1 …», «3.10 …»
   const cols = [];
-  let idCol = -1;
+  let idCol = -1, rCol = -1, dCol = -1, tCol = -1;
   head.forEach((h, i) => {
     const t = String(h).trim();
-    if (/^id$/i.test(t)) { idCol = i; return; }
     const m = t.match(/^(\d+\.\d+)\.?(\s|$)/);
-    if (m) cols.push([i, m[1]]);
+    if (m) { cols.push([i, m[1]]); return; }
+    const low = t.toLowerCase();
+    if (/^id$/i.test(t)) idCol = i;
+    else if (low.indexOf('облыс') === 0) rCol = i;
+    else if (low.indexOf('аудан') === 0) dCol = i;
+    else if (low.indexOf('түрі') === 0) tCol = i;
   });
+  const required = PASSPORT_FIELDS.map(f => f[0]).filter(c => PASSPORT_OPTIONAL.indexOf(c) < 0);
+  const cell = (row, i) => i > -1 ? String(row[i] || '').trim() : '';
 
   const out = [];
   for (let r = 1; r < values.length; r++) {
@@ -343,10 +370,20 @@ function getPassports_() {
     });
     if (!f['1.1']) continue;
     if (f['1.2']) f['1.2'] = imageUrl_(f['1.2']);
-    const id = idCol > -1 && String(row[idCol]).trim() ? String(row[idCol]).trim() : String(r + 1);
-    out.push({ id: id, f: f });
+    const id = cell(row, idCol) || String(r + 1);
+    out.push({ id: id, r: cell(row, rCol), d: cell(row, dCol), t: cell(row, tCol),
+               c: required.filter(c => f[c]).length, f: f });
   }
   return out;
+}
+
+/** Сайттағы тізімге арналған жеңіл нұсқа: толық паспорт кітапхананы ашқанда бөлек жүктеледі */
+function passportIndex_() {
+  return getPassports_().map(x => {
+    const f = {};
+    PASSPORT_INDEX_FIELDS.forEach(c => { if (x.f[c]) f[c] = x.f[c]; });
+    return { id: x.id, r: x.r, d: x.d, t: x.t, c: x.c, f: f };
+  });
 }
 
 /** Google Drive сілтемесін сайтта көрінетін сурет сілтемесіне айналдыру */
