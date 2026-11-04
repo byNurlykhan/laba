@@ -1435,9 +1435,22 @@ function setupCabinet() {
   }
   CacheService.getScriptCache().removeAll(['cab_meta_n', 'cab_q_n', 'pidx_n', 'cab_users']);
   const msg = notes.join('\n') || 'Кабинет бұрыннан орнатылған. Өзгеріс жоқ.';
-  try { SpreadsheetApp.getUi().alert('LABA — кабинет орнатылды', msg, SpreadsheetApp.getUi().ButtonSet.OK); }
-  catch (e) { Logger.log(msg); }
+  // Терезе (alert) редактордан іске қосқанда кесте бетінде жабылмай тұрып қалады — сондықтан журналға жазамыз
+  Logger.log(msg);
+  try { ss.toast(msg, 'LABA — кабинет орнатылды', -1); } catch (e) { /* редактордан — тек журнал */ }
   return msg;
+}
+/** admin паролін жаңарту (пароль жоғалса). Редактордан іске қосыңыз: жаңа пароль Execution log-та шығады */
+function resetAdminPassword() {
+  CacheService.getScriptCache().remove('cab_users');
+  const u = cabUsers_().find(o => o.login === 'admin');
+  if (!u) throw new Error('admin аккаунты табылмады — алдымен setupCabinet іске қосыңыз');
+  const sys = { user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' };
+  const r = cabUserPassword_(sys, u.user_id, '');
+  if (u.status !== 'active') cabUserPatch_(u, { status: 'active' });
+  CacheService.getScriptCache().remove('cab_users');
+  Logger.log('Логин: admin\nЖаңа уақытша пароль: ' + r.password);
+  return r.password;
 }
 /** Сайттағы data/passports/*.json файлдарынан «Тізілім» парағын құру */
 function cabImportRegistry_() {
