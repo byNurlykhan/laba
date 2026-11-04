@@ -418,6 +418,120 @@ select.pick:hover{border-color:var(--faint)}
   .pd-cover{height:110px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
+
+/* ============ ӘДІСКЕРЛЕР КАБИНЕТІ ============ */
+.cab-btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:9px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;flex-shrink:0;transition:all .18s ease}
+.cab-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.cab-btn:hover,.cab-btn.on{border-color:var(--blue);color:var(--blue)}
+.cab-btn.on{background:var(--soft)}
+.q-info{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px}
+.q-info svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:2;flex-shrink:0}
+.cab{display:flex;flex-direction:column;gap:16px}
+.cab-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px}
+.cab-who{display:flex;gap:12px;align-items:center;min-width:0}
+.cab-who b{display:block;color:var(--ink);font-size:15px}
+.cab-who span:not(.ps-av){font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.cab-tabs{display:flex;gap:4px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;width:fit-content;max-width:100%}
+.cab-tabs a{font-size:13px;font-weight:500;padding:8px 14px;border-radius:8px;color:var(--muted);text-decoration:none;white-space:nowrap}
+.cab-tabs a:hover{color:var(--ink);background:var(--surface)}
+.cab-tabs a.on{background:var(--blue);color:#fff;font-weight:600}
+.cab-period{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cab-period label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.cab-ptxt{font-size:13px;font-weight:600;color:var(--ink)}
+.cab-sum{display:grid;grid-template-columns:1fr minmax(220px,360px);gap:16px;align-items:center}
+.cab-sum b{display:block;font-size:17px;color:var(--ink);margin:2px 0}
+.cab-k{font-size:12.5px;color:var(--muted)}
+.cab-prog-t{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.cab-libs{display:grid;gap:8px}
+.cab-lib{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:13px 16px;text-decoration:none}
+.cab-lib:hover{border-color:var(--soft-line);box-shadow:var(--shadow)}
+.cab-lib-m{min-width:0}
+.cab-lib-m b{display:block;color:var(--ink);font-size:14px;font-weight:600;line-height:1.35}
+.cab-lib-m span{font-size:12px;color:var(--muted)}
+.cab-lib-s{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+.cab-lib-s small{font-size:11.5px;color:var(--muted)}
+.cbtn{font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s ease;white-space:nowrap}
+.cbtn:hover{border-color:var(--blue);color:var(--blue)}
+.cbtn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.cbtn.primary:hover{background:var(--blue-dark);color:#fff}
+.cbtn.sm{padding:6px 11px;font-size:12px;border-radius:8px}
+.cbtn.wide{width:100%;padding:12px}
+.cbtn:disabled{opacity:.6;cursor:wait}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text);min-width:0}
+.fld > span{font-weight:500;color:var(--ink)}
+.fld-in{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.inp{font-family:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;transition:border-color .2s ease,box-shadow .2s ease}
+.inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--soft2)}
+.inp.sm{padding:7px 9px;font-size:13px;width:auto}
+.inp.num{font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;max-width:280px}
+.inp.bad{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+.req{color:var(--red);font-style:normal}
+.fld-hint{font-size:12px;color:var(--muted)}
+.fld-err{font-size:12.5px;color:var(--red);min-height:0}
+.fld-err:empty{display:none}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer}
+.cab-form{display:flex;flex-direction:column;gap:16px}
+.cab-form h3,.cab-h3{font-size:16px;margin-bottom:4px}
+.cab-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
+.cab-ed-hd h1{font-size:clamp(19px,2.4vw,26px);margin:10px 0 6px}
+.cab-upd{font-size:13px;color:var(--ink);margin-top:8px;padding:9px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.cab-upd.warn{color:#B45309;background:#FFFBEB;border-color:#FDE68A}
+:root[data-theme="dark"] .cab-upd.warn{color:#FCD34D;background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+.cab-static summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:14px}
+.cab-st-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+.cab-st-grid .cab-actions{grid-column:1/-1}
+.cab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.cab-dates{display:flex;gap:8px;flex-wrap:wrap}
+.cab-log td,.cab-users td{vertical-align:top;font-size:13px}
+.nw{white-space:nowrap}
+.cab-users tr.off td{opacity:.6}
+.cab-outbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;
+  background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;font-size:13px}
+:root[data-theme="dark"] .cab-outbox{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:#FCD34D}
+.cab-login{min-height:calc(100vh - 220px);display:grid;place-items:center;padding:20px 0}
+.cab-login-card{width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px;padding:30px 28px}
+.cab-login-card h1{font-size:22px;text-align:center}
+.cab-login-card > p{text-align:center;font-size:13.5px;margin-top:-6px}
+.cab-lg-ic{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--blue-900));display:grid;place-items:center;margin:0 auto}
+.cab-lg-ic svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.8}
+.cab-note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.cab-p{font-size:14px;line-height:1.55;margin-bottom:12px;color:var(--text)}
+.cab-warn{font-size:13px;color:#B45309;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:8px 12px;margin-bottom:10px}
+:root[data-theme="dark"] .cab-warn{color:#FCD34D;background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+.cab-modal{position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.5);display:grid;place-items:center;padding:16px;animation:fade .2s ease}
+.cab-dialog{background:var(--card);border:1px solid var(--line);border-radius:16px;width:100%;max-width:560px;max-height:calc(100vh - 32px);
+  display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(15,23,42,.35)}
+.cab-dlg-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.cab-dlg-hd h3{font-size:16px}
+.cab-x{border:0;background:transparent;font-size:24px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
+.cab-dlg-bd{padding:18px 20px;overflow:auto}
+.cab-dlg-ft{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cab-uform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cab-uform .fld-err{grid-column:1/-1}
+.pass-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px dashed var(--soft-line);border-radius:10px;padding:12px}
+.pass-box code{font-size:20px;font-weight:700;letter-spacing:.06em;color:var(--ink);flex:1}
+#cabToast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:120;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(92vw,520px)}
+.toast{background:#0F172A;color:#fff;font-size:13.5px;padding:11px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.3);transition:opacity .4s ease,transform .4s ease;text-align:center}
+.toast.ok{background:#15803D}.toast.warn{background:#B45309}.toast.bad{background:#B91C1C}
+.toast.out{opacity:0;transform:translateY(8px)}
+@media(max-width:860px){
+  .cab-sum{grid-template-columns:1fr}
+  .cab-lib{grid-template-columns:1fr auto}
+  .cab-lib-s{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;text-align:left}
+  .cab-lib .cbtn{grid-row:1;grid-column:2}
+  .cab-st-grid,.cab-uform{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .cab-btn span{display:none}
+  .cab-btn{padding:0;width:34px;height:34px;justify-content:center}
+  .cab-tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
+  .cab-actions .cbtn{flex:1}
+  .inp.num{max-width:none}
+  .cab-dlg-ft .cbtn{flex:1}
+  .cab-login-card{padding:24px 18px}
+}
 /* ============ АВТОРЛЫҚ БЕЛГІ ============ */
 .site-foot{
   margin-top:auto;padding:26px 28px 34px;
@@ -602,6 +716,8 @@ select.pick:hover{border-color:var(--faint)}
         <button data-lang="ru">RU</button>
         <button data-lang="en">EN</button>
       </div>
+      <a class="cab-btn" id="cabBtn" href="#login" aria-label="Әдіскер кабинеті">
+        <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 100-9 4.5 4.5 0 000 9zM3.5 21a8.5 8.5 0 0117 0"/></svg><span>Кіру</span></a>
       <button class="theme-btn" id="themeBtn" type="button" aria-label="Күн / түн режимі" title="Күн / түн режимі">
         <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
         <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
@@ -4226,6 +4342,16 @@ const TXT = {
 "ru":"По статусу",
 "en":"By status"
 },
+"p.qper":{
+"kk":"Негізгі көрсеткіштер: {y} жыл, {q} тоқсан",
+"ru":"Основные показатели: {y} год, {q} квартал",
+"en":"Key indicators: {y}, Q{q}"
+},
+"p.qupd":{
+"kk":"жаңартылды {d}",
+"ru":"обновлено {d}",
+"en":"updated {d}"
+},
 "s14.more":{
 "kk":"Толығырақ",
 "ru":"Подробнее",
@@ -5143,6 +5269,7 @@ function normPass(x){
   });
   return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t),
           cat: String(x.cat||"").trim(), lvl: Number(x.lvl)||99, f: f, tr: tr,
+          q: String(x.q||""), u: String(x.u||""),
           c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(f)};
 }
 /* Ықшам жауап: {cols:[…], rows:[[…]]} → [{id, r, …, f:{…}}] */
@@ -5537,10 +5664,23 @@ function requestFull(id){
   jsonp({action:"passport", id:id}, res=>{
     PASS.pending[id] = 0;
     if(res && res.ok && res.passport){
-      PASS.full[id] = normPass(res.passport);
+      const x = normPass(res.passport);
+      PASS.full[id] = x;
       rerenderIfOpen(id);
+      /* толық паспорттың аудармалары — сайттың файлынан */
+      if(window.fetch && location.protocol!=="file:") fetch(passChunk(id)).then(r=>r.ok ? r.json() : null).then(map=>{
+        if(map && map[id]){ mergeTr([x], [normPass(map[id])]); rerenderIfOpen(id); }
+      }).catch(()=>{});
     }
   }, 20000, ()=>{ PASS.pending[id] = 0; });
+}
+/* Негізгі көрсеткіштердің кезеңі мен жаңартылған күні (аты-жөні ашық сайтта көрсетілмейді) */
+function qInfo(x){
+  const q = String(x.q || "").split("-");
+  if(q.length !== 2) return "";
+  const per = T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]});
+  const d = String(x.u || "").split("-");
+  return `<div class="q-info">${svg(PI.info)}<span>${esc(per)}${d.length===3 ? " · " + esc(T("p.qupd",{d:d[2]+"."+d[1]+"."+d[0]})) : ""}</span></div>`;
 }
 function passDetail(x){
   const full = x.demo ? x : PASS.full[x.id];
@@ -5593,6 +5733,7 @@ function passDetail(x){
   <div style="margin-bottom:16px">${panel(null,"3. "+tx(PF[2].t),"",`<div class="eq">${eq}</div>
     <table class="tbl pass-tbl" style="margin-top:14px"><tbody>${eqRows}</tbody></table>`)}</div>
   <div class="grid g2" style="margin-bottom:16px">${secTable(PF[3])}${secTable(PF[4])}</div>
+  ${qInfo(full || x)}
   <div class="grid ${cmp?"g2":""}">${secTable(PF[5])}
     ${cmp?panel(null,T("p.cmp.t"),T("p.cmp.d",{a:tx(ty).toLowerCase()}),cmp):""}</div>
   <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
@@ -5638,6 +5779,11 @@ document.addEventListener("click",e=>{
 });
 /* Паспорттар тізімін жүктеу: сайттағы дерек файлы бірден көрсетіледі,
    Google Sheets-тен дерек келсе — соған ауысады. Толық паспорт ашқанда бөлек жүктеледі. */
+function mergeTr(target, source){
+  const by = {};
+  source.forEach(x=>{ by[x.id] = x.tr; });
+  target.forEach(x=>{ const t = by[x.id]; if(t) ["ru","en"].forEach(l=>{ x.tr[l] = Object.assign({}, t[l], x.tr[l]); }); x._q = ""; });
+}
 function loadPassports(){
   const done = () => {
     PASS._statsFor = null;
@@ -5647,6 +5793,7 @@ function loadPassports(){
     const rows = res && res.ok!==false ? unpackPass(res) : null;
     const list = rows ? rows.map(normPass).filter(x=>pv(x,"1.1")) : [];
     if(!list.length) return false;
+    if(src==="live" && PASS.src==="static") mergeTr(list, PASS.list);       // аудармалар тек сайттың файлдарында
     PASS.list = list; PASS.src = src; PASS.full = {}; PASS.pending = {}; PASS.status = "ok";
     done();
     return true;
@@ -5655,7 +5802,14 @@ function loadPassports(){
   const fail = () => { if(--left===0 && !PASS.list.length){ PASS.status = "error"; done(); } };
   if(window.fetch && location.protocol!=="file:"){
     fetch(PASS_STATIC).then(r=>r.ok ? r.json() : null)
-      .then(res=>{ if(PASS.src==="live" || !apply(res,"static")) fail(); })
+      .then(res=>{
+        if(PASS.src==="live"){                                               // тірі дерек бұрын келсе — тек аудармаларды аламыз
+          const rows = res ? unpackPass(res) : null;
+          if(rows){ mergeTr(PASS.list, rows.map(normPass)); done(); }
+          return;
+        }
+        if(!apply(res,"static")) fail();
+      })
       .catch(fail);
   } else fail();
   if(API_URL) jsonp({action:"passports"}, res=>{ if(!apply(res,"live")) fail(); }, 25000, fail);
@@ -5715,7 +5869,28 @@ function buildNav(){
   nav.innerHTML = html;
   document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent = T(el.dataset.i18n));
 }
+/* Әдіскерлер кабинеті (#login, #cabinet…, #admin…) — cabinet.js тек қажет кезде жүктеледі */
+const CAB_ROUTE = /^(login|cabinet|admin)(\/|$)/;
+let cabLoading = null;
+function loadCabinet(){
+  if(window.CAB) return Promise.resolve();
+  if(!cabLoading) cabLoading = new Promise((res, rej)=>{
+    const sc = document.createElement("script");
+    sc.src = "cabinet.js?v=1"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    document.head.appendChild(sc);
+  });
+  return cabLoading;
+}
 function render(id){
+  if(CAB_ROUTE.test(String(id||""))){
+    Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
+    document.querySelectorAll("#nav a").forEach(a=>a.classList.remove("on"));
+    closeSidebar();
+    loadCabinet().then(()=>window.CAB.render(String(id)), ()=>{
+      document.getElementById("content").innerHTML = '<div class="page on"><div class="card p-empty">cabinet.js жүктелмеді</div></div>';
+    });
+    return;
+  }
   const parts = String(id||"").split("/");
   const sec = SECTIONS.find(s=>s.id===parts[0]) || SECTIONS[0];
   const sub = sec.id===parts[0] ? decodeURIComponent(parts.slice(1).join("/")) : "";
@@ -5816,6 +5991,7 @@ document.documentElement.lang = LANG;
 document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===LANG));
 buildNav();
 fillPeriods();
+try{ if(sessionStorage.getItem("laba_tok")) loadCabinet(); }catch(e){}
 render(location.hash.slice(1)||"home");
 loadRemote();
 loadPassports();
