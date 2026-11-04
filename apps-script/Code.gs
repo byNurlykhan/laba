@@ -123,7 +123,7 @@ const PASSPORT_TYPES = ['Республикалық', 'Облыстық', 'Ре�
 /** Толтырылу есебіне кірмейтін өрістер (сурет пен сайт міндетті емес) */
 const PASSPORT_OPTIONAL = ['1.2', '1.6'];
 /** Сайттағы тізімге (жеңіл нұсқаға) жіберілетін бағандар */
-const PASSPORT_INDEX_COLS = ['id', 'r', 'd', 't', 'cat', 'lvl', 'c', '1.1', '1.2', '1.3', '4.1', '6.1', '6.2', '6.3'];
+const PASSPORT_INDEX_COLS = ['id', 'r', 'd', 't', 'cat', 'lvl', 'c', '1.1', '1.2', '1.3', '4.1', '6.1', '6.2', '6.3', 'q', 'u'];
 const PASSPORT_CACHE_SEC = 21600;
 
 // ═══════════════ ВЕБ-ҚОСЫМША ═══════════════
@@ -313,7 +313,7 @@ function setPathArr_(obj, parts, arr) {
   cur[parts[parts.length - 1]] = arr;
 }
 
-function clearCache_() { CacheService.getScriptCache().removeAll(['payload', 'pidx_n']); }
+function clearCache_() { CacheService.getScriptCache().removeAll(['payload', 'pidx_n', 'cab_meta_n', 'cab_q_n', 'cab_users']); }
 
 function refreshCache() {
   clearCache_();
@@ -353,11 +353,13 @@ function setupPassportSheet() {
 
 function passportSheet_() {
   const ss = SpreadsheetApp.getActive();
+  let first = null;
   for (let i = 0; i < PASSPORT_SHEETS.length; i++) {
     const sh = ss.getSheetByName(PASSPORT_SHEETS[i]);
-    if (sh) return sh;
+    if (sh && sh.getLastRow() > 1) return sh;          // деректері бар парақ бірінші
+    if (sh && !first) first = sh;
   }
-  return null;
+  return first;
 }
 
 /** Баған тақырыбы → өріс коды: «Кітапхана атауы» → 1.1, «1.1 …» → 1.1 */
@@ -428,7 +430,28 @@ function passportById_(id) {
   if (!rowNum && /^\d+$/.test(id) && Number(id) > L.headRow && Number(id) <= last) rowNum = Number(id);
   if (!rowNum) return null;
   const row = L.sh.getRange(rowNum, 1, 1, lastCol).getDisplayValues()[0];
-  return passportRow_(row, L.map, rowNum, PASSPORT_REQUIRED_());
+  const x = passportRow_(row, L.map, rowNum, PASSPORT_REQUIRED_());
+  if (x) quarterOverlay_(x, quarterLatestMap_());
+  return x;
+}
+
+/** Әр кітапхананың ең соңғы тоқсандық жазбасы (ашық сайт үшін — жаңартушының аты көрсетілмейді) */
+function quarterLatestMap_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(CAB.SH.QDATA);
+  if (!sh || sh.getLastRow() < 2) return {};
+  const all = cabQAll_(), best = {};
+  Object.keys(all).forEach(k => {
+    const o = all[k], id = String(o.lib_id);
+    if (!best[id] || Number(o.year) * 10 + Number(o.quarter) > Number(best[id].year) * 10 + Number(best[id].quarter)) best[id] = o;
+  });
+  return best;
+}
+function quarterOverlay_(x, latest) {
+  const o = latest[String(x.id)];
+  if (!o) return;
+  CAB.Q_FIELDS.forEach(f => { if (o.v[f] !== '' && o.v[f] != null) x.f[f] = String(o.v[f]); });
+  x.q = o.year + '-' + o.quarter;
+  x.u = String(o.updated_at || '').slice(0, 10);
 }
 
 /** Сайттағы тізімге арналған ықшам нұсқа: {cols:[…], rows:[[…]]}. Толық паспорт ашқанда бөлек жүктеледі. */
@@ -445,7 +468,9 @@ function passportIndex_() {
   } catch (err) { /* кэш бүлінсе, қайта құрамыз */ }
 
   const cols = PASSPORT_INDEX_COLS;
-  const rows = getPassports_().map(x => cols.map(k => /^\d+\.\d+$/.test(k) ? (x.f[k] || '') : x[k]));
+  const latest = quarterLatestMap_();
+  const rows = getPassports_().map(x => { quarterOverlay_(x, latest); return x; })
+    .map(x => cols.map(k => /^\d+\.\d+$/.test(k) ? (x.f[k] || '') : (x[k] == null ? '' : x[k])));
   const out = { cols: cols, rows: rows };
   try {
     const s = JSON.stringify(out), size = 40000, parts = {};
@@ -460,8 +485,9 @@ function passportIndex_() {
 /** Паспорт парағы өзгергенде тізімнің кэшін тазарту (қарапайым триггер — өзі іске қосылады) */
 function onEdit(e) {
   try {
-    if (e && e.range && PASSPORT_SHEETS.indexOf(e.range.getSheet().getName()) > -1) {
-      CacheService.getScriptCache().remove('pidx_n');
+    const n = e && e.range ? e.range.getSheet().getName() : '';
+    if (PASSPORT_SHEETS.indexOf(n) > -1 || n === 'Тоқсандық' || n === 'Пайдаланушылар') {
+      CacheService.getScriptCache().removeAll(['pidx_n', 'cab_meta_n', 'cab_q_n', 'cab_users']);
     }
   } catch (err) { /* елемейміз */ }
 }
@@ -693,6 +719,9 @@ function onOpen() {
     .addSeparator()
     .addItem('Парақтарды орнату / деректі қалпына келтіру', 'setup')
     .addItem('«Паспорттар» парағын құру', 'setupPassportSheet')
+    .addSeparator()
+    .addItem('Әдіскерлер кабинетін орнату', 'setupCabinet')
+    .addItem('Журналдың тұтастығын тексеру', 'verifyLog')
     .addItem('Күнделікті есеп триггерін қосу', 'createDailyTrigger')
     .addToUi();
 }
@@ -703,4 +732,737 @@ function createDailyTrigger() {
   });
   ScriptApp.newTrigger('buildStatsReport').timeBased().everyDays(1).atHour(6).create();
   SpreadsheetApp.getActive().toast('Күнделікті есеп триггері қосылды (06:00).', 'LABA', 5);
+}
+
+// ═══════════════ ӘДІСКЕРЛЕР КАБИНЕТІ ═══════════════
+//  Кіру жүйесі, рөлдер, тоқсандық жаңарту, журнал, есептер.
+//  Барлық рұқсат осы жерде (серверде) тексеріледі: браузерден келген
+//  кітапхана ID-і пайдаланушының аймағына кірмесе, сұрау орындалмайды.
+//
+//  Парақтар:
+//    Тізілім          — кітапханалардың тұрақты деректері (атауы, мекенжайы…)
+//    Тоқсандық        — тоқсан сайынғы көрсеткіштер (бір кітапхана × жыл × тоқсан = бір жол)
+//    Пайдаланушылар   — әдіскерлер (пароль тек хэш түрінде)
+//    Бірліктер        — аймақтар иерархиясы (көру үшін; Тізілімнен құралады)
+//    Журнал           — барлық өзгеріс (тек жаңа жол қосылады, қорғалған, хэш тізбегі)
+//
+//  Иерархия: KZ (республика) → O:<облыс> немесе C:<республикалық маңызы бар қала>
+//            → D:<облыс>|<аудан немесе облыстық қала> → кітапхана
+
+const CAB = {
+  SH: { QDATA: 'Тоқсандық', USERS: 'Пайдаланушылар', UNITS: 'Бірліктер', LOG: 'Журнал' },
+  Q_FIELDS: ['6.1', '6.2', '6.3'],           // тоқсан сайын жаңартылатын негізгі көрсеткіштер
+  Q_MAX: 100000000,                          // бір көрсеткіштің ең үлкен мәні
+  SESSION_IDLE_SEC: 7200,                    // 2 сағат әрекетсіз болса — сессия жабылады
+  SESSION_MAX_HOURS: 12,                     // бір сессияның ең ұзақ мерзімі
+  LOCK_AFTER: 5, LOCK_MINUTES: 15,           // 5 рет қате пароль → 15 минутқа бұғаттау
+  PBKDF2_ITER: 1500,
+  DATA_URL: 'https://raw.githubusercontent.com/byNurlykhan/laba/main/data/passports/',
+  DATA_CHUNKS: 20,
+  IMPORT: { year: 2026, quarter: 3, label: 'Тізілім 01.10.2026 (импорт)', date: '2026-10-01 00:00' }
+};
+const ROLES = {
+  admin: 'Бас әкімші', oblast: 'Облыстық әдіскер', district: 'Аудандық әдіскер',
+  city: 'Қалалық әдіскер', republic: 'Республикалық кітапхана әдіскері'
+};
+const USER_COLS = ['user_id', 'login', 'full_name', 'position', 'role', 'unit_id', 'library_id', 'institution', 'phone',
+  'status', 'pass_hash', 'salt', 'iter', 'failed_count', 'locked_until', 'last_login', 'created_at', 'created_by', 'updated_at'];
+const QDATA_COLS = ['key', 'lib_id', 'year', 'quarter'].concat(CAB.Q_FIELDS)
+  .concat(['updated_at', 'user_id', 'user_name', 'user_institution', 'user_phone', 'user_role']);
+const LOG_COLS = ['Уақыт', 'Пайдаланушы', 'Деңгейі', 'Аймақ', 'Мекеме', 'Кітапхана', 'Жыл', 'Тоқсан', 'Өріс',
+  'Ескі мән', 'Жаңа мән', 'Әрекет', 'user_id', 'lib_id', 'oblast_id', 'op_id', 'hash'];
+const Q_ROMAN = ['', 'I', 'II', 'III', 'IV'];
+
+// ───────── API: POST сұраулары (JSON, Content-Type: text/plain) ─────────
+function doPost(e) {
+  let out;
+  try {
+    const body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    out = cabDispatch_(body);
+  } catch (err) {
+    out = { ok: false, error: err && err.code ? err.code : 'server', msg: String(err && err.message || err) };
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function cabErr_(code, msg) { const e = new Error(msg || code); e.code = code; return e; }
+
+function cabDispatch_(b) {
+  const a = String(b.action || '');
+  if (a === 'login') return cabLogin_(b.login, b.password);
+  const s = cabSession_(b.token);                 // сессия мен пайдаланушыны тексеру
+  const u = s.user;
+  switch (a) {
+    case 'logout': cabLogout_(b.token); return { ok: true };
+    case 'me': return { ok: true, user: cabPublicUser_(u), units: cabUnitsFor_(u), qfields: CAB.Q_FIELDS, roles: ROLES };
+    case 'libs': return cabLibs_(u, b);
+    case 'lib': return cabLib_(u, b);
+    case 'save': return cabSave_(u, b);
+    case 'saveStatic': cabNeed_(u, 'admin'); return cabSaveStatic_(u, b);
+    case 'history': return cabHistory_(u, b, false);
+    case 'log': cabNeed_(u, 'admin'); return cabHistory_(u, b, true);
+    case 'report': return cabReport_(u, b);
+    case 'users': cabNeed_(u, 'admin'); return { ok: true, users: cabUsers_().map(cabPublicUser_) };
+    case 'userSave': cabNeed_(u, 'admin'); return cabUserSave_(u, b.user || {});
+    case 'userPassword': cabNeed_(u, 'admin'); return cabUserPassword_(u, b.user_id, b.password);
+    case 'userStatus': cabNeed_(u, 'admin'); return cabUserStatus_(u, b.user_id, b.status);
+    case 'userBulk': cabNeed_(u, 'admin'); return cabUserBulk_(u, b.rows || []);
+    case 'allUnits': cabNeed_(u, 'admin'); return { ok: true, units: cabAllUnits_(), libs: cabRepLibs_() };
+    default: throw cabErr_('bad_action', 'Белгісіз әрекет');
+  }
+}
+
+function cabNeed_(u, role) { if (u.role !== role) throw cabErr_('forbidden', 'Рұқсат жоқ'); }
+
+// ───────── Кріптография ─────────
+function hex_(bytes) { return bytes.map(b => ('0' + (b & 255).toString(16)).slice(-2)).join(''); }
+function unhex_(h) { const o = []; for (let i = 0; i < h.length; i += 2) { let v = parseInt(h.substr(i, 2), 16); o.push(v > 127 ? v - 256 : v); } return o; }
+function sha256hex_(s) { return hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(s), Utilities.Charset.UTF_8)); }
+function randHex_(n) {
+  let s = '';
+  while (s.length < n) s += sha256hex_(Utilities.getUuid() + Utilities.getUuid() + Date.now() + Math.random());
+  return s.slice(0, n);
+}
+/** PBKDF2-HMAC-SHA256: парольді тұзбен көп рет хэштеу (ашық түрде сақталмайды) */
+function pbkdf2_(password, saltHex, iter) {
+  const pw = Utilities.newBlob(String(password)).getBytes();
+  let u = Utilities.computeHmacSha256Signature(unhex_(saltHex).concat([0, 0, 0, 1]), pw);
+  const t = u.slice();
+  for (let i = 1; i < iter; i++) {
+    u = Utilities.computeHmacSha256Signature(u, pw);
+    for (let j = 0; j < t.length; j++) t[j] ^= u[j];
+  }
+  return hex_(t);
+}
+/** Бір реттік оқылатын пароль: 10 таңба, шатасатын таңбасыз */
+function genPassword_() {
+  const abc = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  for (let tries = 0; tries < 50; tries++) {
+    const h = randHex_(40);
+    let p = '';
+    for (let i = 0; i < 10; i++) p += abc[parseInt(h.substr(i * 4, 4), 16) % abc.length];
+    if (!passwordProblem_(p)) return p;                 // әріп те, сан да болуы керек
+  }
+  return 'Laba' + randHex_(6) + '7';
+}
+function passwordProblem_(p) {
+  p = String(p || '');
+  if (p.length < 8) return 'Пароль кемінде 8 таңба болуы керек';
+  if (!/[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүІіҺһ]/.test(p) || !/\d/.test(p)) return 'Парольде әріп те, сан да болуы керек';
+  return '';
+}
+
+// ───────── Сессия ─────────
+function cabLogin_(login, password) {
+  login = String(login || '').trim().toLowerCase();
+  if (!login || !password) throw cabErr_('bad_login', 'Логин мен парольді енгізіңіз');
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const users = cabUsers_();
+    const u = users.find(x => String(x.login).toLowerCase() === login);
+    const now = Date.now();
+    if (!u) { Utilities.sleep(400); throw cabErr_('bad_login', 'Логин немесе пароль қате'); }
+    if (u.status !== 'active') throw cabErr_('blocked', 'Аккаунт бұғатталған. Бас әкімшіге хабарласыңыз');
+    if (u.locked_until && Number(u.locked_until) > now) {
+      throw cabErr_('locked', 'Пароль бірнеше рет қате енгізілді. ' +
+        Math.ceil((Number(u.locked_until) - now) / 60000) + ' минуттан кейін қайталаңыз');
+    }
+    if (pbkdf2_(password, u.salt, Number(u.iter) || CAB.PBKDF2_ITER) !== u.pass_hash) {
+      const fails = (Number(u.failed_count) || 0) + 1;
+      const patch = { failed_count: fails >= CAB.LOCK_AFTER ? 0 : fails };
+      if (fails >= CAB.LOCK_AFTER) patch.locked_until = now + CAB.LOCK_MINUTES * 60000;
+      cabUserPatch_(u, patch);
+      throw cabErr_('bad_login', fails >= CAB.LOCK_AFTER
+        ? 'Пароль ' + CAB.LOCK_AFTER + ' рет қате енгізілді. Аккаунт ' + CAB.LOCK_MINUTES + ' минутқа бұғатталды'
+        : 'Логин немесе пароль қате (қалған әрекет: ' + (CAB.LOCK_AFTER - fails) + ')');
+    }
+    cabUserPatch_(u, { failed_count: 0, locked_until: '', last_login: cabNow_() });
+    const token = randHex_(48);
+    const sess = { uid: u.user_id, exp: now + CAB.SESSION_MAX_HOURS * 3600000 };
+    CacheService.getScriptCache().put('sess_' + sha256hex_(token), JSON.stringify(sess), CAB.SESSION_IDLE_SEC);
+    return { ok: true, token: token, user: cabPublicUser_(u), units: cabUnitsFor_(u), qfields: CAB.Q_FIELDS, roles: ROLES,
+             idle: CAB.SESSION_IDLE_SEC };
+  } finally { lock.releaseLock(); }
+}
+function cabSession_(token) {
+  if (!token) throw cabErr_('auth', 'Кіру қажет');
+  const cache = CacheService.getScriptCache(), key = 'sess_' + sha256hex_(token);
+  const raw = cache.get(key);
+  if (!raw) throw cabErr_('auth', 'Сессия уақыты аяқталды. Қайта кіріңіз');
+  const s = JSON.parse(raw);
+  if (Date.now() > s.exp) { cache.remove(key); throw cabErr_('auth', 'Сессия уақыты аяқталды. Қайта кіріңіз'); }
+  const u = cabUsers_().find(x => x.user_id === s.uid);
+  if (!u || u.status !== 'active') { cache.remove(key); throw cabErr_('auth', 'Аккаунт бұғатталған'); }
+  cache.put(key, raw, CAB.SESSION_IDLE_SEC);           // әрекет болса — мерзім ұзарады
+  return { user: u };
+}
+function cabLogout_(token) { if (token) CacheService.getScriptCache().remove('sess_' + sha256hex_(token)); }
+
+// ───────── Пайдаланушылар ─────────
+function cabSheet_(name, cols) {
+  const ss = SpreadsheetApp.getActive();
+  let sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold')
+      .setBackground('#2563EB').setFontColor('#FFFFFF');
+    sh.getRange(1, 1, sh.getMaxRows(), cols.length).setNumberFormat('@');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function cabUsers_() {
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('cab_users');
+  if (hit) return JSON.parse(hit);
+  const sh = cabSheet_(CAB.SH.USERS, USER_COLS);
+  const last = sh.getLastRow();
+  const users = last < 2 ? [] : sh.getRange(2, 1, last - 1, USER_COLS.length).getValues().map((r, i) => {
+    const o = { _row: i + 2 };
+    USER_COLS.forEach((c, j) => { o[c] = r[j] instanceof Date ? cabFmt_(r[j]) : String(r[j] == null ? '' : r[j]); });
+    return o;
+  }).filter(o => o.user_id);
+  try { cache.put('cab_users', JSON.stringify(users), 60); } catch (err) { /* үлкен болса — кэшсіз */ }
+  return users;
+}
+function cabUserPatch_(u, patch) {
+  const sh = cabSheet_(CAB.SH.USERS, USER_COLS);
+  Object.keys(patch).forEach(k => {
+    const j = USER_COLS.indexOf(k);
+    if (j > -1) sh.getRange(u._row, j + 1).setNumberFormat('@').setValue(String(patch[k] == null ? '' : patch[k]));
+    u[k] = String(patch[k]);
+  });
+  CacheService.getScriptCache().remove('cab_users');
+}
+function cabPublicUser_(u) {
+  const o = {};
+  ['user_id', 'login', 'full_name', 'position', 'role', 'unit_id', 'library_id', 'institution', 'phone', 'status',
+   'last_login', 'created_at', 'locked_until'].forEach(k => { o[k] = u[k]; });
+  o.role_name = ROLES[u.role] || u.role;
+  o.unit_name = cabUnitName_(u.unit_id);
+  return o;
+}
+function cabUserValidate_(x, isNew) {
+  const units = cabAllUnits_();
+  const role = String(x.role || '');
+  if (!ROLES[role]) throw cabErr_('invalid', 'Деңгейі дұрыс емес');
+  if (!/^[a-z0-9._-]{3,40}$/i.test(String(x.login || ''))) throw cabErr_('invalid', 'Логин: 3–40 таңба, латын әрпі, сан, . _ -');
+  if (!String(x.full_name || '').trim()) throw cabErr_('invalid', 'Аты-жөнін енгізіңіз');
+  const need = { oblast: ['oblast'], district: ['district', 'city'], city: ['rcity'], republic: ['republic'], admin: ['republic'] }[role];
+  if (role === 'republic') {
+    const libs = cabRepLibs_();
+    if (!libs.some(l => String(l.id) === String(x.library_id))) throw cabErr_('invalid', 'Республикалық кітапхананы таңдаңыз');
+    x.unit_id = 'KZ';
+  } else if (role === 'admin') {
+    x.unit_id = 'KZ'; x.library_id = '';
+  } else {
+    const unit = units.find(n => n.id === x.unit_id);
+    if (!unit || need.indexOf(unit.type) < 0) throw cabErr_('invalid', 'Аймақты таңдаңыз');
+    x.library_id = '';
+  }
+}
+function cabUserSave_(admin, x) {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    x.login = String(x.login || '').trim().toLowerCase();
+    cabUserValidate_(x, !x.user_id);
+    const users = cabUsers_();
+    if (users.some(o => o.login.toLowerCase() === x.login && o.user_id !== x.user_id)) throw cabErr_('invalid', 'Бұл логин бос емес');
+    const sh = cabSheet_(CAB.SH.USERS, USER_COLS);
+    const fields = ['login', 'full_name', 'position', 'role', 'unit_id', 'library_id', 'institution', 'phone'];
+    let password = '';
+    if (!x.user_id) {
+      password = x.password ? String(x.password) : genPassword_();
+      const prob = passwordProblem_(password); if (prob) throw cabErr_('invalid', prob);
+      const salt = randHex_(32);
+      const row = {
+        user_id: 'u' + randHex_(10), status: 'active', salt: salt, iter: CAB.PBKDF2_ITER,
+        pass_hash: pbkdf2_(password, salt, CAB.PBKDF2_ITER), failed_count: 0, locked_until: '', last_login: '',
+        created_at: cabNow_(), created_by: admin.full_name, updated_at: cabNow_()
+      };
+      fields.forEach(f => { row[f] = String(x[f] == null ? '' : x[f]).trim(); });
+      writeRows_(sh, sh.getLastRow() + 1, [USER_COLS.map(c => row[c] == null ? '' : row[c])]);
+      CacheService.getScriptCache().remove('cab_users');
+      cabLogAppend_(admin, [{ lib: null, field: 'Аккаунт', old: '', val: row.login + ' · ' + ROLES[row.role] + ' · ' + cabUnitName_(row.unit_id), action: 'Аккаунт жасалды' }]);
+      return { ok: true, user: cabPublicUser_(row), password: x.password ? '' : password };
+    }
+    const u = users.find(o => o.user_id === x.user_id);
+    if (!u) throw cabErr_('invalid', 'Пайдаланушы табылмады');
+    const patch = { updated_at: cabNow_() }, changes = [];
+    fields.forEach(f => {
+      const v = String(x[f] == null ? '' : x[f]).trim();
+      if (v !== String(u[f])) { patch[f] = v; changes.push({ lib: null, field: 'Аккаунт: ' + f, old: u[f], val: v, action: 'Аккаунт өзгертілді (' + u.login + ')' }); }
+    });
+    cabUserPatch_(u, patch);
+    if (changes.length) cabLogAppend_(admin, changes);
+    return { ok: true, user: cabPublicUser_(u) };
+  } finally { lock.releaseLock(); }
+}
+function cabUserPassword_(admin, userId, password) {
+  const u = cabUsers_().find(o => o.user_id === userId);
+  if (!u) throw cabErr_('invalid', 'Пайдаланушы табылмады');
+  const generated = !password;
+  password = password ? String(password) : genPassword_();
+  const prob = passwordProblem_(password); if (prob) throw cabErr_('invalid', prob);
+  const salt = randHex_(32);
+  cabUserPatch_(u, { salt: salt, iter: CAB.PBKDF2_ITER, pass_hash: pbkdf2_(password, salt, CAB.PBKDF2_ITER),
+                     failed_count: 0, locked_until: '', updated_at: cabNow_() });
+  cabLogAppend_(admin, [{ lib: null, field: 'Пароль', old: '', val: '••••••', action: 'Пароль ауыстырылды (' + u.login + ')' }]);
+  return { ok: true, password: generated ? password : '' };
+}
+function cabUserStatus_(admin, userId, status) {
+  if (['active', 'blocked'].indexOf(status) < 0) throw cabErr_('invalid', 'Күй дұрыс емес');
+  const u = cabUsers_().find(o => o.user_id === userId);
+  if (!u) throw cabErr_('invalid', 'Пайдаланушы табылмады');
+  if (u.user_id === admin.user_id) throw cabErr_('invalid', 'Өз аккаунтыңызды бұғаттай алмайсыз');
+  cabUserPatch_(u, { status: status, failed_count: 0, locked_until: '', updated_at: cabNow_() });
+  cabLogAppend_(admin, [{ lib: null, field: 'Күйі', old: u.status === 'active' ? 'blocked' : 'active', val: status,
+                          action: (status === 'blocked' ? 'Аккаунт бұғатталды (' : 'Аккаунт ашылды (') + u.login + ')' }]);
+  return { ok: true, user: cabPublicUser_(u) };
+}
+/** Excel/CSV-тен бірнеше аккаунт: rows = [{login, full_name, position, role, unit_id|unit_name, library_id, institution, phone, password}] */
+function cabUserBulk_(admin, rows) {
+  const out = [];
+  const units = cabAllUnits_();
+  rows.slice(0, 500).forEach((x, i) => {
+    try {
+      if (!x.unit_id && x.unit_name) {
+        const nm = String(x.unit_name).trim().toLowerCase();
+        const hit = units.find(n => n.name.toLowerCase() === nm || n.full.toLowerCase() === nm);
+        if (hit) x.unit_id = hit.id;
+      }
+      const r = cabUserSave_(admin, Object.assign({}, x, { user_id: '' }));
+      out.push({ row: i + 1, ok: true, login: r.user.login, full_name: r.user.full_name, password: r.password || '(өзі енгізген)' });
+    } catch (err) {
+      out.push({ row: i + 1, ok: false, login: x.login || '', error: String(err.message || err) });
+    }
+  });
+  return { ok: true, results: out };
+}
+
+// ───────── Кітапханалар және аймақтар ─────────
+const OBLAST_SUFFIX = / облысы$/;
+/** Тізілімнен кітапханалардың метадеректері: {id: {id, name, region, district, status, st, cat, lvl, unit, oblast}} */
+function cabLibMeta_() {
+  const cache = CacheService.getScriptCache();
+  const hit = cacheBigGet_(cache, 'cab_meta');
+  if (hit) return hit;
+  const meta = {};
+  getPassports_().forEach(x => {
+    const r = x.r || '';
+    let oblast = '', unit = 'KZ';
+    if (r && r !== 'Республикалық деңгей') {
+      if (OBLAST_SUFFIX.test(r)) { oblast = 'O:' + r; unit = x.d ? 'D:' + r + '|' + x.d : oblast; }
+      else { oblast = 'C:' + r; unit = oblast; }
+    }
+    meta[x.id] = { id: x.id, name: x.f['1.1'] || '', region: r, district: x.d || '', status: x.t || '',
+                   st: cabStatusKey_(x.t), cat: x.cat || '', lvl: Number(x.lvl) || 99, unit: unit, oblast: oblast };
+  });
+  cacheBigPut_(cache, 'cab_meta', meta, 3600);
+  return meta;
+}
+function cabStatusKey_(t) {
+  const s = String(t || '').toLowerCase();
+  if (s.indexOf('маңызы') > -1) return 'rcity';
+  if (s.indexOf('республика') > -1) return 'rep';
+  if (s.indexOf('облыс') > -1) return 'obl';
+  if (s.indexOf('қала') > -1) return 'city';
+  if (s.indexOf('аудан') > -1) return 'dist';
+  return 'rural';
+}
+/** Барлық бірлік: [{id, type, name, full, parent}] */
+function cabAllUnits_() {
+  const meta = cabLibMeta_();
+  const map = { KZ: { id: 'KZ', type: 'republic', name: 'Қазақстан Республикасы', full: 'Республикалық деңгей', parent: '' } };
+  Object.keys(meta).forEach(k => {
+    const m = meta[k];
+    if (m.oblast && !map[m.oblast]) {
+      map[m.oblast] = { id: m.oblast, type: m.oblast[0] === 'O' ? 'oblast' : 'rcity', name: m.region, full: m.region, parent: 'KZ' };
+    }
+    if (m.unit.indexOf('D:') === 0 && !map[m.unit]) {
+      map[m.unit] = { id: m.unit, type: /қ\.$|қаласы$/.test(m.district) ? 'city' : 'district', name: m.district,
+                      full: m.region + ', ' + m.district, parent: m.oblast };
+    }
+  });
+  return Object.keys(map).map(k => map[k]).sort((a, b) => (a.full > b.full ? 1 : -1));
+}
+function cabUnitName_(id) {
+  if (!id) return '';
+  if (id === 'KZ') return 'Республикалық деңгей';
+  if (id.indexOf('D:') === 0) return id.slice(2).replace('|', ', ');
+  return id.slice(2);
+}
+function cabRepLibs_() {
+  const meta = cabLibMeta_();
+  return Object.keys(meta).map(k => meta[k]).filter(m => m.st === 'rep').map(m => ({ id: m.id, name: m.name }));
+}
+/** Пайдаланушы осы кітапхананы басқара ала ма? (басты рұқсат тексеруі) */
+function cabCan_(u, m) {
+  if (!m) return false;
+  switch (u.role) {
+    case 'admin': return true;
+    case 'oblast': return m.oblast === u.unit_id;
+    case 'city': return m.oblast === u.unit_id;
+    case 'district': return m.unit === u.unit_id;
+    case 'republic': return String(m.id) === String(u.library_id);
+    default: return false;
+  }
+}
+/** Сүзгілер үшін пайдаланушыға көрінетін бірліктер */
+function cabUnitsFor_(u) {
+  const all = cabAllUnits_();
+  if (u.role === 'admin') return all;
+  if (u.role === 'oblast' || u.role === 'city') return all.filter(n => n.id === u.unit_id || n.parent === u.unit_id);
+  return all.filter(n => n.id === u.unit_id);
+}
+function cabScopeLibs_(u) {
+  const meta = cabLibMeta_();
+  return Object.keys(meta).map(k => meta[k]).filter(m => cabCan_(u, m));
+}
+function cabLibOr403_(u, id) {
+  const m = cabLibMeta_()[String(id)];
+  if (!m) throw cabErr_('not_found', 'Кітапхана табылмады');
+  if (!cabCan_(u, m)) throw cabErr_('forbidden', 'Бұл кітапхана сіздің аймағыңызға кірмейді');
+  return m;
+}
+
+// ───────── Тоқсандық деректер ─────────
+function cabQKey_(lib, y, q) { return lib + '|' + y + '|' + q; }
+/** Тоқсандық парақтың бәрі: {key: {lib_id, year, quarter, v:{6.1:…}, updated_at, user_*, _row}} (кэштеледі) */
+function cabQAll_() {
+  const cache = CacheService.getScriptCache();
+  const hit = cacheBigGet_(cache, 'cab_q');
+  if (hit) return hit;
+  const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  const last = sh.getLastRow(), out = {};
+  if (last >= 2) {
+    sh.getRange(2, 1, last - 1, QDATA_COLS.length).getDisplayValues().forEach((r, i) => {
+      if (!r[0]) return;
+      const o = { _row: i + 2, v: {} };
+      QDATA_COLS.forEach((c, j) => { if (CAB.Q_FIELDS.indexOf(c) > -1) o.v[c] = r[j]; else o[c] = r[j]; });
+      out[r[0]] = o;
+    });
+  }
+  cacheBigPut_(cache, 'cab_q', out, 3600);
+  return out;
+}
+function cabQFor_(all, lib, y, q) { return all[cabQKey_(lib, y, q)] || null; }
+/** Кітапхананың ең соңғы толтырылған тоқсаны */
+function cabQLatest_(all, lib) {
+  let best = null;
+  Object.keys(all).forEach(k => {
+    const o = all[k];
+    if (String(o.lib_id) !== String(lib)) return;
+    if (!best || Number(o.year) * 10 + Number(o.quarter) > Number(best.year) * 10 + Number(best.quarter)) best = o;
+  });
+  return best;
+}
+function cabPrevQ_(y, q) { return q > 1 ? [y, q - 1] : [y - 1, 4]; }
+function cabPeriod_(b) {
+  const y = Number(b.year), q = Number(b.quarter);
+  const now = new Date(), cy = now.getFullYear(), cq = Math.floor(now.getMonth() / 3) + 1;
+  if (!(y >= 2020 && y <= cy + 1) || !(q >= 1 && q <= 4)) throw cabErr_('invalid', 'Жыл немесе тоқсан дұрыс емес');
+  if (y * 10 + q > cy * 10 + cq) throw cabErr_('invalid', 'Әлі басталмаған тоқсанға дерек енгізуге болмайды');
+  return [y, q];
+}
+function cabLibs_(u, b) {
+  const yq = cabPeriod_(b), all = cabQAll_();
+  const libs = cabScopeLibs_(u).map(m => {
+    const r = cabQFor_(all, m.id, yq[0], yq[1]);
+    return { id: m.id, name: m.name, region: m.region, district: m.district, st: m.st, cat: m.cat, lvl: m.lvl, unit: m.unit,
+             filled: !!r, updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '', user_institution: r ? r.user_institution : '' };
+  }).sort((a, b2) => a.lvl - b2.lvl || (a.district > b2.district ? 1 : a.district < b2.district ? -1 : 0) || (a.name > b2.name ? 1 : -1));
+  return { ok: true, year: yq[0], quarter: yq[1], libs: libs };
+}
+function cabLib_(u, b) {
+  const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b), all = cabQAll_();
+  const cur = cabQFor_(all, m.id, yq[0], yq[1]);
+  const p = cabPrevQ_(yq[0], yq[1]);
+  const prev = cabQFor_(all, m.id, p[0], p[1]) || (cur ? null : cabQLatest_(all, m.id));
+  const history = Object.keys(all).map(k => all[k]).filter(o => String(o.lib_id) === String(m.id))
+    .sort((a, c) => (Number(c.year) * 10 + Number(c.quarter)) - (Number(a.year) * 10 + Number(a.quarter)))
+    .map(o => ({ year: o.year, quarter: o.quarter, v: o.v, updated_at: o.updated_at, user_name: o.user_name, user_institution: o.user_institution }));
+  return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1],
+           current: cur ? { v: cur.v, updated_at: cur.updated_at, user_name: cur.user_name, user_institution: cur.user_institution } : null,
+           previous: prev ? { year: prev.year, quarter: prev.quarter, v: prev.v } : null,
+           history: history, canStatic: u.role === 'admin' };
+}
+function cabNum_(v) {
+  const s = String(v == null ? '' : v).replace(/[\s ]/g, '');
+  if (!/^\d+$/.test(s)) return null;
+  return Number(s);
+}
+function cabSave_(u, b) {
+  const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b);
+  const op = String(b.op || '');
+  const cache = CacheService.getScriptCache();
+  if (op && cache.get('op_' + op)) return { ok: true, duplicate: true };       // кезектен қайта жіберілген сұрау
+  const vals = {}, errors = {};
+  CAB.Q_FIELDS.forEach(f => {
+    const n = cabNum_((b.values || {})[f]);
+    if (n === null) errors[f] = 'Бүтін сан енгізіңіз (0 немесе одан көп)';
+    else if (n > CAB.Q_MAX) errors[f] = 'Мән тым үлкен';
+    else vals[f] = n;
+  });
+  if (Object.keys(errors).length) return { ok: false, error: 'invalid', fields: errors, msg: 'Өрістерді тексеріңіз' };
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    cache.remove('cab_q_n');                          // соңғы күйді парақтан оқимыз
+    const all = cabQAll_();
+    const cur = cabQFor_(all, m.id, yq[0], yq[1]);
+    const changes = [];
+    CAB.Q_FIELDS.forEach(f => {
+      const old = cur ? String(cur.v[f]).replace(/\s/g, '') : '';
+      if (old !== String(vals[f])) changes.push({ lib: m, year: yq[0], quarter: yq[1], field: f + ' ' + cabFieldName_(f), old: old, val: String(vals[f]),
+                                                  action: cur ? 'Өзгертілді' : 'Жаңа жазба' });
+    });
+    if (!changes.length) return { ok: true, nochange: true };
+    const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+    const row = [cabQKey_(m.id, yq[0], yq[1]), m.id, yq[0], yq[1]].concat(CAB.Q_FIELDS.map(f => vals[f]))
+      .concat([cabNow_(), u.user_id, u.full_name, u.institution, u.phone, ROLES[u.role]]);
+    writeRows_(sh, cur ? cur._row : sh.getLastRow() + 1, [row]);
+    cabLogAppend_(u, changes, op);
+    if (op) cache.put('op_' + op, '1', 21600);
+    cache.removeAll(['cab_q_n', 'pidx_n']);
+    return { ok: true, changed: changes.length, updated_at: row[4 + CAB.Q_FIELDS.length] };
+  } finally { lock.releaseLock(); }
+}
+function cabFieldName_(code) {
+  const f = PASSPORT_FIELDS.find(x => x[0] === code);
+  return f ? f[1] : code;
+}
+/** Бас әкімші: тұрақты өрістерді түзету (атауы, мекенжайы т.б.) — Тізілім парағына жазылады */
+function cabSaveStatic_(u, b) {
+  const m = cabLibOr403_(u, b.id);
+  const L = passportLayout_();
+  if (!L) throw cabErr_('server', 'Тізілім парағы табылмады');
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const last = L.sh.getLastRow();
+    const cell = L.sh.getRange(L.headRow + 1, L.map.id + 1, last - L.headRow, 1).createTextFinder(String(m.id)).matchEntireCell(true).findNext();
+    if (!cell) throw cabErr_('not_found', 'Кітапхана табылмады');
+    const r = cell.getRow(), changes = [];
+    const rowVals = L.sh.getRange(r, 1, 1, L.sh.getLastColumn()).getDisplayValues()[0];
+    Object.keys(b.fields || {}).forEach(code => {
+      if (CAB.Q_FIELDS.indexOf(code) > -1 || !(code in L.map) || !/^\d+\.\d+$/.test(code)) return;
+      const v = String(b.fields[code] == null ? '' : b.fields[code]).trim().slice(0, 2000);
+      const old = String(rowVals[L.map[code]] || '').trim();
+      if (v === old) return;
+      if (code === '1.1' && !v) throw cabErr_('invalid', 'Атауы бос болмауы керек');
+      L.sh.getRange(r, L.map[code] + 1).setValue(v);
+      changes.push({ lib: m, year: '', quarter: '', field: code + ' ' + cabFieldName_(code), old: old, val: v, action: 'Тұрақты өріс өзгертілді' });
+    });
+    if (changes.length) {
+      cabLogAppend_(u, changes);
+      CacheService.getScriptCache().removeAll(['pidx_n', 'cab_meta_n']);
+    }
+    return { ok: true, changed: changes.length };
+  } finally { lock.releaseLock(); }
+}
+
+// ───────── Журнал (тек жаңа жол қосылады + хэш тізбегі) ─────────
+function cabLogSheet_() {
+  const sh = cabSheet_(CAB.SH.LOG, LOG_COLS);
+  return sh;
+}
+/** changes = [{lib, year, quarter, field, old, val, action}] */
+function cabLogAppend_(u, changes, op) {
+  const sh = cabLogSheet_();
+  const props = PropertiesService.getScriptProperties();
+  let prev = props.getProperty('log_hash') || '';
+  const now = cabNow_();
+  const rows = changes.map(c => {
+    const m = c.lib;
+    const base = [now, u.full_name, ROLES[u.role] || u.role, m ? (m.region + (m.district ? ', ' + m.district : '')) : cabUnitName_(u.unit_id),
+      u.institution, m ? m.name : '', c.year == null ? '' : String(c.year), c.quarter ? Q_ROMAN[c.quarter] : '', c.field,
+      String(c.old == null ? '' : c.old), String(c.val == null ? '' : c.val), c.action,
+      u.user_id, m ? String(m.id) : '', m ? m.oblast : '', op || ''].map(v => String(v == null ? '' : v));
+    prev = sha256hex_(prev + '\u0001' + JSON.stringify(base));
+    return base.concat([prev]);
+  });
+  if (!rows.length) return;
+  writeRows_(sh, sh.getLastRow() + 1, rows);
+  props.setProperty('log_hash', prev);
+}
+/** Журналдың тұтастығын тексеру (мәзірден): біреу қолмен өзгертсе — сол жол көрсетіледі */
+function verifyLog() {
+  const sh = cabLogSheet_(), last = sh.getLastRow();
+  let prev = '', bad = 0, first = 0;
+  if (last >= 2) {
+    sh.getRange(2, 1, last - 1, LOG_COLS.length).getDisplayValues().forEach((r, i) => {
+      const base = r.slice(0, LOG_COLS.length - 1);
+      const h = sha256hex_(prev + '\u0001' + JSON.stringify(base));
+      if (h !== r[LOG_COLS.length - 1]) { bad++; if (!first) first = i + 2; prev = r[LOG_COLS.length - 1]; } else prev = h;
+    });
+  }
+  const msg = bad ? 'Журналда ' + bad + ' өзгертілген жол бар. Біріншісі: ' + first + '-жол' : 'Журнал бүтін: ешбір жол өзгертілмеген.';
+  try { SpreadsheetApp.getActive().toast(msg, 'LABA', 10); } catch (e) { /* UI жоқ */ }
+  return msg;
+}
+/** Журналды оқу. full=true — бас әкімші (ескі/жаңа мәнімен), false — облыс/қала әдіскері (кім, қашан, қай өріс) */
+function cabHistory_(u, b, full) {
+  if (!full && ['admin', 'oblast', 'city'].indexOf(u.role) < 0) throw cabErr_('forbidden', 'Рұқсат жоқ');
+  const sh = cabLogSheet_(), last = sh.getLastRow();
+  const limit = Math.min(Number(b.limit) || 100, 500), offset = Math.max(Number(b.offset) || 0, 0);
+  const from = b.from ? String(b.from) : '', to = b.to ? String(b.to) + ' 99' : '';
+  const q = String(b.q || '').toLowerCase();
+  const out = [];
+  let matched = 0, done = false;
+  for (let end = last; end >= 2 && !done; end -= 2000) {
+    const start = Math.max(2, end - 1999);
+    const block = sh.getRange(start, 1, end - start + 1, LOG_COLS.length).getDisplayValues();
+    for (let i = block.length - 1; i >= 0; i--) {
+      const r = block[i];
+      if (to && r[0] > to) continue;
+      if (from && r[0] < from) { done = true; break; }
+      if (!full && u.role !== 'admin' && r[14] !== u.unit_id) continue;      // облыс/қала: тек өз аймағы
+      if (full && u.role !== 'admin') continue;
+      if (b.unit && !(r[14] === b.unit || String(r[3]).indexOf(cabUnitName_(b.unit)) === 0)) continue;
+      if (b.lib && String(r[13]) !== String(b.lib)) continue;
+      if (q && (r[1] + ' ' + r[4] + ' ' + r[5] + ' ' + r[8] + ' ' + r[11]).toLowerCase().indexOf(q) < 0) continue;
+      matched++;
+      if (matched <= offset) continue;
+      if (out.length < limit) {
+        out.push(full
+          ? { ts: r[0], user: r[1], role: r[2], region: r[3], inst: r[4], lib: r[5], year: r[6], quarter: r[7], field: r[8], old: r[9], val: r[10], action: r[11], lib_id: r[13] }
+          : { ts: r[0], user: r[1], role: r[2], region: r[3], inst: r[4], lib: r[5], year: r[6], quarter: r[7], field: r[8], action: r[11], lib_id: r[13] });
+      } else if (!b.count) { done = true; break; }
+    }
+  }
+  return { ok: true, rows: out, more: out.length === limit };
+}
+
+// ───────── Есептер ─────────
+/** Есепке арналған деректер (тек пайдаланушының аймағы бойынша) */
+function cabReport_(u, b) {
+  const yq = cabPeriod_(b), all = cabQAll_();
+  const from = b.from ? String(b.from) : '', to = b.to ? String(b.to) + ' 99' : '';
+  let libs = cabScopeLibs_(u);
+  if (b.unit) libs = libs.filter(m => m.oblast === b.unit || m.unit === b.unit || (b.unit === 'KZ' && !m.oblast));
+  if (b.st) libs = libs.filter(m => m.st === b.st);
+  if (b.lib) libs = libs.filter(m => String(m.id) === String(b.lib));
+  const rows = [];
+  libs.sort((a, c) => (a.region > c.region ? 1 : a.region < c.region ? -1 : 0) || a.lvl - c.lvl || (a.name > c.name ? 1 : -1))
+    .forEach(m => {
+      const r = cabQFor_(all, m.id, yq[0], yq[1]);
+      if ((from || to) && (!r || (from && r.updated_at < from) || (to && r.updated_at > to))) return;
+      rows.push({ id: m.id, name: m.name, region: m.region, district: m.district, status: m.status, cat: m.cat,
+                  v: r ? r.v : null, updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '',
+                  user_institution: r ? r.user_institution : '', user_phone: r ? r.user_phone : '' });
+    });
+  return { ok: true, year: yq[0], quarter: yq[1], generated_by: u.full_name, generated_inst: u.institution,
+           fields: CAB.Q_FIELDS.map(f => [f, cabFieldName_(f)]), rows: rows };
+}
+
+// ───────── Көмекшілер ─────────
+/** Жолдарды мәтін пішімінде жазу (Sheets күн/телефонды өзі түрлендірмеуі үшін), парақ кішкентай болса — кеңейтеді */
+function writeRows_(sh, startRow, rows) {
+  if (!rows.length) return;
+  const need = startRow + rows.length - 1;
+  if (sh.getMaxRows() < need) sh.insertRowsAfter(sh.getMaxRows(), need - sh.getMaxRows());
+  const w = rows[0].length;
+  if (sh.getMaxColumns() < w) sh.insertColumnsAfter(sh.getMaxColumns(), w - sh.getMaxColumns());
+  sh.getRange(startRow, 1, rows.length, w).setNumberFormat('@').setValues(rows.map(r => r.map(v => v == null ? '' : String(v))));
+}
+function cabNow_() { return Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Almaty', 'yyyy-MM-dd HH:mm:ss'); }
+function cabFmt_(d) { return Utilities.formatDate(d, Session.getScriptTimeZone() || 'Asia/Almaty', 'yyyy-MM-dd HH:mm:ss'); }
+function cacheBigPut_(cache, key, obj, ttl) {
+  try {
+    const s = JSON.stringify(obj), size = 40000, parts = {};
+    let n = 0;
+    for (let i = 0; i < s.length; i += size) parts[key + '_' + (n++)] = s.slice(i, i + size);
+    cache.putAll(parts, ttl);
+    cache.put(key + '_n', String(n), ttl);
+  } catch (err) { /* сыймаса — кэшсіз */ }
+}
+function cacheBigGet_(cache, key) {
+  try {
+    const n = Number(cache.get(key + '_n') || 0);
+    if (!n) return null;
+    const keys = [];
+    for (let i = 0; i < n; i++) keys.push(key + '_' + i);
+    const got = cache.getAll(keys);
+    if (!keys.every(k => got[k] != null)) return null;
+    return JSON.parse(keys.map(k => got[k]).join(''));
+  } catch (err) { return null; }
+}
+
+// ───────── Орнату (бір рет) ─────────
+/**
+ * Кабинетті орнату. Мәзірден немесе редактордан бір рет іске қосыңыз:
+ *  1) «Тізілім» парағы жоқ болса — сайттағы дерек файлдарынан құрады (3 875 кітапхана);
+ *  2) «Тоқсандық» парағына тізілімдегі 6.1–6.3 көрсеткіштерін 2026 жылдың III тоқсаны деп жазады;
+ *  3) «Бірліктер», «Пайдаланушылар», «Журнал» парақтарын құрады, журналды қорғайды;
+ *  4) бас әкімшінің аккаунтын жасап, логин мен уақытша парольді терезеде көрсетеді.
+ * Қайта іске қосу қауіпсіз: бар деректер өшірілмейді.
+ */
+function setupCabinet() {
+  const ss = SpreadsheetApp.getActive();
+  const notes = [];
+  if (!getPassports_().length) { cabImportRegistry_(); notes.push('«Тізілім» парағы сайттың дерек файлдарынан құрылды.'); }
+  CacheService.getScriptCache().removeAll(['cab_meta_n', 'cab_q_n', 'pidx_n', 'cab_users']);
+  // Тоқсандық: тізілімдегі көрсеткіштерді 2026-III тоқсаны деп жазу (бұрын жазылмаса)
+  const qs = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  if (qs.getLastRow() < 2) {
+    const I = CAB.IMPORT;
+    const rows = getPassports_().map(x => [cabQKey_(x.id, I.year, I.quarter), x.id, I.year, I.quarter]
+      .concat(CAB.Q_FIELDS.map(f => { const n = cabNum_(x.f[f]); return n === null ? (x.f[f] || '') : n; }))
+      .concat([I.date, 'import', I.label, 'ҚР Ұлттық кітапханасы', '', 'Импорт']));
+    writeRows_(qs, 2, rows);
+    notes.push('«Тоқсандық» парағына ' + rows.length + ' кітапхананың 2026 жылғы III тоқсан деректері жазылды.');
+  }
+  // Бірліктер (көру үшін)
+  const us = cabSheet_(CAB.SH.UNITS, ['unit_id', 'type', 'name', 'parent_id']);
+  const units = cabAllUnits_();
+  if (us.getLastRow() > 1) us.getRange(2, 1, us.getLastRow() - 1, 4).clearContent();
+  writeRows_(us, 2, units.map(n => [n.id, n.type, n.name, n.parent]));
+  // Журнал: қорғау (тек скрипт пен кесте иесі жаза алады)
+  const log = cabLogSheet_();
+  try {
+    const p = log.protect().setDescription('Журнал — тек жүйе жазады');
+    p.removeEditors(p.getEditors());
+    if (p.canDomainEdit()) p.setDomainEdit(false);
+  } catch (e) { /* қорғау мүмкін болмаса — елемейміз */ }
+  cabSheet_(CAB.SH.USERS, USER_COLS);
+  // Бас әкімші
+  let pass = '';
+  if (!cabUsers_().some(u => u.role === 'admin')) {
+    const admin = { user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' };
+    const r = cabUserSave_(admin, { login: 'admin', full_name: 'Бас әкімші', position: 'Бас әкімші', role: 'admin',
+                                    institution: 'ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет', phone: '' });
+    pass = r.password;
+    notes.push('Бас әкімші: логин «admin», уақытша пароль: ' + pass + ' — кіргеннен кейін «Аккаунттар» бетінде ауыстырыңыз.');
+  }
+  CacheService.getScriptCache().removeAll(['cab_meta_n', 'cab_q_n', 'pidx_n', 'cab_users']);
+  const msg = notes.join('\n') || 'Кабинет бұрыннан орнатылған. Өзгеріс жоқ.';
+  try { SpreadsheetApp.getUi().alert('LABA — кабинет орнатылды', msg, SpreadsheetApp.getUi().ButtonSet.OK); }
+  catch (e) { Logger.log(msg); }
+  return msg;
+}
+/** Сайттағы data/passports/*.json файлдарынан «Тізілім» парағын құру */
+function cabImportRegistry_() {
+  const recs = [];
+  for (let i = 0; i < CAB.DATA_CHUNKS; i++) {
+    const res = UrlFetchApp.fetch(CAB.DATA_URL + i + '.json', { muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) continue;
+    const obj = JSON.parse(res.getContentText());
+    Object.keys(obj).forEach(k => recs.push(obj[k]));
+  }
+  if (!recs.length) throw new Error('Сайттың дерек файлдары жүктелмеді: ' + CAB.DATA_URL);
+  recs.sort((a, b) => Number(a.id) - Number(b.id));
+  const ss = SpreadsheetApp.getActive();
+  const old = ss.getSheetByName('Тізілім');
+  if (old && old.getLastRow() > 1) throw new Error('«Тізілім» парағында дерек бар, бірақ оқылмады — бағандарын тексеріңіз');
+  const sh = old || ss.insertSheet('Тізілім');
+  sh.clear();
+  const head = PASSPORT_HEAD.map(h => h[0]);
+  const rows = recs.map(x => PASSPORT_HEAD.map(h => {
+    const k = h[1];
+    if (/^\d+\.\d+$/.test(k)) return (x.f && x.f[k]) || '';
+    return x[k] == null ? '' : x[k];
+  }));
+  writeRows_(sh, 1, [head]);
+  sh.getRange(1, 1, 1, head.length).setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF');
+  writeRows_(sh, 2, rows);
+  sh.setFrozenRows(1);
 }
