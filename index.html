@@ -412,7 +412,53 @@ select.pick:hover{border-color:var(--faint)}
 .cmp-bars .avg i{background:var(--faint)}
 .cmp-bars em{font-style:normal;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
 .print-logo{display:none}
+.pp{display:none}
 @media print{
+  @page{size:A4 portrait;margin:10mm 11mm}
+  body:has(.pp) .print-logo{display:none!important}
+  .page:has(.pp)>:not(.pp){display:none!important}
+  .pp{display:block;color:#0F172A;font-size:8.6pt;line-height:1.32;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pp-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:7px;
+    border-bottom:2px solid transparent;border-image:linear-gradient(90deg,#2563EB,#7C3AED,#C026D3) 1}
+  .pp-head img{height:17mm;width:auto;display:block}
+  .pp-head div{text-align:right;display:flex;flex-direction:column;gap:1px}
+  .pp-head b{font-size:12pt;letter-spacing:.06em;text-transform:uppercase;color:#2563EB}
+  .pp-head span{font-size:7.6pt;color:#64748B}
+  .pp-title{margin:9px 0 8px}
+  .pp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+  .pp-tags span{font-size:7.2pt;font-weight:600;color:#1D4ED8;background:#EFF6FF;border:1px solid #DBEAFE;border-radius:20px;padding:1px 7px}
+  .pp-title h1{font-size:14pt;line-height:1.22;margin:0;font-weight:700;color:#0F172A}
+  .pp-kpi{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #DBEAFE;border-radius:8px;overflow:hidden;margin-bottom:9px;background:#F8FAFF}
+  .pp-kpi div{padding:5px 8px;border-left:1px solid #DBEAFE;display:flex;flex-direction:column;justify-content:space-between;gap:2px}
+  .pp-kpi div:first-child{border-left:0}
+  .pp-kpi span{font-size:6.9pt;color:#64748B;line-height:1.2}
+  .pp-kpi b{font-size:12pt;color:#1E3A8A;font-variant-numeric:tabular-nums}
+  .pp-kpi .fill{background:linear-gradient(135deg,#2563EB,#7C3AED)}
+  .pp-kpi .fill span,.pp-kpi .fill b{color:#fff}
+  .pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-items:start}
+  .pp-full{grid-column:1/-1}
+  .pp-sec{break-inside:avoid}
+  .pp-sec .pp-sec{display:contents}
+  .pp-sec h3{display:flex;align-items:center;gap:6px;font-size:9pt;font-weight:700;margin:0 0 3px;color:#0F172A;
+    padding-bottom:3px;border-bottom:1px solid #CBD5E1;break-after:avoid}
+  .pp-sec h3 i{font-style:normal;display:inline-grid;place-items:center;width:15px;height:15px;border-radius:4px;background:#2563EB;color:#fff;font-size:7.5pt}
+  .pp-sec table{width:100%;border-collapse:collapse}
+  .pp-sec td{padding:2.6px 3px;border-bottom:1px solid #EEF2F7;vertical-align:top}
+  .pp-sec tr{break-inside:avoid}
+  .pp-sec td.c{width:24px;color:#94A3B8;font-size:7.2pt;padding-top:3.4px;font-variant-numeric:tabular-nums}
+  .pp-sec td.l{color:#475569}
+  .pp-sec td.v{text-align:right;font-weight:600;white-space:nowrap;padding-left:8px}
+  .pp-sec td.v.no{color:#CBD5E1;font-weight:400}
+  .pp-sec tr.w .l{display:block;color:#475569}
+  .pp-sec tr.w .v{font-weight:600;margin-top:1px;overflow-wrap:anywhere}
+  .pp-eq{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:4px 0 3px}
+  .pp-eq div{border:1px solid #E2E8F0;border-radius:6px;padding:3px 5px;background:#F8FAFC;display:flex;flex-direction:column}
+  .pp-eq b{font-size:10.5pt;color:#1E3A8A;line-height:1.15;overflow-wrap:anywhere}
+  .pp-eq b.t{font-size:8pt}
+  .pp-eq em{font-style:normal;font-size:6.6pt;color:#334155;line-height:1.2;margin-bottom:1px}
+  .pp-eq span{font-size:6.6pt;color:#64748B;line-height:1.2;margin-top:auto}
+  .pp-per{margin:4px 0 0;font-size:7.4pt;color:#64748B}
+  .pp-foot{display:flex;justify-content:space-between;gap:10px;margin-top:9px;padding-top:5px;border-top:1px solid #E2E8F0;font-size:7pt;color:#94A3B8}
   .print-logo{display:block;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid #E2E8F0}
   .print-logo img{height:20mm;width:auto;display:block}
   .sidebar,.topbar,.site-foot,.scrim,.btn-ghost,.crumbs,.p-demo{display:none!important}
@@ -4356,6 +4402,21 @@ const TXT = {
 "ru":"обновлено {d}",
 "en":"updated {d}"
 },
+"pp.title":{
+"kk":"Кітапхана паспорты",
+"ru":"Паспорт библиотеки",
+"en":"Library passport"
+},
+"pp.printed":{
+"kk":"Басып шығарылған күні: {d}",
+"ru":"Дата печати: {d}",
+"en":"Printed: {d}"
+},
+"pp.fill":{
+"kk":"Паспорттың толтырылуы",
+"ru":"Заполненность паспорта",
+"en":"Passport completeness"
+},
 "s14.more":{
 "kk":"Толығырақ",
 "ru":"Подробнее",
@@ -5686,6 +5747,60 @@ function qInfo(x){
   const d = String(x.u || "").split("-");
   return `<div class="q-info">${svg(PI.info)}<span>${esc(per)}${d.length===3 ? " · " + esc(T("p.qupd",{d:d[2]+"."+d[1]+"."+d[0]})) : ""}</span></div>`;
 }
+/* ── Паспорттың баспа нұсқасы: A4, ықшам, 2 беттен аспайды ── */
+const PP_MAX = 520;                                   // өте ұзын мәтін қысқартылады (толығы сайтта)
+const ppCut = v => v.length > PP_MAX ? v.slice(0, PP_MAX).replace(/\s+\S*$/, "") + " …" : v;
+function ppPerson(v){
+  const phoneRe = /\+?\d[\d\s()\-–.]{4,}\d/g;
+  const isYears = m => /^(19|20)\d{2}(\s*[-–.]\s*(19|20)?\d{2})?$/.test(m.trim());
+  const name = (v.split(/\s+\/\s+|\s*;\s*/)[0] || "").replace(phoneRe, m=>isYears(m) ? m : "")
+    .replace(/\b(тел|телефон|байланыс телефоны)\.?\s*:?/gi,"").replace(/[\s,;:–\-/]+$/,"").trim();
+  const phones = [];
+  (v.match(phoneRe)||[]).forEach(m=>{ const d = m.replace(/\D/g,"");
+    if(d.length>=6 && d.length<=12 && !isYears(m) && phones.indexOf(m.trim())<0) phones.push(m.trim()); });
+  return `<b>${esc(name||"—")}</b>${phones.length ? " · " + esc(phones.join(", ")) : ""}`;
+}
+function ppRow(f, c){
+  const v = pv(f, c);
+  if(c === "5.2" && v) return `<tr class="w"><td class="c">${c}</td><td colspan="2"><span class="l">${esc(pl(c))}</span><div class="v">${ppPerson(v)}</div></td></tr>`;
+  const wide = v && (v.length > 34 || (NUMF.indexOf(c) < 0 && splitVal(v).length > 2));
+  if(wide) return `<tr class="w"><td class="c">${c}</td><td colspan="2"><span class="l">${esc(pl(c))}</span><div class="v">${esc(ppCut(splitVal(v).join(" · ")))}</div></td></tr>`;
+  return `<tr><td class="c">${c}</td><td class="l">${esc(pl(c))}</td><td class="v${v ? "" : " no"}">${v ? esc(v) : "—"}</td></tr>`;
+}
+function ppSec(f, g, skip){
+  const rows = g.f.filter(x => (skip || []).indexOf(x[0]) < 0).map(x => ppRow(f, x[0])).join("");
+  return `<section class="pp-sec"><h3><i>${g.n}</i>${esc(tx(g.t))}</h3><table><tbody>${rows}</tbody></table></section>`;
+}
+function passPrint(f, x){
+  const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
+  const d = new Date(), p2 = n => String(n).padStart(2, "0");
+  const tags = [tx(ty), x.cat ? catName(x.cat) : "", r ? tx(r.n) + (x.d ? ", " + x.d : "") : ""].filter(Boolean);
+  const kpi = ["4.1","6.1","6.2","6.3"].map(c => `<div><span>${esc(pl(c))}</span><b>${esc(pv(f,c) || "—")}</b></div>`).join("")
+    + `<div class="fill"><span>${esc(T("pp.fill"))}</span><b>${pf(f.c*100)}</b></div>`;
+  const eq = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11"].map(c => { const v = pv(f,c);
+    const m = v.match(/^(\d[\d\s]*(?:[.,]\d+)?)\s*(.*)$/);
+    const big = m ? m[1].trim() : "", note = (m ? m[2].replace(/^[-–,;:()\s]+/, "") : v).replace(/\)$/, "");
+    const shortNote = note.length > 70 ? note.slice(0, 70).replace(/\s+\S*$/, "") + " …" : note;
+    return `<div><b${big || !v ? "" : ' class="t"'}>${esc(big || (v ? shortNote : "—"))}</b>${big && note ? `<em>${esc(shortNote)}</em>` : ""}<span>${esc(pl(c))}</span></div>`; }).join("");
+  const q = String(f.q || "").split("-"), u = String(f.u || "").split("-");
+  const per = q.length === 2 ? T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]}) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "") : "";
+  return `<div class="pp" aria-hidden="true">
+    <header class="pp-head"><img src="img/laba-logo.png" alt="">
+      <div><b>${esc(T("pp.title"))}</b><span>${esc(T("owner"))} · ${esc(T("dept"))}</span>
+      <span>${esc(T("pp.printed",{d:p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()}))}</span></div></header>
+    <div class="pp-title"><div class="pp-tags">${tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      <h1>${esc(pv(f,"1.1"))}</h1></div>
+    <div class="pp-kpi">${kpi}</div>
+    <div class="pp-grid">
+      ${ppSec(f, PF[0], ["1.1","1.2"])}${ppSec(f, PF[1])}
+      <section class="pp-sec pp-full"><h3><i>3</i>${esc(tx(PF[2].t))}</h3><div class="pp-eq">${eq}</div>
+        <table><tbody>${["3.1","3.2","3.3","3.4"].map(c => ppRow(f, c)).join("")}</tbody></table></section>
+      ${ppSec(f, PF[3])}${ppSec(f, PF[4])}
+      <section class="pp-sec pp-full">${ppSec(f, PF[5]).replace(/^<section class="pp-sec">|<\/section>$/g, "")}${per ? `<p class="pp-per">${esc(per)}</p>` : ""}</section>
+    </div>
+    <footer class="pp-foot"><span>${esc(T("source"))}: ${esc(T("s15.src"))}</span><span>bynurlykhan.github.io/laba/#passport/${esc(x.id)}</span></footer>
+  </div>`;
+}
 function passDetail(x){
   const full = x.demo ? x : PASS.full[x.id];
   if(!full && !isDemo()) requestFull(x.id);
@@ -5740,7 +5855,8 @@ function passDetail(x){
   ${qInfo(full || x)}
   <div class="grid ${cmp?"g2":""}">${secTable(PF[5])}
     ${cmp?panel(null,T("p.cmp.t"),T("p.cmp.d",{a:tx(ty).toLowerCase()}),cmp):""}</div>
-  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>`;
+  <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>
+  ${passPrint(f, x)}`;
 }
 
 P.passport = sub => {
