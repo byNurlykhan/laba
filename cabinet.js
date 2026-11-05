@@ -229,6 +229,41 @@ function loadScript(src){
 }
 const needXLSX = () => window.XLSX ? Promise.resolve() : loadScript("vendor/xlsx-0.18.5.full.min.js");
 const needDOCX = () => window.docx ? Promise.resolve() : loadScript("vendor/docx-8.5.0.umd.js");
+const needEXCEL = () => window.ExcelJS ? Promise.resolve() : loadScript("vendor/exceljs-4.4.0.min.js");
+/* Логотип: барлық жүктелетін құжаттың жоғарғы жағында. Жүктелмесе — құжат логотипсіз жасалады */
+const LOGO = {src: "img/laba-logo.png", w: 480, h: 315};
+let logoBuf = null;
+const needLogo = () => logoBuf ? Promise.resolve(logoBuf)
+  : fetch(LOGO.src).then(r => r.ok ? r.arrayBuffer() : null).then(b => (logoBuf = b), () => null);
+/* Excel кітабы: жоғарыда логотип (1–4 жолдар), сосын кесте. rows — жолдар массиві, opts: {title, cols, head (тақырып жолының индексі)} */
+function excelBook(sheetName, rows, opts){
+  opts = opts || {};
+  return Promise.all([needEXCEL(), needLogo()]).then(arr => {
+    const wb = new ExcelJS.Workbook(); wb.creator = "LABA"; wb.created = new Date();
+    const ws = wb.addWorksheet(sheetName, {views: [{state: "frozen", ySplit: (opts.head != null ? opts.head + 1 : 0) + 5}]});
+    const TOP = 5;                                       // логотипке арналған жолдар
+    for(let i = 1; i <= TOP; i++) ws.getRow(i).height = i < TOP ? 20 : 8;
+    if(arr[1]){
+      const id = wb.addImage({buffer: arr[1], extension: "png"});
+      const h = 100, w = Math.round(h * LOGO.w / LOGO.h);
+      ws.addImage(id, {tl: {col: 0, row: 0}, ext: {width: w, height: h}, editAs: "oneCell"});
+    }
+    rows.forEach((r, i) => {
+      const row = ws.getRow(TOP + 1 + i);
+      row.values = r.map(v => v == null ? "" : v);
+      if(i === opts.head){
+        row.eachCell(c => { c.font = {bold: true}; c.fill = {type: "pattern", pattern: "solid", fgColor: {argb: "FFDBEAFE"}};
+          c.alignment = {vertical: "middle", wrapText: true}; c.border = {bottom: {style: "thin", color: {argb: "FF94A3B8"}}}; });
+      }
+    });
+    if(opts.title != null) ws.getRow(TOP + 1 + opts.title).font = {bold: true, size: 14};
+    if(opts.cols) ws.columns.forEach((c, i) => { if(opts.cols[i]) c.width = opts.cols[i]; });
+    return wb;
+  });
+}
+function saveBook(wb, name){
+  return wb.xlsx.writeBuffer().then(buf => saveBlob(new Blob([buf], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), name));
+}
 function saveBlob(blob, name){
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = name;
@@ -516,14 +551,12 @@ function bindHist(full){
   const x = document.getElementById("hXls");
   if(x) x.addEventListener("click", () => {
     busy(x, true);
-    Promise.all([needXLSX(), api("log", Object.assign({limit: 500, offset: 0}, st.params))]).then(arr => {
-      const rows = arr[1].rows;
+    api("log", Object.assign({limit: 500, offset: 0}, st.params)).then(res => {
       const aoa = [[ct("when"), ct("who"), ct("level"), ct("region"), ct("inst"), ct("lib"), ct("year"), ct("quarter"), ct("field"), ct("oldV"), ct("newV"), ct("action")]]
-        .concat(rows.map(r => [r.ts, r.user, r.role, r.region, r.inst, r.lib, r.year, r.quarter, r.field, r.old, r.val, r.action]));
-      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), "Журнал");
-      XLSX.writeFile(wb, "laba-zhurnal-" + stamp().slice(0, 10) + ".xlsx");
-      busy(x, false);
-    }, err => { busy(x, false); toast(err.msg || err.error || "Excel", "bad"); });
+        .concat(res.rows.map(r => [r.ts, r.user, r.role, r.region, r.inst, r.lib, r.year, r.quarter, r.field, r.old, r.val, r.action]));
+      return excelBook("Журнал", aoa, {head: 0, cols: [18, 28, 16, 28, 30, 40, 7, 8, 22, 14, 14, 26]})
+        .then(wb => saveBook(wb, "laba-zhurnal-" + stamp().slice(0, 10) + ".xlsx"));
+    }).then(() => busy(x, false), err => { busy(x, false); toast(err.msg || err.error || err.message || "Excel", "bad"); });
   });
   load(true);
 }
@@ -559,7 +592,7 @@ VIEWS.reports.after = () => {
     const lbl = {unit: f.unit && f.unit.value ? f.unit.selectedOptions[0].textContent : "", st: f.st.value ? f.st.selectedOptions[0].textContent : "",
                  lib: f.lib.value ? f.lib.selectedOptions[0].textContent : ""};
     busy(b, true);
-    Promise.all([b.dataset.fmt === "docx" ? needDOCX() : needXLSX(), api("report", p)]).then(arr => {
+    Promise.all([b.dataset.fmt === "docx" ? needDOCX() : needEXCEL(), api("report", p), needLogo()]).then(arr => {
       const rep = arr[1];
       if(!rep.rows.length){ toast(ct("noRows"), "warn"); busy(b, false); return; }
       (b.dataset.fmt === "docx" ? buildDocx : buildXlsx)(rep, p, lbl).then(() => busy(b, false), e => { busy(b, false); toast(String(e && e.message || e), "bad"); });
@@ -605,6 +638,8 @@ function buildDocx(rep, p, lbl){
     styles: {default: {document: {run: {font: F, size: 22}}}},
     sections: [{
       properties: {page: {size: {orientation: D.PageOrientation.LANDSCAPE}, margin: {top: 1000, bottom: 1000, left: 1000, right: 1000}}},
+      headers: {default: new D.Header({children: logoBuf ? [new D.Paragraph({children: [new D.ImageRun({data: logoBuf,
+        transformation: {width: 122, height: Math.round(122 * LOGO.h / LOGO.w)}})], spacing: {after: 80}})] : []})},
       footers: {default: new D.Footer({children: [par([txt("LABA · " + ct("repTitle") + " · " + stamp() + "   "), new D.TextRun({children: [D.PageNumber.CURRENT, " / ", D.PageNumber.TOTAL_PAGES], font: F, size: 16})], {alignment: D.AlignmentType.RIGHT})]})},
       children: [
         par(txt("ҚАЗАҚСТАН РЕСПУБЛИКАСЫНЫҢ ҰЛТТЫҚ КІТАПХАНАСЫ · ҒЫЛЫМИ-ӘДІСТЕМЕЛІК ҚЫЗМЕТ", {size: 16, color: "475569"}), {alignment: D.AlignmentType.CENTER}),
@@ -635,11 +670,9 @@ function buildXlsx(rep, p, lbl){
       .concat([r.updated_at, r.user_name, r.user_institution, r.user_phone])))
     .concat([[], [ct("respList")]]).concat(m.people.map(x => ["", x.n, x.i, x.p]))
     .concat([[], [ct("lastDate", {d: m.last ? fmtTs(m.last) : "—"})], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws["!cols"] = [{wch: 5}, {wch: 50}, {wch: 24}, {wch: 24}, {wch: 14}].concat(rep.fields.map(() => ({wch: 14}))).concat([{wch: 18}, {wch: 28}, {wch: 28}, {wch: 16}]);
-  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Есеп");
-  XLSX.writeFile(wb, "laba-esep-" + rep.year + "-" + ROMAN[rep.quarter] + "-" + stamp().slice(0, 10) + ".xlsx");
-  return Promise.resolve();
+  const cols = [5, 50, 24, 24, 14].concat(rep.fields.map(() => 14)).concat([18, 28, 28, 16]);
+  return excelBook("Есеп", aoa, {title: 0, head: 4, cols: cols})
+    .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + ROMAN[rep.quarter] + "-" + stamp().slice(0, 10) + ".xlsx"));
 }
 
 /* Аккаунттар (бас әкімші) */
@@ -656,15 +689,15 @@ VIEWS.users.after = () => {
   }, err => { document.getElementById("uBox").innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
   document.getElementById("uQ").addEventListener("input", drawUsers);
   document.getElementById("uNew").addEventListener("click", () => userForm(null).then(r => { if(r) load(); }));
-  document.getElementById("uTpl").addEventListener("click", () => needXLSX().then(() => {
+  document.getElementById("uTpl").addEventListener("click", () => Promise.resolve().then(() => {
     const aoa = [["Логин", "Аты-жөні", "Лауазымы", "Деңгейі", "Аймағы", "Республикалық кітапхана №", "Мекемесі", "Телефон", "Пароль"],
       ["turk.oblys", "Сәрсенова Айгүл Маратқызы", "Бас әдіскер", "облыстық", "Түркістан облысы", "", "Түркістан облыстық кітапханасы", "+7 701 000 00 00", ""],
       ["keles.audan", "Әлиев Нұрлан", "Әдіскер", "аудандық", "Түркістан облысы, Келес ауданы", "", "Келес ОКЖ", "+7 702 000 00 00", ""],
       ["astana.qala", "Иванова Анна", "Әдіскер", "қалалық", "Астана қаласы", "", "Астана ОКЖ", "", "Astana2026x"],
       ["nlrk", "Омарова Дана", "Әдіскер", "республикалық", "", "1", "ҚР Ұлттық кітапханасы", "", ""]];
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), "Аккаунттар");
-    XLSX.writeFile(wb, "laba-akkaunttar-ulgi.xlsx");
-  }));
+    return excelBook("Аккаунттар", aoa, {head: 0, cols: [16, 32, 18, 16, 34, 14, 32, 18, 14]})
+      .then(wb => saveBook(wb, "laba-akkaunttar-ulgi.xlsx"));
+  }).catch(err => toast(String(err && (err.msg || err.message) || err), "bad")));
   document.getElementById("uFile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if(f) bulkImport(f).then(load); });
   document.getElementById("uBox").addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if(!b) return;
@@ -754,22 +787,26 @@ function bulkImport(file){
   return needXLSX().then(() => file.arrayBuffer()).then(buf => {
     const wb = XLSX.read(buf, {type: "array"});
     const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, raw: false, defval: ""});
-    const hdr = (aoa[0] || []).map(h => String(h).trim().toLowerCase());
+    /* Тақырып жолы — «Логин» бағаны бар алғашқы жол (үлгінің басында логотип үшін бос жолдар бар) */
+    let hi = aoa.findIndex((r, i) => i < 20 && r.some(c => /^\s*(логин|login)\s*$/i.test(String(c))));
+    if(hi < 0) hi = 0;
+    const hdr = (aoa[hi] || []).map(h => String(h).trim().toLowerCase());
     const col = re => hdr.findIndex(h => re.test(h));
     const ix = {login: col(/логин|login/), full_name: col(/аты|фио|name/), position: col(/лауазым|должн/), role: col(/деңгей|уров|role/),
                 unit_name: col(/аймақ|аймағ|регион|облыс|unit/), library_id: col(/республикалық кітапхана|№/), institution: col(/мекеме|учрежд/),
                 phone: col(/телефон|phone/), password: col(/пароль|password/)};
     const roleOf = s => { s = String(s).toLowerCase(); return /облыс|област|oblast/.test(s) ? "oblast" : /аудан|район|district/.test(s) ? "district" : /респ|republic/.test(s) ? "republic" : /қала|город|city/.test(s) ? "city" : /әкімші|админ/.test(s) ? "admin" : ""; };
-    const rows = aoa.slice(1).filter(r => r.some(c => String(c).trim())).map(r => {
-      const o = {}; Object.keys(ix).forEach(k => { o[k] = ix[k] > -1 ? String(r[ix[k]]).trim() : ""; });
-      o.role = roleOf(o.role); return o;
+    const lines = [];                                    // әр жолдың файлдағы нөмірі (нәтиже терезесі үшін)
+    const rows = aoa.map((r, i) => [r, i]).slice(hi + 1).filter(x => x[0].some(c => String(c).trim())).map(x => {
+      const r = x[0], o = {}; Object.keys(ix).forEach(k => { o[k] = ix[k] > -1 ? String(r[ix[k]]).trim() : ""; });
+      o.role = roleOf(o.role); lines.push(x[1] + 1); return o;
     });
     if(!rows.length){ toast(ct("nothing"), "warn"); return; }
     toast(ct("wait"), "warn");
     return api("userBulk", {rows: rows}).then(res => {
       const okN = res.results.filter(r => r.ok).length, bad = res.results.length - okN;
       const html = `<p class="cab-p"><b>${esc(ct("bulkRes", {a: okN, b: bad}))}</b></p>
-        <div class="scroll-x"><table class="tbl"><tbody>${res.results.map(r => `<tr><td>${r.row}</td><td>${esc(r.login)}</td><td>${r.ok ? `<span class="pill ok">✓</span> ${esc(r.full_name)}` : `<span class="pill bad">✗</span> ${esc(r.error)}`}</td></tr>`).join("")}</tbody></table></div>
+        <div class="scroll-x"><table class="tbl"><tbody>${res.results.map(r => `<tr><td>${lines[r.row - 1] || r.row}</td><td>${esc(r.login)}</td><td>${r.ok ? `<span class="pill ok">✓</span> ${esc(r.full_name)}` : `<span class="pill bad">✗</span> ${esc(r.error)}`}</td></tr>`).join("")}</tbody></table></div>
         ${okN ? `<p class="cab-note">${esc(ct("passOnce"))}</p>` : ""}`;
       const pr = modal(ct("bulk"), html, okN ? [[ct("bulkDl"), "dl", "primary"], [ct("close"), "", "ghost"]] : [[ct("close"), "", "ghost"]]);
       pr.then(v => {
