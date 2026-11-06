@@ -138,6 +138,8 @@ function doGet(e) {
     else if (action === 'ping') { out = { ok: true, time: new Date().toISOString() }; }
     else if (action === 'passports') { out = Object.assign({ ok: true }, passportIndex_()); }
     else if (action === 'passport') { out = { ok: true, passport: passportById_(p.id) }; }
+    else if (action === 'passHistory') { out = { ok: true, years: archiveLib_(p.id) }; }
+    else if (action === 'archiveYears') { out = { ok: true, years: archiveYears_() }; }
     else { out = getPayload_(); }
   } catch (err) {
     out = { ok: false, error: String(err && err.message || err) };
@@ -759,7 +761,7 @@ const CAB = {
   PBKDF2_ITER: 1500,
   DATA_URL: 'https://raw.githubusercontent.com/byNurlykhan/laba/main/data/passports/',
   DATA_CHUNKS: 20,
-  IMPORT: { year: 2026, quarter: 3, label: 'Тізілім 01.10.2026 (импорт)', date: '2026-10-01 00:00' }
+  BASE_YEAR: 2025                            // «Тізілім» парағындағы бастапқы деректер — 2025 жылдың қорытындысы
 };
 const ROLES = {
   admin: 'Бас әкімші', oblast: 'Облыстық әдіскер', district: 'Аудандық әдіскер',
@@ -772,6 +774,11 @@ const QDATA_COLS = ['key', 'lib_id', 'year', 'quarter'].concat(CAB.Q_FIELDS)
 const LOG_COLS = ['Уақыт', 'Пайдаланушы', 'Деңгейі', 'Аймақ', 'Мекеме', 'Кітапхана', 'Жыл', 'Тоқсан', 'Өріс',
   'Ескі мән', 'Жаңа мән', 'Әрекет', 'user_id', 'lib_id', 'oblast_id', 'op_id', 'hash'];
 const Q_ROMAN = ['', 'I', 'II', 'III', 'IV'];
+/** «Мұрағат» парағы: әр жылдың толық паспорты, бір кітапхананың бір жылы — бір жол */
+const ARCH_SHEET = 'Мұрағат';
+const ARCH_META = ['Жыл', 'Мұрағатталған уақыты', 'Кім мұрағаттады'];
+const ARCH_COLS = ARCH_META.concat(PASSPORT_HEAD.map(h => h[0]));
+const ARCH_KEYS = PASSPORT_HEAD.map(h => h[1]);
 
 // ───────── API: POST сұраулары (JSON, Content-Type: text/plain) ─────────
 function doPost(e) {
@@ -808,6 +815,8 @@ function cabDispatch_(b) {
     case 'userStatus': cabNeed_(u, 'admin'); return cabUserStatus_(u, b.user_id, b.status);
     case 'userBulk': cabNeed_(u, 'admin'); return cabUserBulk_(u, b.rows || []);
     case 'allUnits': cabNeed_(u, 'admin'); return { ok: true, units: cabAllUnits_(), libs: cabRepLibs_() };
+    case 'archiveYears': return { ok: true, years: archiveYears_() };
+    case 'archive': cabNeed_(u, 'admin'); return archiveYear_(u, Number(b.year), !!b.overwrite);
     default: throw cabErr_('bad_action', 'Белгісіз әрекет');
   }
 }
@@ -904,6 +913,7 @@ function cabSheet_(name, cols) {
   let sh = ss.getSheetByName(name);
   if (!sh) {
     sh = ss.insertSheet(name);
+    if (sh.getMaxColumns() < cols.length) sh.insertColumnsAfter(sh.getMaxColumns(), cols.length - sh.getMaxColumns());
     sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold')
       .setBackground('#2563EB').setFontColor('#FFFFFF');
     sh.getRange(1, 1, sh.getMaxRows(), cols.length).setNumberFormat('@');
@@ -1182,7 +1192,9 @@ function cabLib_(u, b) {
   const history = Object.keys(all).map(k => all[k]).filter(o => String(o.lib_id) === String(m.id))
     .sort((a, c) => (Number(c.year) * 10 + Number(c.quarter)) - (Number(a.year) * 10 + Number(a.quarter)))
     .map(o => ({ year: o.year, quarter: o.quarter, v: o.v, updated_at: o.updated_at, user_name: o.user_name, user_institution: o.user_institution }));
-  return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1],
+  const archive = archiveLib_(m.id).map(a => ({ year: a.year, archived_at: a.archived_at,
+    v: CAB.Q_FIELDS.reduce((o, f) => { o[f] = a.f[f] || ''; return o; }, {}) }));
+  return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1], archive: archive,
            current: cur ? { v: cur.v, updated_at: cur.updated_at, user_name: cur.user_name, user_institution: cur.user_institution } : null,
            previous: prev ? { year: prev.year, quarter: prev.quarter, v: prev.v } : null,
            history: history, canStatic: u.role === 'admin' };
@@ -1335,6 +1347,7 @@ function cabHistory_(u, b, full) {
 // ───────── Есептер ─────────
 /** Есепке арналған деректер (тек пайдаланушының аймағы бойынша) */
 function cabReport_(u, b) {
+  if (b.archive) return cabReportArchive_(u, b);
   const yq = cabPeriod_(b), all = cabQAll_();
   const from = b.from ? String(b.from) : '', to = b.to ? String(b.to) + ' 99' : '';
   let libs = cabScopeLibs_(u);
@@ -1352,6 +1365,153 @@ function cabReport_(u, b) {
     });
   return { ok: true, year: yq[0], quarter: yq[1], generated_by: u.full_name, generated_inst: u.institution,
            fields: CAB.Q_FIELDS.map(f => [f, cabFieldName_(f)]), rows: rows };
+}
+
+/** Мұрағаттағы жыл бойынша есеп (жылдық қорытынды): мәндер «Мұрағат» парағынан */
+function cabReportArchive_(u, b) {
+  const year = Number(b.archive);
+  const data = archiveYearValues_(year, CAB.Q_FIELDS);
+  if (!data) throw cabErr_('not_found', year + ' жылдың мұрағаты жоқ');
+  let libs = cabScopeLibs_(u);
+  if (b.unit) libs = libs.filter(m => m.oblast === b.unit || m.unit === b.unit || (b.unit === 'KZ' && !m.oblast));
+  if (b.st) libs = libs.filter(m => m.st === b.st);
+  if (b.lib) libs = libs.filter(m => String(m.id) === String(b.lib));
+  const rows = libs.sort((a, c) => (a.region > c.region ? 1 : a.region < c.region ? -1 : 0) || a.lvl - c.lvl || (a.name > c.name ? 1 : -1))
+    .map(m => {
+      const r = data.rows[String(m.id)];
+      return { id: m.id, name: m.name, region: m.region, district: m.district, status: m.status, cat: m.cat,
+               v: r ? r.v : null, updated_at: r ? r.at : '', user_name: '', user_institution: '', user_phone: '' };
+    });
+  return { ok: true, archive: year, year: year, quarter: 0, generated_by: u.full_name, generated_inst: u.institution,
+           fields: CAB.Q_FIELDS.map(f => [f, cabFieldName_(f)]), rows: rows };
+}
+
+// ───────── Жылдық мұрағат ─────────
+function archiveSheet_() {
+  const ss = SpreadsheetApp.getActive();
+  let sh = ss.getSheetByName(ARCH_SHEET);
+  if (!sh) {
+    sh = cabSheet_(ARCH_SHEET, ARCH_COLS);
+    try {
+      const p = sh.protect().setDescription('Мұрағат — тек жүйе жазады');
+      p.removeEditors(p.getEditors());
+      if (p.canDomainEdit()) p.setDomainEdit(false);
+    } catch (e) { /* қорғау мүмкін болмаса — елемейміз */ }
+  }
+  return sh;
+}
+/** Мұрағаттағы жылдар: [{year, count, archived_at}] (жаңасы бірінші) */
+function archiveYears_() {
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get('arch_years');
+  if (hit) return JSON.parse(hit);
+  const sh = SpreadsheetApp.getActive().getSheetByName(ARCH_SHEET);
+  const out = {};
+  if (sh && sh.getLastRow() > 1) {
+    sh.getRange(2, 1, sh.getLastRow() - 1, 2).getDisplayValues().forEach(r => {
+      if (!r[0]) return;
+      const o = out[r[0]] = out[r[0]] || { year: Number(r[0]), count: 0, archived_at: r[1] };
+      o.count++;
+    });
+  }
+  const list = Object.keys(out).map(k => out[k]).sort((a, b) => b.year - a.year);
+  cache.put('arch_years', JSON.stringify(list), 21600);
+  return list;
+}
+/** Бір кітапхананың мұрағаттағы барлық жылы (ашық сайт үшін: кім мұрағаттағаны көрсетілмейді) */
+function archiveLib_(id) {
+  id = String(id || '').trim();
+  const sh = SpreadsheetApp.getActive().getSheetByName(ARCH_SHEET);
+  if (!id || !sh || sh.getLastRow() < 2) return [];
+  const idCol = ARCH_META.length + ARCH_KEYS.indexOf('id') + 1;
+  const cells = sh.getRange(2, idCol, sh.getLastRow() - 1, 1).createTextFinder(id).matchEntireCell(true).findAll();
+  const required = PASSPORT_REQUIRED_();
+  return cells.map(c => {
+    const row = sh.getRange(c.getRow(), 1, 1, ARCH_COLS.length).getDisplayValues()[0];
+    const map = {}; ARCH_KEYS.forEach((k, i) => { map[k] = ARCH_META.length + i; });
+    const x = passportRow_(row, map, c.getRow(), required);
+    if (!x) return null;
+    x.year = Number(row[0]); x.archived_at = row[1];
+    return x;
+  }).filter(Boolean).sort((a, b) => b.year - a.year);
+}
+/** Бір жылдың таңдалған өрістері: {rows: {id: {v:{код: мән}, at}}} — есептер үшін, тек керек бағандар оқылады */
+function archiveYearValues_(year, fields) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(ARCH_SHEET);
+  if (!sh || sh.getLastRow() < 2) return null;
+  const n = sh.getLastRow() - 1;
+  const col = k => sh.getRange(2, ARCH_META.length + ARCH_KEYS.indexOf(k) + 1, n, 1).getDisplayValues();
+  const years = sh.getRange(2, 1, n, 2).getDisplayValues(), ids = col('id');
+  const vals = fields.map(f => col(f));
+  const rows = {}; let any = false;
+  years.forEach((r, i) => {
+    if (Number(r[0]) !== year) return;
+    any = true;
+    const v = {}; fields.forEach((f, j) => { v[f] = vals[j][i][0]; });
+    rows[String(ids[i][0])] = { v: v, at: r[1] };
+  });
+  return any ? { rows: rows } : null;
+}
+/**
+ * Жылды мұрағатқа жабу: «Тізілім» парағындағы барлық паспорт осы жылдың толық көшірмесі ретінде сақталады.
+ * 6.1–6.3 үшін сол жылдың ең соңғы тоқсанының мәні алынады (болмаса — тізілімдегі мән).
+ * Жыл бұрын мұрағатталған болса, тек overwrite=true кезде ауыстырылады (журналға жазылады).
+ */
+function archiveYear_(u, year, overwrite) {
+  const cy = new Date().getFullYear();
+  if (!(year >= 2020 && year <= cy)) throw cabErr_('invalid', 'Жыл дұрыс емес');
+  const L = passportLayout_();
+  if (!L) throw cabErr_('server', 'Тізілім парағы табылмады');
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const sh = archiveSheet_();
+    CacheService.getScriptCache().remove('arch_years');
+    const had = archiveYears_().find(o => o.year === year);
+    if (had && !overwrite) throw cabErr_('exists', year + ' жыл бұрын мұрағатталған (' + had.archived_at + ')');
+    if (had) archiveDeleteYear_(sh, year);
+    // жылдың ең соңғы тоқсаны
+    CacheService.getScriptCache().remove('cab_q_n');
+    const all = cabQAll_(), lastQ = {};
+    Object.keys(all).forEach(k => {
+      const o = all[k];
+      if (Number(o.year) !== year) return;
+      const id = String(o.lib_id);
+      if (!lastQ[id] || Number(o.quarter) > Number(lastQ[id].quarter)) lastQ[id] = o;
+    });
+    const last = L.sh.getLastRow();
+    const values = last > L.headRow ? L.sh.getRange(L.headRow + 1, 1, last - L.headRow, L.sh.getLastColumn()).getDisplayValues() : [];
+    const now = cabNow_(), rows = [];
+    values.forEach((r, i) => {
+      const g = k => (k in L.map) ? String(r[L.map[k]] == null ? '' : r[L.map[k]]).trim() : '';
+      if (!g('1.1')) return;
+      const id = g('id') || String(L.headRow + 1 + i);
+      const q = lastQ[id];
+      rows.push([year, now, u.full_name].concat(ARCH_KEYS.map(k => {
+        if (k === 'id') return id;
+        if (q && CAB.Q_FIELDS.indexOf(k) > -1 && q.v[k] !== '' && q.v[k] != null) return String(q.v[k]).replace(/\s/g, '');
+        return g(k);
+      })));
+    });
+    if (!rows.length) throw cabErr_('server', 'Тізілімде дерек жоқ');
+    writeRows_(sh, Math.max(sh.getLastRow(), 1) + 1, rows);
+    cabLogAppend_(u, [{ lib: null, year: year, quarter: 0, field: 'Мұрағат', old: had ? had.count + ' жазба' : '',
+                        val: rows.length + ' кітапхана', action: had ? 'Жылдың мұрағаты ауыстырылды' : 'Жыл мұрағатқа жабылды' }]);
+    CacheService.getScriptCache().remove('arch_years');
+    return { ok: true, year: year, count: rows.length, replaced: !!had };
+  } finally { lock.releaseLock(); }
+}
+function archiveDeleteYear_(sh, year) {
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return;
+  if (sh.getMaxRows() <= n + 1) sh.insertRowsAfter(sh.getMaxRows(), 1);   // Sheets барлық жолды өшіртпейді
+  const ys = sh.getRange(2, 1, n, 1).getDisplayValues();
+  // төменнен жоғары қарай, қатар тұрған жолдарды бір рет өшіреміз
+  let end = -1;
+  for (let i = n - 1; i >= -1; i--) {
+    const hit = i >= 0 && Number(ys[i][0]) === year;
+    if (hit && end < 0) end = i;
+    if (!hit && end >= 0) { sh.deleteRows(i + 3, end - i); end = -1; }
+  }
 }
 
 // ───────── Көмекшілер ─────────
@@ -1401,16 +1561,17 @@ function setupCabinet() {
   const notes = [];
   if (!getPassports_().length) { cabImportRegistry_(); notes.push('«Тізілім» парағы сайттың дерек файлдарынан құрылды.'); }
   CacheService.getScriptCache().removeAll(['cab_meta_n', 'cab_q_n', 'pidx_n', 'cab_users']);
-  // Тоқсандық: тізілімдегі көрсеткіштерді 2026-III тоқсаны деп жазу (бұрын жазылмаса)
-  const qs = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
-  if (qs.getLastRow() < 2) {
-    const I = CAB.IMPORT;
-    const rows = getPassports_().map(x => [cabQKey_(x.id, I.year, I.quarter), x.id, I.year, I.quarter]
-      .concat(CAB.Q_FIELDS.map(f => { const n = cabNum_(x.f[f]); return n === null ? (x.f[f] || '') : n; }))
-      .concat([I.date, 'import', I.label, 'ҚР Ұлттық кітапханасы', '', 'Импорт']));
-    writeRows_(qs, 2, rows);
-    notes.push('«Тоқсандық» парағына ' + rows.length + ' кітапхананың 2026 жылғы III тоқсан деректері жазылды.');
+  const sysU = { user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' };
+  // 2025 жылдың қорытындысы: тізілімдегі деректер мұрағатқа жылдық паспорт ретінде сақталады (бір рет)
+  cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  CacheService.getScriptCache().remove('arch_years');
+  if (!archiveYears_().some(o => o.year === CAB.BASE_YEAR)) {
+    const r = archiveYear_(sysU, CAB.BASE_YEAR, false);
+    notes.push('«Мұрағат» парағына ' + r.count + ' кітапхананың ' + CAB.BASE_YEAR + ' жылғы қорытынды паспорты сақталды.');
   }
+  // Бұрынғы нұсқа тізілімді «2026 III тоқсан» деп жазған — ол жолдарды алып тастаймыз (деректер енді 2025 мұрағатында)
+  const removed = cabRemoveImportRows_();
+  if (removed) notes.push('«Тоқсандық» парағынан бұрынғы импорт жолдары (' + removed + ') алынды — олар енді ' + CAB.BASE_YEAR + ' жылдың мұрағатында.');
   // Бірліктер (көру үшін)
   const us = cabSheet_(CAB.SH.UNITS, ['unit_id', 'type', 'name', 'parent_id']);
   const units = cabAllUnits_();
@@ -1427,8 +1588,7 @@ function setupCabinet() {
   // Бас әкімші
   let pass = '';
   if (!cabUsers_().some(u => u.role === 'admin')) {
-    const admin = { user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' };
-    const r = cabUserSave_(admin, { login: 'admin', full_name: 'Бас әкімші', position: 'Бас әкімші', role: 'admin',
+    const r = cabUserSave_(sysU, { login: 'admin', full_name: 'Бас әкімші', position: 'Бас әкімші', role: 'admin',
                                     institution: 'ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет', phone: '' });
     pass = r.password;
     notes.push('Бас әкімші: логин «admin», уақытша пароль: ' + pass + ' — кіргеннен кейін «Аккаунттар» бетінде ауыстырыңыз.');
@@ -1439,6 +1599,28 @@ function setupCabinet() {
   Logger.log(msg);
   try { ss.toast(msg, 'LABA — кабинет орнатылды', -1); } catch (e) { /* редактордан — тек журнал */ }
   return msg;
+}
+/** «Тоқсандық» парағындағы импорт жолдарын (user_id = import) өшіру. Өшірілген жол санын қайтарады */
+function cabRemoveImportRows_() {
+  const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  const n = sh.getLastRow() - 1;
+  if (n < 1) return 0;
+  if (sh.getMaxRows() <= n + 1) sh.insertRowsAfter(sh.getMaxRows(), 1);   // Sheets барлық жолды өшіртпейді
+  const col = QDATA_COLS.indexOf('user_id');
+  const v = sh.getRange(2, col + 1, n, 1).getDisplayValues();
+  let cnt = 0, end = -1;
+  for (let i = n - 1; i >= -1; i--) {
+    const hit = i >= 0 && v[i][0] === 'import';
+    if (hit) { cnt++; if (end < 0) end = i; }
+    if (!hit && end >= 0) { sh.deleteRows(i + 3, end - i); end = -1; }
+  }
+  if (cnt) {
+    cabLogAppend_({ user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' },
+      [{ lib: null, year: CAB.BASE_YEAR, quarter: 0, field: 'Тоқсандық', old: cnt + ' импорт жолы', val: '',
+         action: 'Импорт деректері ' + CAB.BASE_YEAR + ' жылдың мұрағатына көшірілді' }]);
+    CacheService.getScriptCache().removeAll(['cab_q_n', 'pidx_n']);
+  }
+  return cnt;
 }
 /** admin паролін жаңарту (пароль жоғалса). Редактордан іске қосыңыз: жаңа пароль Execution log-та шығады */
 function resetAdminPassword() {

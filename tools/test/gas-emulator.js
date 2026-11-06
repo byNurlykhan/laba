@@ -39,6 +39,13 @@ class Range {
           if (String(self.cell(i, j)) === String(t)) return new Range(self.sh, self.r + i, self.c + j, 1, 1);
         }
         return null;
+      },
+      findAll() {
+        const out = [];
+        for (let i = 0; i < self.nr; i++) for (let j = 0; j < self.nc; j++) {
+          if (String(self.cell(i, j)) === String(t)) out.push(new Range(self.sh, self.r + i, self.c + j, 1, 1));
+        }
+        return out;
       }
     };
   }
@@ -59,7 +66,11 @@ class Sheet {
   getDataRange() { return new Range(this, 1, 1, Math.max(1, this.getLastRow()), Math.max(1, this.getLastColumn())); }
   appendRow(row) { const r = this.getLastRow() + 1; if (r > this.maxRows) this.maxRows = r; if (row.length > this.maxCols) this.maxCols = row.length; this.getRange(r, 1, 1, row.length).setValues([row]); }
   clear() { this.data = []; }
-  deleteRows(r, n) { this.data.splice(r - 1, n); }
+  deleteRows(r, n) {
+    // Google Sheets: қатырылмаған жолдардың бәрін өшіруге болмайды
+    if (this.maxRows - n < 2) throw new Error('Sorry, it is not possible to delete all non-frozen rows.');
+    this.data.splice(r - 1, n); this.maxRows -= n;
+  }
   protect() { return { setDescription() { return this; }, removeEditors() { return this; }, getEditors() { return []; }, canDomainEdit() { return false; }, setDomainEdit() { return this; } }; }
 }
 ['setFrozenRows', 'setFrozenColumns', 'setRowHeight', 'setColumnWidth', 'setColumnWidths'].forEach(m => { Sheet.prototype[m] = function () { return this; }; });
