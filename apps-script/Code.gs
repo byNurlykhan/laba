@@ -156,6 +156,7 @@ function doGet(e) {
     else if (action === 'passport') { out = { ok: true, passport: passportById_(p.id) }; }
     else if (action === 'passHistory') { out = { ok: true, years: archiveLib_(p.id) }; }
     else if (action === 'archiveYears') { out = { ok: true, years: archiveYears_() }; }
+    else if (action === 'books') { out = Object.assign({ ok: true }, booksPublic_()); }
     else if (action === 'yearData') { out = Object.assign({ ok: true }, yearData_(Number(p.year) || 0)); }
     else { out = getPayload_(); }
   } catch (err) {
@@ -912,6 +913,8 @@ function cabDispatch_(b) {
     case 'queue': return cabQueue_(u);
     case 'summary': return cabSummary_(u, b);
     case 'export': return cabExport_(u, b);
+    case 'books': return booksFor_(u);
+    case 'booksSave': return booksSave_(u, b);
     case 'archive': cabNeed_(u, 'admin'); return archiveYear_(u, Number(b.year), !!b.overwrite);
     default: throw cabErr_('bad_action', 'Белгісіз әрекет');
   }
@@ -1513,6 +1516,116 @@ function yearData_(year) {
   });
   return { years: years, year: year, total: tot, qs: qs, regions: Object.keys(regions).map(k => regions[k]) };
 }
+// ───────── «Кітапханалар не оқып, не ұсынып жатыр?» ─────────
+/**
+ * Республикалық, облыстық және республикалық маңызы бар қалалардың негізгі кітапханалары ұсынған және ең көп оқылған кітаптар.
+ * Аудан, қала, ауыл кітапханаларының деректері облыстық кітапхананың тізіміне кіреді (оны облыстық әдіскер енгізеді).
+ * Тізім кезеңсіз: әдіскер кез келген уақытта жаңартады; әр өзгеріс журналға жазылады.
+ */
+const BOOK_SHEET = 'Кітаптар';
+const BOOK_COLS = ['owner_id', 'kind', 'cat', 'rank', 'author', 'title', 'lang', 'genre', 'count', 'updated_at', 'user_id', 'user_name'];
+const BOOK_KINDS = { rec: 'Оқырманға ұсынады', top: 'Ең көп оқылған' };
+const BOOK_CATS = ['', 'Балалар (0–14 жас)', 'Жасөспірімдер (15–17 жас)', 'Жастар (18–29 жас)', 'Ересектер (30–59 жас)', 'Аға буын (60+ жас)'];
+const BOOK_LANGS = ['қазақ', 'орыс', 'ағылшын', 'басқа'];
+const BOOK_GENRES = ['Көркем әдебиет', 'Балалар әдебиеті', 'Поэзия', 'Тарихи', 'Ғылыми-танымдық', 'Салалық', 'Өмірбаяндық', 'Басқа'];
+const BOOK_MAX = 10;
+/** Негізгі кітапханалар: республикалықтар жеке, облыс пен қалада — деңгейі ең жоғары кітапхана */
+function bookOwners_() {
+  const meta = cabLibMeta_(), best = {};
+  Object.keys(meta).forEach(id => {
+    const m = meta[id];
+    const key = m.st === 'rep' ? 'R:' + m.id : ((m.st === 'obl' || m.st === 'rcity') && m.oblast ? m.oblast : '');
+    if (!key) return;
+    const b = best[key];
+    // деңгейі бірдей болса — балалар кітапханасы емесі (мысалы, Шымкентте көпшілік кітапханалар жүйесі), сосын ID кішісі
+    const kid = x => /балалар/i.test(x.name) ? 1 : 0;
+    if (!b || m.lvl < b.lvl || (m.lvl === b.lvl && (kid(m) - kid(b) || Number(m.id) - Number(b.id)) < 0)) best[key] = m;
+  });
+  const ord = { rep: 0, obl: 1, rcity: 2 };
+  return Object.keys(best).map(k => ({ id: String(best[k].id), unit: k, name: best[k].name, region: best[k].region || 'Республикалық деңгей', st: best[k].st }))
+    .sort((a, b) => ord[a.st] - ord[b.st] || (a.st === 'rep' ? Number(a.id) - Number(b.id) : (a.region > b.region ? 1 : -1)));
+}
+function bookCanEdit_(u, o) {
+  if (u.role === 'admin') return true;
+  if (u.role === 'oblast' || u.role === 'city') return o.unit === u.unit_id;
+  if (u.role === 'republic') return String(o.id) === String(u.library_id);
+  return false;
+}
+function bookRows_() {
+  const sh = cabSheet_(BOOK_SHEET, BOOK_COLS), last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, BOOK_COLS.length).getDisplayValues().filter(r => r[0]).map(r => {
+    const o = {}; BOOK_COLS.forEach((c, i) => { o[c] = r[i]; });
+    o.cat = Number(o.cat); o.rank = Number(o.rank);
+    return o;
+  });
+}
+/** Ашық сайт үшін: негізгі кітапханалар және олардың тізімдері (кім енгізгені көрсетілмейді) */
+function booksPublic_() {
+  const cache = CacheService.getScriptCache();
+  const hit = cacheBigGet_(cache, 'books_pub');
+  if (hit) return hit;
+  const owners = bookOwners_();
+  const ok = {}; owners.forEach(o => { ok[o.id] = 1; });
+  const items = bookRows_().filter(r => ok[r.owner_id]).map(r => ({ owner: r.owner_id, kind: r.kind, cat: r.cat, rank: r.rank, author: r.author,
+    title: r.title, lang: r.lang, genre: r.genre, count: r.count, updated: String(r.updated_at).slice(0, 10) }));
+  const out = { owners: owners.map(o => ({ id: o.id, name: o.name, region: o.region, st: o.st })), items: items,
+                cats: BOOK_CATS, langs: BOOK_LANGS, genres: BOOK_GENRES };
+  cacheBigPut_(cache, 'books_pub', out, 3600);
+  return out;
+}
+/** Кабинет: пайдаланушы өңдей алатын кітапханалар және олардың тізімдері */
+function booksFor_(u) {
+  const owners = bookOwners_().filter(o => bookCanEdit_(u, o));
+  const ids = {}; owners.forEach(o => { ids[o.id] = 1; });
+  return { ok: true, owners: owners, rows: bookRows_().filter(r => ids[r.owner_id]),
+           kinds: BOOK_KINDS, cats: BOOK_CATS, langs: BOOK_LANGS, genres: BOOK_GENRES, max: BOOK_MAX };
+}
+/** Бір кітапхананың бір санаттағы тізімін толық ауыстыру (≤ 10 кітап) */
+function booksSave_(u, b) {
+  const o = bookOwners_().find(x => String(x.id) === String(b.owner));
+  if (!o) throw cabErr_('not_found', 'Кітапхана табылмады');
+  if (!bookCanEdit_(u, o)) throw cabErr_('forbidden', 'Бұл кітапхананың тізімін өзгертуге рұқсатыңыз жоқ');
+  const kind = String(b.kind), cat = Number(b.cat);
+  if (!BOOK_KINDS[kind] || !(cat >= 1 && cat <= 5)) throw cabErr_('invalid', 'Тізім түрі немесе санаты дұрыс емес');
+  const items = (b.items || []).filter(x => x && (String(x.author || '').trim() || String(x.title || '').trim()));
+  if (items.length > BOOK_MAX) return { ok: false, error: 'invalid', msg: 'Ең көбі ' + BOOK_MAX + ' кітап' };
+  const errors = {}, clean = [];
+  items.forEach((x, i) => {
+    const author = String(x.author || '').replace(/\s+/g, ' ').trim().slice(0, 200), title = String(x.title || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    const lang = BOOK_LANGS.indexOf(String(x.lang || '')) > -1 ? String(x.lang) : '';
+    const genre = BOOK_GENRES.indexOf(String(x.genre || '')) > -1 ? String(x.genre) : '';
+    const cs = String(x.count == null ? '' : x.count).replace(/[\s\u00a0]/g, '');
+    if (!author) errors[i + '.author'] = 'Авторын жазыңыз';
+    if (!title) errors[i + '.title'] = 'Атауын жазыңыз';
+    if (cs && !/^\d+$/.test(cs)) errors[i + '.count'] = 'Бүтін сан';
+    if (kind === 'top' && !cs) errors[i + '.count'] = 'Оқылу санын жазыңыз';
+    clean.push({ author: author, title: title, lang: lang, genre: genre, count: cs });
+  });
+  if (Object.keys(errors).length) return { ok: false, error: 'invalid', fields: errors, msg: 'Өрістерді тексеріңіз' };
+  if (kind === 'top') clean.sort((a, c) => Number(c.count) - Number(a.count));
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const all = bookRows_();
+    const same = r => String(r.owner_id) === String(o.id) && r.kind === kind && r.cat === cat;
+    const old = all.filter(same).sort((a, c) => a.rank - c.rank);
+    const txt = list => list.map((x, i) => (i + 1) + '. ' + x.author + ' «' + x.title + '»' + (x.count ? ' (' + x.count + ')' : '')).join('; ').slice(0, 1500);
+    if (txt(old) === txt(clean)) return { ok: true, nochange: true };
+    const now = cabNow_();
+    const keep = all.filter(r => !same(r));
+    const rows = keep.map(r => BOOK_COLS.map(c => r[c]))
+      .concat(clean.map((x, i) => [o.id, kind, cat, i + 1, x.author, x.title, x.lang, x.genre, x.count, now, u.user_id, u.full_name]));
+    const sh = cabSheet_(BOOK_SHEET, BOOK_COLS);
+    if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, BOOK_COLS.length).clearContent();
+    writeRows_(sh, 2, rows);
+    const m = cabLibMeta_()[String(o.id)] || null;
+    cabLogAppend_(u, [{ lib: m, year: '', quarter: 0, field: 'Кітаптар: ' + BOOK_KINDS[kind] + ' · ' + BOOK_CATS[cat],
+                        old: txt(old), val: txt(clean), action: old.length ? 'Тізім жаңартылды' : 'Тізім енгізілді' }]);
+    CacheService.getScriptCache().remove('books_pub_n');
+    return { ok: true, count: clean.length, updated_at: now };
+  } finally { lock.releaseLock(); }
+}
+
 /** Бір жылдың барлық тоқсандық жазбасы (барлық өрісімен): {lib_id: [жазбалар]} */
 function cabQYearRows_(year) {
   const Q = qSheet_(), last = Q.sh.getLastRow(), by = {};

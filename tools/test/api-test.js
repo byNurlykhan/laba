@@ -239,4 +239,29 @@ ok(tr2 && tr2.rep === 1 && tr2.s['6.4'] === 600 && yd.qs[1] === 2 && yd.qs[2] ==
 ok(JSON.stringify(yd).indexOf('Әдіскер') < 0, 'Жиынтықта аты-жөн жоқ');
 ok(JSON.stringify(JSON.parse(g.get({ action: 'yearData', year: 2019 })).years) === '[2026]', 'Есебі жоқ жыл — тек жылдар тізімі');
 
+step('9. Кітаптар: ұсыныстар және ең көп оқылғандар');
+let bk = g.post({ action: 'books', token: admin });
+ok(bk.owners.length === 23 && bk.owners.filter(o => o.st === 'rep').length === 3 && bk.owners.filter(o => o.st === 'rcity').length === 3,
+   'Негізгі кітапханалар: 3 республикалық + 17 облыстық + 3 қалалық');
+bk = g.post({ action: 'books', token: tO });
+const turkLib = bk.owners[0];
+ok(bk.owners.length === 1 && turkLib.region === 'Түркістан облысы' && /Фараб/.test(turkLib.name), 'Облыстық әдіскер — тек өз облысының негізгі кітапханасы');
+ok(g.post({ action: 'books', token: tD }).owners.length === 0, 'Аудандық әдіскерде кітап тізімі жоқ (облыстықтың ішінде)');
+ok(g.post({ action: 'booksSave', token: tD, owner: turkLib.id, kind: 'rec', cat: 1, items: [{ author: 'А', title: 'Б' }] }).error === 'forbidden', 'Басқа әдіскер өзгерте алмайды');
+x = g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'rec', cat: 1, items: [{ author: 'М. Әуезов', title: '' }] });
+ok(!x.ok && x.fields['0.title'], 'Атауы міндетті');
+ok(!g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'rec', cat: 1, items: Array.from({ length: 11 }, (_, i) => ({ author: 'A' + i, title: 'T' + i })) }).ok, 'Ең көбі 10 кітап');
+x = g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'rec', cat: 4, items: [{ author: 'М. Әуезов', title: 'Абай жолы', lang: 'қазақ', genre: 'Көркем әдебиет' }, { author: 'Ы. Алтынсарин', title: 'Өнер-білім бар жұрттар' }] });
+ok(x.ok && x.count === 2, 'Ұсыныс сақталды (Ересектер, 2 кітап)');
+ok(!g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'top', cat: 1, items: [{ author: 'А', title: 'Б' }] }).ok, 'Ең көп оқылғанда оқылу саны міндетті');
+x = g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'top', cat: 1, items: [{ author: 'Б. Соқпақбаев', title: 'Менің атым Қожа', count: '120' }, { author: 'Ж. Аймауытов', title: 'Ертегілер', count: '1 450' }] });
+ok(x.ok, 'Ең көп оқылғандар сақталды');
+const pubB = JSON.parse(g.get({ action: 'books' }));
+const tops = pubB.items.filter(i => i.kind === 'top' && i.owner === turkLib.id);
+ok(pubB.owners.length === 23 && tops[0].rank === 1 && tops[0].count === '1450', 'Ашық сайт: тізімдер, оқылу саны бойынша реттелген');
+ok(JSON.stringify(pubB).indexOf('Облыс Әдіскері') < 0, 'Ашық сайтта енгізген адамның аты жоқ');
+ok(g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'rec', cat: 4, items: [{ author: 'М. Әуезов', title: 'Абай жолы', lang: 'қазақ', genre: 'Көркем әдебиет' }, { author: 'Ы. Алтынсарин', title: 'Өнер-білім бар жұрттар' }] }).nochange, 'Өзгеріс жоқ болса — жазылмайды');
+ok(g.post({ action: 'log', token: admin, q: 'Кітаптар:' }).rows.length === 2, 'Кітап тізімінің өзгерістері журналда');
+ok(g.verifyLog().indexOf('бүтін') > -1, 'Журналдың тізбегі бүтін');
+
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');

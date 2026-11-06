@@ -17,6 +17,11 @@ const CTX = {
     loginF:"Логин", passF:"Пароль", enter:"Кіру", wait:"Күте тұрыңыз…", showPass:"Парольді көрсету",
     noAccount:"Аккаунт жоқ па? Бас әкімшіге хабарласыңыз: ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет.",
     tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал", tArch:"Мұрағат",
+    tBooks:"Кітаптар", bkDesc:"«Кітапханалар не оқып, не ұсынып жатыр?» рубрикасына: оқырманға ұсынатын кітаптар және ең көп оқылған кітаптар — әр оқырман санатына 10 кітапқа дейін. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректерін қосып енгізіңіз. Тізімді кез келген уақытта жаңартуға болады.",
+    bkNone:"Сізге кітап тізімі бекітілмеген: оны облыстық, қалалық және республикалық кітапхананың әдіскері енгізеді.", bkRec:"Оқырманға ұсынады", bkTop:"Ең көп оқылған",
+    bkAuthor:"Автор", bkTitle:"Кітаптың атауы", bkLang:"Тілі", bkGenre:"Жанры", bkCount:"Оқылу саны", bkClear:"Тазарту",
+    bkSaved:"Тізім сақталды: {a} кітап", bkUpd:"Соңғы жаңарту: {d} · {n}",
+    bkHintRec:"Ұсыну реті бойынша жазыңыз: 1-орында — ең басты ұсыныс.", bkHintTop:"Оқылу санын (берілім) жазыңыз — тізім сақталғанда сан бойынша өзі реттеледі.",
     stDraft:"Жоба", stSub:"Бекітуде", stOk:"Бекітілді", stRet:"Түзетуге қайтарылды", state:"Күйі",
     saveDraft:"Жоба ретінде сақтау", submit:"Бекітуге жіберу", saveApprove:"Сақтау және бекіту", returnBtn:"Түзетуге қайтару",
     returnQ:"Қайтару себебін жазыңыз (әдіскер көреді):", returned:"Есеп түзетуге қайтарылды", approvedOk:"Есеп бекітілді",
@@ -86,6 +91,11 @@ const CTX = {
     loginF:"Логин", passF:"Пароль", enter:"Войти", wait:"Подождите…", showPass:"Показать пароль",
     noAccount:"Нет аккаунта? Обратитесь к главному администратору: НБ РК, научно-методическая служба.",
     tLibs:"Библиотеки", tHistory:"История изменений", tReports:"Отчёты", tUsers:"Аккаунты", tLog:"Журнал", tArch:"Архив",
+    tBooks:"Книги", bkDesc:"Для рубрики «Что читают и рекомендуют библиотеки?»: книги, рекомендуемые читателям, и самые читаемые книги — до 10 книг на каждую категорию читателей. В список области включите данные районных, городских и сельских библиотек. Список можно обновлять в любое время.",
+    bkNone:"За вами не закреплён список книг: его вносит методист областной, городской или республиканской библиотеки.", bkRec:"Рекомендуют", bkTop:"Самые читаемые",
+    bkAuthor:"Автор", bkTitle:"Название книги", bkLang:"Язык", bkGenre:"Жанр", bkCount:"Выдач", bkClear:"Очистить",
+    bkSaved:"Список сохранён: {a} книг", bkUpd:"Последнее обновление: {d} · {n}",
+    bkHintRec:"Укажите в порядке рекомендации: на 1-м месте — главная рекомендация.", bkHintTop:"Укажите число выдач — при сохранении список упорядочится автоматически.",
     stDraft:"Черновик", stSub:"На утверждении", stOk:"Утверждён", stRet:"Возвращён на доработку", state:"Статус",
     saveDraft:"Сохранить черновик", submit:"Отправить на утверждение", saveApprove:"Сохранить и утвердить", returnBtn:"Вернуть на доработку",
     returnQ:"Укажите причину возврата (её увидит методист):", returned:"Отчёт возвращён на доработку", approvedOk:"Отчёт утверждён",
@@ -347,6 +357,7 @@ function shell(active, inner){
   if(["admin","oblast","city"].indexOf(me.role) > -1) tabs.push(["cabinet/history", "tHistory"]);
   if(["admin","oblast"].indexOf(me.role) > -1) tabs.push(["cabinet/queue", "tQueue"]);
   tabs.push(["cabinet/summary", "tSum"]);
+  if(["admin","oblast","city","republic"].indexOf(me.role) > -1) tabs.push(["cabinet/books", "tBooks"]);
   tabs.push(["cabinet/reports", "tReports"]);
   if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"], ["admin/archive", "tArch"]);
   return `<div class="cab">
@@ -1151,6 +1162,76 @@ function buildSumDocx(r){
   return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-jiyntyq-" + r.year + "-" + (r.quarter ? ROMAN[r.quarter] : "jyl") + "-" + stamp().slice(0, 10) + ".docx"));
 }
 
+/* Кітаптар: ұсыныстар және ең көп оқылғандар (облыстық, қалалық, республикалық әдіскер, бас әкімші) */
+VIEWS.books = () => shell("cabinet/books", `
+  <div class="ph"><h2>${esc(ct("tBooks"))}</h2><p>${esc(ct("bkDesc"))}</p></div>
+  <div id="bkBox"><div class="card p-empty">${esc(ct("wait"))}</div></div>`);
+VIEWS.books.after = () => {
+  const load = () => api("books").then(r => { S.bkData = r; drawBooks(); },
+    err => { document.getElementById("bkBox").innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
+  S.bk = S.bk || {owner: "", kind: "rec", cat: 1};
+  S.bkReload = load;
+  load();
+};
+function drawBooks(){
+  const box = document.getElementById("bkBox"), d = S.bkData, st = S.bk;
+  if(!box) return;
+  if(!d.owners.length){ box.innerHTML = `<div class="card p-empty">${esc(ct("bkNone"))}</div>`; return; }
+  if(!d.owners.some(o => o.id === st.owner)) st.owner = d.owners[0].id;
+  const list = (o, k, c) => d.rows.filter(r => r.owner_id === o && r.kind === k && r.cat === c).sort((a, b) => a.rank - b.rank);
+  const cur = list(st.owner, st.kind, st.cat);
+  const last = cur.reduce((m, r) => (r.updated_at > m.updated_at ? r : m), {updated_at: ""});
+  const rows = [];
+  for(let i = 0; i < d.max; i++) rows.push(cur[i] || {author: "", title: "", lang: "", genre: "", count: ""});
+  const sel = (n, opts, v) => `<select class="inp" name="${n}"><option value=""></option>${opts.map(o => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+  box.innerHTML = `<div class="card cab-period bk-bar">
+      ${d.owners.length > 1 ? `<select class="pick" id="bkOwner">${d.owners.map(o => `<option value="${esc(o.id)}" ${o.id === st.owner ? "selected" : ""}>${esc((o.st === "rep" ? "" : o.region + " — ") + o.name.slice(0, 80))}</option>`).join("")}</select>`
+        : `<b class="bk-own">${esc(d.owners[0].name)}</b>`}
+      <div class="seg">${["rec", "top"].map(k => `<button data-bk="${k}" class="${st.kind === k ? "on" : ""}">${esc(ct(k === "rec" ? "bkRec" : "bkTop"))}</button>`).join("")}</div>
+    </div>
+    <div class="chips">${[1, 2, 3, 4, 5].map(c => `<button class="chip ${st.cat === c ? "on" : ""}" data-bkc="${c}">${esc(d.cats[c])}<small>${list(st.owner, st.kind, c).length}</small></button>`).join("")}</div>
+    <form class="card cab-form" id="bkForm" novalidate>
+      <p class="cab-note">${esc(ct(st.kind === "top" ? "bkHintTop" : "bkHintRec"))}</p>
+      <div class="scroll-x"><table class="tbl bk-tbl"><thead><tr><th>№</th><th>${esc(ct("bkAuthor"))} *</th><th>${esc(ct("bkTitle"))} *</th><th>${esc(ct("bkLang"))}</th><th>${esc(ct("bkGenre"))}</th>
+        ${st.kind === "top" ? `<th style="text-align:right">${esc(ct("bkCount"))} *</th>` : ""}</tr></thead>
+      <tbody>${rows.map((r, i) => `<tr data-i="${i}"><td class="nw">${i + 1}</td>
+        <td><input class="inp" name="author" value="${esc(r.author)}" placeholder="${i ? "" : "М. Әуезов"}"><small class="fld-err" data-err="${i}.author"></small></td>
+        <td><input class="inp" name="title" value="${esc(r.title)}" placeholder="${i ? "" : "Абай жолы"}"><small class="fld-err" data-err="${i}.title"></small></td>
+        <td>${sel("lang", d.langs, r.lang)}</td><td>${sel("genre", d.genres, r.genre)}</td>
+        ${st.kind === "top" ? `<td><input class="inp num" name="count" inputmode="numeric" value="${esc(r.count ? nf(+String(r.count).replace(/\s/g, "")) : "")}"><small class="fld-err" data-err="${i}.count"></small></td>` : ""}</tr>`).join("")}</tbody></table></div>
+      <div class="cab-actions">${last.updated_at ? `<span class="cab-k" style="margin-right:auto">${esc(ct("bkUpd", {d: fmtTs(last.updated_at), n: last.user_name}))}</span>` : ""}
+        <button class="cbtn ghost" type="button" id="bkClear">${esc(ct("bkClear"))}</button><button class="cbtn primary" type="submit">${esc(ct("save"))}</button></div>
+    </form>`;
+  const o = document.getElementById("bkOwner"); if(o) o.addEventListener("change", e => { st.owner = e.target.value; drawBooks(); });
+  box.querySelectorAll("[data-bk]").forEach(b => b.addEventListener("click", () => { st.kind = b.dataset.bk; drawBooks(); }));
+  box.querySelectorAll("[data-bkc]").forEach(b => b.addEventListener("click", () => { st.cat = +b.dataset.bkc; drawBooks(); }));
+  const f = document.getElementById("bkForm");
+  f.querySelectorAll(".num").forEach(i => i.addEventListener("input", () => { const raw = i.value.replace(/\D/g, ""); i.value = raw ? nf(+raw) : ""; }));
+  document.getElementById("bkClear").addEventListener("click", () => { f.querySelectorAll("input,select").forEach(i => { i.value = ""; }); });
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    f.querySelectorAll(".fld-err").forEach(x => { x.textContent = ""; });
+    const items = [...f.querySelectorAll("tbody tr")].map(tr => {
+      const g = n => { const el = tr.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ""; };
+      return {author: g("author"), title: g("title"), lang: g("lang"), genre: g("genre"), count: g("count").replace(/\s/g, "")};
+    }).filter(x => x.author || x.title);
+    const btn = f.querySelector("button[type=submit]"); busy(btn, true);
+    api("booksSave", {owner: st.owner, kind: st.kind, cat: st.cat, items: items}).then(r => {
+      busy(btn, false); toast(r.nochange ? ct("nochange") : ct("bkSaved", {a: r.count}), r.nochange ? "warn" : "ok");
+      if(!r.nochange) S.bkReload();
+    }, err => {
+      busy(btn, false);
+      if(err && err.fields){
+        // сервер тек толтырылған жолдарды санайды — нөмірін формадағы жолға сәйкестендіреміз
+        const filled = [...f.querySelectorAll("tbody tr")].filter(tr => tr.querySelector('[name="author"]').value.trim() || tr.querySelector('[name="title"]').value.trim());
+        Object.keys(err.fields).forEach(k => { const p = k.split("."), tr = filled[+p[0]]; if(!tr) return;
+          const el = f.querySelector('[data-err="' + tr.dataset.i + "." + p[1] + '"]'); if(el) el.textContent = err.fields[k]; });
+      }
+      toast(err.msg || err.error, "bad");
+    });
+  });
+}
+
 /* Мұрағат (бас әкімші) */
 VIEWS.archive = () => {
   const cy = new Date().getFullYear(), ys = [];
@@ -1197,6 +1278,7 @@ function route(hash){
     if(p[1] === "reports") return ["reports", p];
     if(p[1] === "queue") return ["queue", p];
     if(p[1] === "summary") return ["summary", p];
+    if(p[1] === "books") return ["books", p];
     return ["cabinet", p];
   }
   if(p[0] === "admin") return [p[1] === "log" ? "log" : p[1] === "archive" ? "archive" : "users", p];

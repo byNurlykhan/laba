@@ -475,6 +475,47 @@ select.pick:hover{border-color:var(--faint)}
 .cab-btn:hover,.cab-btn.on{border-color:var(--blue);color:var(--blue)}
 .cab-btn.on{background:var(--soft)}
 .q-info{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px}
+/* Кітапханалар не оқып, не ұсынып жатыр? */
+.bk-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.bk-own{font-size:15px;color:var(--ink)}
+.bk-tbl td{vertical-align:top;padding:5px 6px}
+.bk-tbl .inp{min-width:120px}
+.bk-tbl td:nth-child(3) .inp{min-width:220px}
+.bk-tbl .inp.num{width:110px;min-width:90px;text-align:right}
+.rd-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 0}
+.rd-tabs button{font-family:inherit;text-align:left;display:flex;flex-direction:column;gap:3px;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:all .15s ease}
+.rd-tabs button b{font-size:15px;color:var(--ink)}
+.rd-tabs button span{font-size:12.5px;color:var(--muted)}
+.rd-tabs button:hover{border-color:var(--soft-line)}
+.rd-tabs button.on{background:linear-gradient(135deg,var(--blue),#7C3AED);border-color:transparent}
+.rd-tabs button.on b,.rd-tabs button.on span{color:#fff}
+.rd-k3{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.rd-k3 b{font-size:17px;color:var(--ink);line-height:1.25}
+.rd-k3 span{font-size:12.5px;color:var(--muted)}
+.rd-list{display:grid;gap:10px}
+.rd-card{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all .15s ease}
+.rd-card:hover,.rd-card:focus-visible{border-color:var(--soft-line);box-shadow:var(--shadow)}
+.rd-card.open{border-color:var(--blue)}
+.rd-n{width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--blue);display:grid;place-items:center;font-weight:700;font-size:14px}
+.rd-card:nth-child(-n+3) .rd-n{background:linear-gradient(135deg,var(--blue),#7C3AED);color:#fff}
+.rd-m{min-width:0;display:flex;flex-direction:column;gap:3px}
+.rd-m b{font-size:15px;color:var(--ink);line-height:1.3}
+.rd-m > span{font-size:13px;color:var(--text)}
+.rd-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.rd-tags i{font-style:normal;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)}
+.rd-tags i.c{background:var(--soft);color:var(--blue)}
+.rd-s{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.rd-s b{font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1}
+.rd-s span,.rd-s small{font-size:11.5px;color:var(--muted)}
+.rd-libs{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:2px;cursor:default}
+.rd-lh{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.rd-lib{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;padding:7px 8px;border-radius:8px;text-decoration:none;font-size:13px;color:var(--text)}
+.rd-lib:hover{background:var(--surface)}
+.rd-ln{color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd-lr,.rd-lc{font-size:12px;color:var(--muted);white-space:nowrap}
+.rd-lk{font-weight:600;color:var(--blue);white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:720px){.rd-tabs{grid-template-columns:1fr}.rd-card{grid-template-columns:34px 1fr;padding:12px 14px}.rd-s{grid-column:2;flex-direction:row;align-items:baseline;gap:6px;text-align:left}
+  .rd-lib{grid-template-columns:1fr auto}.rd-lr,.rd-lc{display:none}}
 .year-note{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--ink);background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:10px 14px;margin:0 0 18px}
 .year-note svg{width:17px;height:17px;flex-shrink:0;margin-top:2px;stroke:#B45309;fill:none;stroke-width:2}
 :root[data-theme="dark"] .year-note{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35)}
@@ -4125,6 +4166,241 @@ const TXT = {
 "ru":"Паспорта библиотек",
 "en":"Library passports"
 },
+"s16":{
+"kk":"Кітапханалар не оқып, не ұсынып жатыр?",
+"ru":"Что читают и рекомендуют библиотеки?",
+"en":"What are libraries reading and recommending?"
+},
+"s16.desc":{
+"kk":"Республикалық, облыстық және қалалық негізгі кітапханалардың оқырманға ұсынған кітаптары мен ең көп оқылған кітаптары — оқырман санаттары бойынша. Аудан, қала және ауыл кітапханаларының деректері облыстық кітапхананың тізіміне кіреді.",
+"ru":"Книги, которые рекомендуют читателям, и самые читаемые книги главных республиканских, областных и городских библиотек — по категориям читателей. Данные районных, городских и сельских библиотек входят в список областной библиотеки.",
+"en":"Books recommended to readers and the most-read books of the main national, regional and city libraries, by reader category. District, town and village libraries are included in their regional library's list."
+},
+"rd.eyebrow":{
+"kk":"Оқу мәдениеті",
+"ru":"Культура чтения",
+"en":"Reading culture"
+},
+"rd.rec":{
+"kk":"Кітапханалар оқырманға ұсынады",
+"ru":"Библиотеки рекомендуют",
+"en":"Libraries recommend"
+},
+"rd.recD":{
+"kk":"Кітапханашылардың таңдауы",
+"ru":"Выбор библиотекарей",
+"en":"Librarians' picks"
+},
+"rd.top":{
+"kk":"Ең көп оқылған кітаптар",
+"ru":"Самые читаемые книги",
+"en":"Most-read books"
+},
+"rd.topD":{
+"kk":"Оқылу саны бойынша",
+"ru":"По числу выдач",
+"en":"By number of loans"
+},
+"rd.empty":{
+"kk":"Деректер жиналуда: республикалық, облыстық және қалалық кітапханалар тізімдерін енгізгенде осы жерде көрінеді.",
+"ru":"Данные собираются: появятся здесь, когда республиканские, областные и городские библиотеки внесут списки.",
+"en":"Data are being collected and will appear here once national, regional and city libraries submit their lists."
+},
+"rd.k1":{
+"kk":"Кітап саны",
+"ru":"Книг в списках",
+"en":"Books listed"
+},
+"rd.k2":{
+"kk":"Тізім берген кітапхана",
+"ru":"Библиотек со списками",
+"en":"Libraries with lists"
+},
+"rd.k2s":{
+"kk":"{a} негізгі кітапхананың",
+"ru":"из {a} главных библиотек",
+"en":"of {a} main libraries"
+},
+"rd.k3r":{
+"kk":"Ең көп ұсынылған",
+"ru":"Чаще всего рекомендуют",
+"en":"Most recommended"
+},
+"rd.k3t":{
+"kk":"Ең көп оқылған",
+"ru":"Самая читаемая",
+"en":"Most read"
+},
+"rd.all":{
+"kk":"Барлық оқырман",
+"ru":"Все читатели",
+"en":"All readers"
+},
+"rd.c1":{
+"kk":"Балалар · 0–14",
+"ru":"Дети · 0–14",
+"en":"Children · 0–14"
+},
+"rd.c2":{
+"kk":"Жасөспірімдер · 15–17",
+"ru":"Подростки · 15–17",
+"en":"Teenagers · 15–17"
+},
+"rd.c3":{
+"kk":"Жастар · 18–29",
+"ru":"Молодёжь · 18–29",
+"en":"Youth · 18–29"
+},
+"rd.c4":{
+"kk":"Ересектер · 30–59",
+"ru":"Взрослые · 30–59",
+"en":"Adults · 30–59"
+},
+"rd.c5":{
+"kk":"Аға буын · 60+",
+"ru":"Старшее поколение · 60+",
+"en":"Seniors · 60+"
+},
+"rd.cs1":{
+"kk":"балалар",
+"ru":"дети",
+"en":"children"
+},
+"rd.cs2":{
+"kk":"жасөспірімдер",
+"ru":"подростки",
+"en":"teenagers"
+},
+"rd.cs3":{
+"kk":"жастар",
+"ru":"молодёжь",
+"en":"youth"
+},
+"rd.cs4":{
+"kk":"ересектер",
+"ru":"взрослые",
+"en":"adults"
+},
+"rd.cs5":{
+"kk":"аға буын",
+"ru":"старшее поколение",
+"en":"seniors"
+},
+"rd.find":{
+"kk":"Кітап немесе автор…",
+"ru":"Книга или автор…",
+"en":"Book or author…"
+},
+"rd.allLibs":{
+"kk":"Барлық кітапханалар",
+"ru":"Все библиотеки",
+"en":"All libraries"
+},
+"rd.none":{
+"kk":"Бұл сүзгі бойынша кітап табылмады.",
+"ru":"По этому фильтру книг не найдено.",
+"en":"No books match this filter."
+},
+"rd.note":{
+"kk":"Кітапты басыңыз — оны ұсынған (немесе оқырманы көп болған) кітапханалардың тізімі ашылады. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректері кіреді.",
+"ru":"Нажмите на книгу — откроется список библиотек, которые её рекомендовали (или где её больше всего читали). Список области включает данные районных, городских и сельских библиотек.",
+"en":"Click a book to see which libraries recommended it (or where it was most read). A region's list includes its district, town and village libraries."
+},
+"rd.reads":{
+"kk":"рет оқылды",
+"ru":"выдач",
+"en":"loans"
+},
+"rd.nlib":{
+"kk":"{a} кітапхана",
+"ru":"библиотек: {a}",
+"en":"{a} libraries"
+},
+"rd.rep":{
+"kk":"Республикалық",
+"ru":"Республиканская",
+"en":"National"
+},
+"rd.inlist":{
+"kk":"тізімде",
+"ru":"в списке",
+"en":"in list"
+},
+"rd.libs":{
+"kk":"кітапхана ұсынды",
+"ru":"библиотек рекомендуют",
+"en":"libraries recommend"
+},
+"rd.whoTop":{
+"kk":"Қай кітапханаларда көп оқылды",
+"ru":"Где больше всего читали",
+"en":"Where it was most read"
+},
+"rd.whoRec":{
+"kk":"Ұсынған кітапханалар",
+"ru":"Рекомендовали",
+"en":"Recommended by"
+},
+"rd.l.қазақ":{
+"kk":"қазақ тілінде",
+"ru":"на казахском",
+"en":"in Kazakh"
+},
+"rd.l.орыс":{
+"kk":"орыс тілінде",
+"ru":"на русском",
+"en":"in Russian"
+},
+"rd.l.ағылшын":{
+"kk":"ағылшын тілінде",
+"ru":"на английском",
+"en":"in English"
+},
+"rd.l.басқа":{
+"kk":"басқа тілде",
+"ru":"на другом языке",
+"en":"other language"
+},
+"rd.g.Көркем әдебиет":{
+"kk":"көркем әдебиет",
+"ru":"художественная",
+"en":"fiction"
+},
+"rd.g.Балалар әдебиеті":{
+"kk":"балалар әдебиеті",
+"ru":"детская",
+"en":"children's"
+},
+"rd.g.Поэзия":{
+"kk":"поэзия",
+"ru":"поэзия",
+"en":"poetry"
+},
+"rd.g.Тарихи":{
+"kk":"тарихи",
+"ru":"историческая",
+"en":"history"
+},
+"rd.g.Ғылыми-танымдық":{
+"kk":"ғылыми-танымдық",
+"ru":"научно-популярная",
+"en":"popular science"
+},
+"rd.g.Салалық":{
+"kk":"салалық",
+"ru":"отраслевая",
+"en":"non-fiction"
+},
+"rd.g.Өмірбаяндық":{
+"kk":"өмірбаяндық",
+"ru":"биографическая",
+"en":"biography"
+},
+"rd.g.Басқа":{
+"kk":"басқа",
+"ru":"другое",
+"en":"other"
+},
 "s15.desc":{
 "kk":"Елдің барлық көпшілік кітапханасының бірыңғай электрондық паспорты: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер — бір жерде.",
 "ru":"Единый электронный паспорт всех публичных библиотек страны: контакты, здание, оснащение, фонд, кадры и основные показатели — в одном месте.",
@@ -4532,6 +4808,7 @@ function nm(name){
 const SECTIONS = [
   {id:"home",    key:"s1",  group:"grpMain"},
   {id:"passport",key:"s15", group:"grpMain"},
+  {id:"reads",   key:"s16", group:"grpMain"},
   {id:"iso",     key:"s2",  group:"grpAnalytics"},
   {id:"network", key:"s3",  group:"grpAnalytics"},
   {id:"users",   key:"s4",  group:"grpAnalytics"},
@@ -6094,6 +6371,126 @@ function loadPassports(){
   else fail();
 }
 
+/* ─────────────── 3. КІТАПХАНАЛАР НЕ ОҚЫП, НЕ ҰСЫНЫП ЖАТЫР? ───────────────
+   Республикалық, облыстық және қалалық негізгі кітапханалардың тізімдері (аудан, қала, ауыл — облыстықтың ішінде).
+   Бірдей кітаптар (атауы бірдей, авторының тегі сәйкес) бір картаға біріктіріледі. */
+const READS = {data:null, status:"", kind:"rec", cat:0, q:"", owner:"", open:{}};
+function loadReads(){
+  if(READS.status) return;
+  if(!API_URL){ READS.status = "none"; return; }
+  READS.status = "loading";
+  jsonp({action:"books"}, res=>{
+    READS.status = res && res.ok ? "ok" : "error";
+    if(res && res.ok) READS.data = res;
+    if((location.hash.slice(1)||"home").split("/")[0]==="reads") render(location.hash.slice(1));
+  }, 25000, ()=>{ READS.status = "error"; if((location.hash.slice(1)||"").indexOf("reads")===0) render("reads"); });
+}
+/* Ресми атаудан қысқа атау: «…» ішіндегі бөлігі, басқарма/комитет атауынсыз */
+function shortLib(n){
+  n = String(n||"");
+  const q = n.match(/«[^«»]{8,}»/g);
+  if(q) n = q[q.length-1].slice(1,-1);
+  n = n.replace(/^.*(басқармасының|комитетінің|әкімдігінің)\s+/,"").replace(/\s*\/\s*/g," ").replace(/\s+/g," ").trim();
+  return n.charAt(0).toUpperCase() + n.slice(1);
+}
+const rdNorm = s => String(s||"").toLowerCase().replace(/[«»"“”„'`.,:;!?()\[\]\-–—]/g," ").replace(/ё/g,"е").replace(/\s+/g," ").trim();
+const rdTok = a => rdNorm(a).split(" ").filter(w=>w.length>2);
+/* Тізімдерді кітаптар бойынша топтау */
+function rdGroups(){
+  const d = READS.data; if(!d) return [];
+  const own = {}; d.owners.forEach(o=>{ own[o.id] = o; });
+  const q = rdNorm(READS.q);
+  const items = d.items.filter(i=>i.kind===READS.kind && (!READS.cat || i.cat===READS.cat) && (!READS.owner || i.owner===READS.owner)
+    && (!q || rdNorm(i.title+" "+i.author).indexOf(q)>-1));
+  const byTitle = {};
+  items.forEach(i=>{
+    const tk = rdNorm(i.title), at = rdTok(i.author);
+    const list = byTitle[tk] = byTitle[tk] || [];
+    let g = list.find(x=>x.tok.some(w=>at.indexOf(w)>-1) || (!x.tok.length && !at.length));
+    if(!g){ g = {key:tk+"|"+at.join(" "), title:String(i.title).replace(/[\s.,;:]+$/,""), author:i.author, tok:at, lang:i.lang, genre:i.genre, libs:{}, cats:{}, count:0, best:99, items:[]}; list.push(g); }
+    g.items.push(Object.assign({o:own[i.owner]}, i));
+    g.libs[i.owner] = 1; g.cats[i.cat] = 1; g.best = Math.min(g.best, i.rank);
+    const n = +String(i.count||"").replace(/\s/g,""); if(n) g.count += n;
+    if(!g.lang && i.lang) g.lang = i.lang; if(!g.genre && i.genre) g.genre = i.genre;
+  });
+  const out = [].concat.apply([], Object.keys(byTitle).map(k=>byTitle[k]));
+  out.forEach(g=>{ g.nlib = Object.keys(g.libs).length; });
+  return out.sort(READS.kind==="top"
+    ? (a,b)=>b.count-a.count || b.nlib-a.nlib || a.best-b.best
+    : READS.owner ? (a,b)=>a.best-b.best : (a,b)=>b.nlib-a.nlib || a.best-b.best || (a.title>b.title?1:-1));
+}
+const RD_CATS = () => [1,2,3,4,5].map(n=>T("rd.c"+n));
+function rdCard(g, i){
+  const open = READS.open[g.key];
+  const cats = Object.keys(g.cats).map(Number).sort();
+  const right = READS.kind==="top"
+    ? `<b>${nf(g.count)}</b><span>${esc(T("rd.reads"))}</span>${READS.owner ? "" : `<small>${esc(T("rd.nlib",{a:g.nlib}))}</small>`}`
+    : READS.owner ? `<b>№${g.best}</b><span>${esc(T("rd.inlist"))}</span>` : `<b>${g.nlib}</b><span>${esc(T("rd.libs"))}</span>`;
+  /* бір кітапхана — бір жол: қай санаттарда, ең жоғары орны, оқылу саны */
+  const byLib = {};
+  g.items.forEach(x=>{ const b = byLib[x.owner] = byLib[x.owner] || {o:x.o, owner:x.owner, cats:[], rank:99, count:0};
+    if(b.cats.indexOf(x.cat)<0) b.cats.push(x.cat); b.rank = Math.min(b.rank, x.rank); b.count += +String(x.count||"").replace(/\s/g,"") || 0; });
+  const regName = o => o ? (o.st==="rep" ? T("rd.rep") : tx((REG.find(r=>r.src && o.region.indexOf(r.src)===0)||{}).n) || o.region) : "";
+  const rows = Object.keys(byLib).map(k=>byLib[k]).sort((a,b)=>READS.kind==="top" ? b.count-a.count : a.rank-b.rank || b.cats.length-a.cats.length)
+    .map(x=>`<a class="rd-lib" href="#passport/${esc(x.owner)}"><span class="rd-ln" title="${esc(x.o ? x.o.name : "")}">${esc(x.o ? shortLib(x.o.name) : x.owner)}</span>
+      <span class="rd-lr">${esc(regName(x.o))}</span>
+      <span class="rd-lc">${esc(x.cats.sort().map(c=>T("rd.cs"+c)).join(", "))}</span><span class="rd-lk">${READS.kind==="top" ? nf(x.count) : "№" + x.rank}</span></a>`).join("");
+  return `<article class="rd-card${open?" open":""}" data-rk="${esc(g.key)}" tabindex="0" role="button" aria-expanded="${open?"true":"false"}">
+    <div class="rd-n">${i+1}</div>
+    <div class="rd-m"><b>${esc(g.title)}</b><span>${esc(g.author)}</span>
+      <div class="rd-tags">${g.lang?`<i>${esc(T("rd.l."+g.lang)||g.lang)}</i>`:""}${g.genre?`<i>${esc(T("rd.g."+g.genre)||g.genre)}</i>`:""}${READS.cat?"":cats.map(c=>`<i class="c">${esc(T("rd.cs"+c))}</i>`).join("")}</div></div>
+    <div class="rd-s">${right}</div>
+    ${open ? `<div class="rd-libs"><div class="rd-lh">${esc(T(READS.kind==="top"?"rd.whoTop":"rd.whoRec"))}</div>${rows}</div>` : ""}
+  </article>`;
+}
+P.reads = () => {
+  loadReads();
+  const d = READS.data;
+  const tabs = `<div class="rd-tabs">${[["rec","rd.rec","rd.recD"],["top","rd.top","rd.topD"]].map(t=>`<button data-rkind="${t[0]}" class="${READS.kind===t[0]?"on":""}">
+    <b>${esc(T(t[1]))}</b><span>${esc(T(t[2]))}</span></button>`).join("")}</div>`;
+  const hd = `<div class="ph"><div class="eyebrow">${esc(T("rd.eyebrow"))}</div><h1>${esc(T("s16"))}</h1><p>${esc(T("s16.desc"))}</p></div>`;
+  if(!d){
+    const msg = READS.status==="loading" ? T("s15.loading") : T("rd.empty");
+    return `${hd}${tabs}<div class="card p-empty">${esc(msg)}</div>`;
+  }
+  const gs = rdGroups();
+  const all = d.items.filter(i=>i.kind===READS.kind);
+  const nl = {}; all.forEach(i=>{ nl[i.owner] = 1; });
+  const ownOpts = d.owners.filter(o=>d.items.some(i=>i.owner===o.id)).map(o=>`<option value="${esc(o.id)}" ${READS.owner===o.id?"selected":""}>${esc((o.st==="rep" ? "" : (tx((REG.find(r=>r.src && o.region.indexOf(r.src)===0)||{}).n) || o.region) + " — ") + shortLib(o.name).slice(0,80))}</option>`).join("");
+  const catCnt = n => { const s = {}; all.filter(i=>(!n || i.cat===n) && (!READS.owner || i.owner===READS.owner)).forEach(i=>{ s[rdNorm(i.title)] = 1; }); return Object.keys(s).length; };
+  return `${hd}${tabs}
+  <div class="grid g3" style="margin:16px 0 18px">
+    ${kpi(T("rd.k1"), catCnt(0), {icon:"book"})}
+    ${kpi(T("rd.k2"), Object.keys(nl).length, {icon:"home", sub:T("rd.k2s",{a:d.owners.length})})}
+    <div class="card kpi"><div class="lbl"><span>${esc(T(READS.kind==="top"?"rd.k3t":"rd.k3r"))}</span><span class="ic"><svg viewBox="0 0 24 24">${ICONS.chart}</svg></span></div>
+      <div class="rd-k3">${gs[0] ? `<b>${esc(gs[0].title)}</b><span>${esc(gs[0].author)}</span>` : "—"}</div></div>
+  </div>
+  <div class="chips">${[0,1,2,3,4,5].map(n=>`<button class="chip ${READS.cat===n?"on":""}" data-rcat="${n}">${esc(n ? T("rd.c"+n) : T("rd.all"))}<small>${catCnt(n)}</small></button>`).join("")}</div>
+  <div class="p-tools">
+    <label class="p-search">${svg(PI.search)}<input id="rdQ" type="search" placeholder="${esc(T("rd.find"))}" value="${esc(READS.q)}"></label>
+    <select class="pick" id="rdOwner"><option value="">${esc(T("rd.allLibs"))}</option>${ownOpts}</select>
+    <span class="p-count">${nf(gs.length)}</span>
+  </div>
+  <div class="rd-list" id="rdList">${gs.length ? gs.map(rdCard).join("") : `<div class="card p-empty">${esc(T("rd.none"))}</div>`}</div>
+  <div style="height:16px"></div>
+  ${note(esc(T("rd.note")))}`;
+};
+document.addEventListener("click",e=>{
+  const k = e.target.closest("[data-rkind]");
+  if(k){ READS.kind = k.dataset.rkind; READS.open = {}; render("reads"); return; }
+  const c = e.target.closest("[data-rcat]");
+  if(c){ READS.cat = +c.dataset.rcat; READS.open = {}; render("reads"); return; }
+  const card = e.target.closest(".rd-card");
+  if(card && !e.target.closest(".rd-lib")){ const key = card.dataset.rk; READS.open[key] = !READS.open[key];
+    const y = window.scrollY; render("reads"); window.scrollTo(0, y); }
+});
+document.addEventListener("keydown",e=>{ const card = e.target.closest && e.target.closest(".rd-card"); if(card && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); card.click(); } });
+document.addEventListener("input",e=>{
+  if(e.target.id==="rdQ"){ READS.q = e.target.value; const pos = e.target.selectionStart, y = window.scrollY; render("reads"); window.scrollTo(0,y);
+    const i = document.getElementById("rdQ"); if(i){ i.focus(); try{ i.setSelectionRange(pos,pos); }catch(er){} } }
+});
+document.addEventListener("change",e=>{ if(e.target.id==="rdOwner"){ READS.owner = e.target.value; READS.open = {}; render("reads"); } });
+
 /* ─────────────── APPS SCRIPT БАЙЛАНЫСЫ ─────────────── */
 let jsonpSeq = 0;
 function jsonp(params, cb, timeout, fail){
@@ -6158,7 +6555,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=4"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=5"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
