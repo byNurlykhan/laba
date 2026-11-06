@@ -17,6 +17,25 @@ const CTX = {
     loginF:"Логин", passF:"Пароль", enter:"Кіру", wait:"Күте тұрыңыз…", showPass:"Парольді көрсету",
     noAccount:"Аккаунт жоқ па? Бас әкімшіге хабарласыңыз: ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет.",
     tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал", tArch:"Мұрағат",
+    stDraft:"Жоба", stSub:"Бекітуде", stOk:"Бекітілді", stRet:"Түзетуге қайтарылды", state:"Күйі",
+    saveDraft:"Жоба ретінде сақтау", submit:"Бекітуге жіберу", saveApprove:"Сақтау және бекіту", returnBtn:"Түзетуге қайтару",
+    returnQ:"Қайтару себебін жазыңыз (әдіскер көреді):", returned:"Есеп түзетуге қайтарылды", approvedOk:"Есеп бекітілді",
+    submittedOk:"Есеп бекітуге жіберілді", draftOk:"Жоба сақталды", ruleSum:"тоқсан ішінде", ruleLast:"тоқсан соңында",
+    subBy:"Жіберген: {n}, {d}", apBy:"Бекіткен: {n}, {d}", retBy:"Түзетуге қайтарылды: {c}", prevQ:"алдыңғы: {v} ({p})",
+    formNote:"«Тоқсан ішінде» — осы тоқсандағы мән (жылдық есепте 4 тоқсан қосылады). «Тоқсан соңында» — тоқсанның соңғы күніндегі жағдай (жылдық есепте IV тоқсанның мәні). Мән жоқ болса — 0 жазыңыз. Толық толтырылмаған есепті жоба ретінде сақтауға болады.",
+    fixErr:"Қате өрістерді түзетіңіз", reqSubmit:"Бекітуге жіберу үшін барлық сандық өрісті толтырыңыз (мән жоқ болса — 0)",
+    ofErr:"«Соның ішінде» мәні {p} мәнінен аспауы керек", num:"Сан енгізіңіз (0 немесе одан көп)",
+    annualT:"{y} жылдық есеп", annualFull:"4 тоқсан бекітілген — жылдық есеп дайын", annualPart:"Бекітілген тоқсандар: {q} (жылдық есеп алдын ала)",
+    annualNone:"Бұл жылы бекітілген тоқсан әлі жоқ", yearCol:"Жыл",
+    annualNote:"Жылдық есеп тек бекітілген тоқсандардан жиналады: «тоқсан ішінде» көрсеткіштері қосылады, «тоқсан соңында» көрсеткіштері — соңғы бекітілген тоқсаннан.",
+    tQueue:"Бекіту", queueDesc:"Бекітуді күтіп тұрған есептер. Есепті ашып тексеріңіз: дұрыс болса — «Сақтау және бекіту», қате болса — себебін жазып, түзетуге қайтарыңыз.",
+    queueNone:"Бекітуді күтіп тұрған есеп жоқ", sentAt:"Жіберілді", check:"Тексеру",
+    tSum:"Жиынтық", sumDesc:"Аймақтар бойынша есептердің тапсырылуы және негізгі көрсеткіштердің қосындысы. Барлық кітапхананың толық деректерін Excel-ге жүктей аласыз.",
+    perYear:"Жыл", cntLibs:"Кітапхана", cntOk:"Бекітілді", cntSub:"Бекітуде", cntOther:"Жоба / қайтарылған", cntNone:"Тапсырмаған",
+    cntFull:"Толық жыл", xlsFull:"Excel: барлық деректер", wordSum:"Word: жиынтық", sumTitle:"Кітапханалардың тоқсандық есептерінің жиынтығы",
+    sumNote:"Қосындыларға тек бекітілген есептер кіреді. «Жыл» — жыл басынан бергі бекітілген тоқсандардың жиынтығы.", unitCol:"Аудан / қала",
+    apCol:"Бекіткен", onlyDraft:"Жоба / қайтарылған", onlySub:"Бекітуде", repPerY:"{y} жыл — жыл басынан (бекітілген тоқсандар)",
+    periodYtd:"{y} жыл, жыл басынан (бекітілген тоқсандар)",
     annual:"жыл қорытындысы", archRow:"Мұрағат", periodArch:"{y} жыл, жылдық қорытынды (мұрағат)",
     repPer:"Кезең", repPerQ:"Тоқсан (жоғарыда таңдалған)", repPerA:"{y} жыл — жылдық қорытынды (мұрағат)",
     archDesc:"Жыл аяқталғанда «Тізілім» парағындағы барлық паспорт сол жылдың толық көшірмесі ретінде мұрағатқа сақталады. 6.1–6.3 көрсеткіштері үшін сол жылдың соңғы тоқсанының мәні алынады. Мұрағатталған деректер өзгермейді: сайтта жыл бойынша қарауға, есепке шығаруға және салыстыруға болады.",
@@ -26,10 +45,10 @@ const CTX = {
     archOk:"{y} жыл мұрағатқа сақталды: {n} кітапхана", archBusy:"Мұрағатқа сақталуда… (1–2 минут)",
     year:"Жыл", quarter:"Тоқсан", qN:"{a} тоқсан", period:"{y} жыл, {q} тоқсан",
     scope:"Жауапты аймағыңыз", libsN:"{a} кітапхана", filled:"Толтырылды", notFilled:"Толтырылмаған",
-    progress:"{a} / {b} толтырылды", search:"Кітапхана атауы немесе аудан…", allUnits:"Барлық аймақтар",
-    allStates:"Барлығы", onlyEmpty:"Толтырылмағандар", onlyFilled:"Толтырылғандар", update:"Жаңарту", open:"Ашу",
+    progress:"{a} / {b} бекітілді", search:"Кітапхана атауы немесе аудан…", allUnits:"Барлық аймақтар",
+    allStates:"Барлығы", onlyEmpty:"Толтырылмағандар", onlyFilled:"Бекітілгендер", update:"Жаңарту", open:"Ашу",
     updatedBy:"{d} · {n}", more:"Тағы көрсету", nothing:"Ештеңе табылмады",
-    back:"← Кітапханалар тізімі", qFields:"Тоқсандық көрсеткіштер", prev:"Алдыңғы тоқсан: {v}", prevNone:"Алдыңғы тоқсан деректері жоқ",
+    back:"← Кітапханалар тізімі", qFields:"Тоқсандық есеп", prev:"Алдыңғы тоқсан: {v}", prevNone:"Алдыңғы тоқсан деректері жоқ",
     lastUpd:"Соңғы жаңарту: {d} · {n}, {i}", neverUpd:"Бұл тоқсанға әлі дерек енгізілмеген",
     save:"Сақтау", cancel:"Болдырмау", confirm:"Растау", confirmTitle:"Өзгерістерді растаңыз",
     confirmDesc:"Төмендегі мәндер журналға сіздің атыңызбен жазылады.", oldV:"Ескі мән", newV:"Жаңа мән",
@@ -67,6 +86,25 @@ const CTX = {
     loginF:"Логин", passF:"Пароль", enter:"Войти", wait:"Подождите…", showPass:"Показать пароль",
     noAccount:"Нет аккаунта? Обратитесь к главному администратору: НБ РК, научно-методическая служба.",
     tLibs:"Библиотеки", tHistory:"История изменений", tReports:"Отчёты", tUsers:"Аккаунты", tLog:"Журнал", tArch:"Архив",
+    stDraft:"Черновик", stSub:"На утверждении", stOk:"Утверждён", stRet:"Возвращён на доработку", state:"Статус",
+    saveDraft:"Сохранить черновик", submit:"Отправить на утверждение", saveApprove:"Сохранить и утвердить", returnBtn:"Вернуть на доработку",
+    returnQ:"Укажите причину возврата (её увидит методист):", returned:"Отчёт возвращён на доработку", approvedOk:"Отчёт утверждён",
+    submittedOk:"Отчёт отправлен на утверждение", draftOk:"Черновик сохранён", ruleSum:"за квартал", ruleLast:"на конец квартала",
+    subBy:"Отправил: {n}, {d}", apBy:"Утвердил: {n}, {d}", retBy:"Возвращён: {c}", prevQ:"пред.: {v} ({p})",
+    formNote:"«За квартал» — значение за этот квартал (в годовом отчёте 4 квартала суммируются). «На конец квартала» — состояние на последний день квартала (в годовом — значение IV квартала). Если значения нет — укажите 0. Неполный отчёт можно сохранить как черновик.",
+    fixErr:"Исправьте поля с ошибками", reqSubmit:"Для отправки заполните все числовые поля (если значения нет — 0)",
+    ofErr:"Значение «в том числе» не может превышать {p}", num:"Введите число (0 или больше)",
+    annualT:"Годовой отчёт за {y} год", annualFull:"Утверждены 4 квартала — годовой отчёт готов", annualPart:"Утверждённые кварталы: {q} (годовой отчёт предварительный)",
+    annualNone:"В этом году утверждённых кварталов пока нет", yearCol:"Год",
+    annualNote:"Годовой отчёт собирается только из утверждённых кварталов: показатели «за квартал» суммируются, «на конец квартала» — из последнего утверждённого квартала.",
+    tQueue:"Утверждение", queueDesc:"Отчёты, ожидающие утверждения. Откройте и проверьте: если всё верно — «Сохранить и утвердить», если нет — верните на доработку с указанием причины.",
+    queueNone:"Нет отчётов на утверждении", sentAt:"Отправлен", check:"Проверить",
+    tSum:"Свод", sumDesc:"Сдача отчётов и суммы основных показателей по регионам. Полные данные всех библиотек можно выгрузить в Excel.",
+    perYear:"Год", cntLibs:"Библиотек", cntOk:"Утверждено", cntSub:"На утверждении", cntOther:"Черновик / возвращено", cntNone:"Не сдали",
+    cntFull:"Полный год", xlsFull:"Excel: все данные", wordSum:"Word: свод", sumTitle:"Свод квартальных отчётов библиотек",
+    sumNote:"В суммы входят только утверждённые отчёты. «Год» — свод утверждённых кварталов с начала года.", unitCol:"Район / город",
+    apCol:"Утвердил", onlyDraft:"Черновик / возвращённые", onlySub:"На утверждении", repPerY:"{y} год — с начала года (утверждённые кварталы)",
+    periodYtd:"{y} год, с начала года (утверждённые кварталы)",
     annual:"итоги года", archRow:"Архив", periodArch:"{y} год, годовые итоги (архив)",
     repPer:"Период", repPerQ:"Квартал (выбран выше)", repPerA:"{y} год — годовые итоги (архив)",
     archDesc:"По окончании года все паспорта из листа «Тізілім» сохраняются в архив как полная копия этого года. Для показателей 6.1–6.3 берётся значение последнего квартала года. Архивные данные не меняются: их можно смотреть на сайте по годам, выгружать в отчёты и сравнивать.",
@@ -76,10 +114,10 @@ const CTX = {
     archOk:"{y} год сохранён в архив: {n} библиотек", archBusy:"Сохранение в архив… (1–2 минуты)",
     year:"Год", quarter:"Квартал", qN:"{a} квартал", period:"{y} год, {q} квартал",
     scope:"Ваша зона ответственности", libsN:"Библиотек: {a}", filled:"Заполнено", notFilled:"Не заполнено",
-    progress:"Заполнено {a} из {b}", search:"Название библиотеки или район…", allUnits:"Все регионы",
-    allStates:"Все", onlyEmpty:"Незаполненные", onlyFilled:"Заполненные", update:"Обновить", open:"Открыть",
+    progress:"Утверждено {a} из {b}", search:"Название библиотеки или район…", allUnits:"Все регионы",
+    allStates:"Все", onlyEmpty:"Незаполненные", onlyFilled:"Утверждённые", update:"Обновить", open:"Открыть",
     updatedBy:"{d} · {n}", more:"Показать ещё", nothing:"Ничего не найдено",
-    back:"← Список библиотек", qFields:"Квартальные показатели", prev:"Предыдущий квартал: {v}", prevNone:"Нет данных предыдущего квартала",
+    back:"← Список библиотек", qFields:"Квартальный отчёт", prev:"Предыдущий квартал: {v}", prevNone:"Нет данных предыдущего квартала",
     lastUpd:"Последнее обновление: {d} · {n}, {i}", neverUpd:"Данные за этот квартал ещё не внесены",
     save:"Сохранить", cancel:"Отмена", confirm:"Подтвердить", confirmTitle:"Подтвердите изменения",
     confirmDesc:"Эти значения будут записаны в журнал от вашего имени.", oldV:"Было", newV:"Стало",
@@ -125,7 +163,7 @@ const ST_NAME = () => ({rep:tx(LTM.rep), obl:tx(LTM.obl), rcity:tx(LTM.rcity), c
 
 /* ─────────── Күй ─────────── */
 const S = {
-  token: ss_get("laba_tok"), me: null, units: [], qfields: ["6.1","6.2","6.3"],
+  token: ss_get("laba_tok"), me: null, units: [], form: null, main: ["6.1","6.2","6.3","4.1","4.6","5.3"],
   year: 0, quarter: 0, libs: null, libsFor: "", q: "", unit: "", state: "", shown: 50,
   hist: null, log: null, users: null, allUnits: null, repLibs: null
 };
@@ -307,6 +345,8 @@ function shell(active, inner){
   const me = S.me, adm = me.role === "admin";
   const tabs = [["cabinet", "tLibs"]];
   if(["admin","oblast","city"].indexOf(me.role) > -1) tabs.push(["cabinet/history", "tHistory"]);
+  if(["admin","oblast"].indexOf(me.role) > -1) tabs.push(["cabinet/queue", "tQueue"]);
+  tabs.push(["cabinet/summary", "tSum"]);
   tabs.push(["cabinet/reports", "tReports"]);
   if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"], ["admin/archive", "tArch"]);
   return `<div class="cab">
@@ -354,7 +394,7 @@ VIEWS.login.after = () => {
 };
 function fetchLogin(login, password){
   return api("login", {login: login, password: password}).then(res => {
-    S.token = res.token; S.me = res.user; S.units = res.units; S.qfields = res.qfields || S.qfields;
+    S.token = res.token; S.me = res.user; S.units = res.units; S.form = res.form || S.form; S.main = res.main || S.main;
     ss_set("laba_tok", res.token); ss_set("laba_me", JSON.stringify(res.user));
     updateBtn(); flushOutbox();
   });
@@ -383,15 +423,15 @@ function loadLibs(force){
 function drawLibs(){
   const box = document.getElementById("cabLibs");
   if(!box) return;
-  const all = S.libs || [], done = all.filter(l => l.filled).length;
+  const all = S.libs || [], done = all.filter(l => l.status === "approved").length, sub = all.filter(l => l.status === "submitted").length;
   const units = (S.units || []).filter(u => all.some(l => l.unit === u.id || ("O:" + l.region) === u.id || ("C:" + l.region) === u.id));
   box.innerHTML = `<div class="card cab-sum">
       <div><span class="cab-k">${esc(ct("scope"))}</span><b>${esc(S.me.unit_name || "")}</b><span class="cab-k">${esc(ct("libsN", {a: nf(all.length)}))}</span></div>
-      <div class="cab-prog"><div class="cab-prog-t">${esc(ct("progress", {a: nf(done), b: nf(all.length)}))}</div>${meter(all.length ? done / all.length : 0)}</div></div>
+      <div class="cab-prog"><div class="cab-prog-t">${esc(ct("progress", {a: nf(done), b: nf(all.length)}))}${sub ? ` · ${esc(ct("cntSub"))}: ${nf(sub)}` : ""}</div>${meter(all.length ? done / all.length : 0)}</div></div>
     <div class="p-tools">
       <label class="p-search">${svg(PI.search)}<input id="cabQ" type="search" placeholder="${esc(ct("search"))}" value="${esc(S.q)}"></label>
       ${units.length > 1 ? `<select class="pick" id="cabUnit"><option value="">${esc(ct("allUnits"))}</option>${units.map(u => `<option value="${esc(u.id)}" ${S.unit === u.id ? "selected" : ""}>${esc(u.full)}</option>`).join("")}</select>` : ""}
-      <select class="pick" id="cabState">${[["", "allStates"], ["0", "onlyEmpty"], ["1", "onlyFilled"]].map(o => `<option value="${o[0]}" ${S.state === o[0] ? "selected" : ""}>${esc(ct(o[1]))}</option>`).join("")}</select>
+      <select class="pick" id="cabState">${[["", "allStates"], ["0", "onlyEmpty"], ["d", "onlyDraft"], ["s", "onlySub"], ["1", "onlyFilled"]].map(o => `<option value="${o[0]}" ${S.state === o[0] ? "selected" : ""}>${esc(ct(o[1]))}</option>`).join("")}</select>
       <span class="p-count" id="cabCnt"></span></div>
     <div id="cabList"></div>`;
   const redraw = () => drawLibRows();
@@ -404,23 +444,60 @@ function drawLibRows(){
   const q = S.q.trim().toLowerCase();
   const rows = (S.libs || []).filter(l => (!q || (l.name + " " + l.district + " " + l.region).toLowerCase().indexOf(q) > -1)
     && (!S.unit || l.unit === S.unit || ("O:" + l.region) === S.unit || ("C:" + l.region) === S.unit)
-    && (S.state === "" || (S.state === "1") === l.filled));
+    && (S.state === "" || {"0": !l.status, "d": l.status === "draft" || l.status === "returned", "s": l.status === "submitted", "1": l.status === "approved"}[S.state]));
   const shown = rows.slice(0, S.shown), st = ST_NAME();
   document.getElementById("cabCnt").textContent = nf(rows.length);
   document.getElementById("cabList").innerHTML = rows.length ? `<div class="cab-libs">${shown.map(l => `
     <a class="cab-lib card" href="#cabinet/lib/${encodeURIComponent(l.id)}/${S.year}/${S.quarter}">
       <div class="cab-lib-m"><b>${esc(l.name)}</b><span>${esc([l.district || l.region, st[l.st] || ""].filter(Boolean).join(" · "))}</span></div>
-      <div class="cab-lib-s">${l.filled
-        ? `<span class="pill ok">✓ ${esc(ct("filled"))}</span><small>${esc(ct("updatedBy", {d: fmtTs(l.updated_at), n: l.user_name}))}</small>`
-        : `<span class="pill warn">${esc(ct("notFilled"))}</span>`}</div>
-      <span class="cbtn ${l.filled ? "ghost" : "primary"} sm">${esc(ct(l.filled ? "open" : "update"))}</span></a>`).join("")}</div>
+      <div class="cab-lib-s">${stPill(l.status)}${l.status ? `<small>${esc(ct("updatedBy", {d: fmtTs(l.updated_at), n: l.user_name}))}</small>` : ""}</div>
+      <span class="cbtn ${l.status === "approved" ? "ghost" : "primary"} sm">${esc(ct(l.status === "approved" ? "open" : "update"))}</span></a>`).join("")}</div>
     ${rows.length > shown.length ? `<button class="more-btn" id="cabMore">${esc(ct("more"))} (${nf(rows.length - shown.length)})</button>` : ""}`
     : `<div class="card p-empty">${esc(ct("nothing"))}</div>`;
   const m = document.getElementById("cabMore");
   if(m) m.addEventListener("click", () => { S.shown += 100; drawLibRows(); });
 }
 
-/* Жаңарту формасы */
+/* Тоқсандық есеп формасы */
+const FIELDS = () => [].concat.apply([], (S.form || []).map(s => s.f));
+const FLD = c => FIELDS().find(x => x.c === c);
+const flabel = x => (PFL && PFL[x.c] ? pl(x.c) : x.l);
+const numOf = (v, frac) => { const s = String(v == null ? "" : v).replace(/[\s ]/g, "").replace(",", "."); return (frac ? /^\d+(\.\d+)?$/ : /^\d+$/).test(s) ? +s : null; };
+const fmtV = (x, v) => {
+  if(v === "" || v == null) return "—";
+  if(x && (x.t === "int" || x.t === "num")){ const n = numOf(v, true); if(n === null) return String(v); return x.t === "num" && n % 1 ? String(n).replace(".", ",") : nf(n); }
+  return String(v);
+};
+const ST_PILL = {draft: ["gray", "stDraft"], submitted: ["warn", "stSub"], approved: ["ok", "stOk"], returned: ["bad", "stRet"]};
+const stPill = s => s && ST_PILL[s] ? `<span class="pill ${ST_PILL[s][0]}">${esc(ct(ST_PILL[s][1]))}</span>` : `<span class="pill warn">${esc(ct("notFilled"))}</span>`;
+/* Паспорттағы мәнді форма өрісіне келтіру: «4 сканер (…)» → 4, «Иә» → иә */
+function fromPassport(x, v){
+  v = String(v == null ? "" : v).trim();
+  if(!v) return "";
+  if(x.t === "int"){ const m = v.match(/^(\d[\d\s]*)/); return m ? m[1].replace(/\s/g, "") : ""; }
+  if(x.t === "num"){ const m = v.match(/^(\d+(?:[.,]\d+)?)/); return m ? m[1].replace(".", ",") : ""; }
+  if(x.t === "sel"){ const h = x.opt.find(o => o.toLowerCase() === v.toLowerCase()); return h || ""; }
+  return v;
+}
+/* Формадағы мәндерді тексеру (серверде де дәл осылай тексеріледі) */
+function checkVals(vals, submit){
+  const errs = {};
+  FIELDS().forEach(x => {
+    const v = String(vals[x.c] == null ? "" : vals[x.c]).trim();
+    if(x.t === "text") return;
+    if(!v){ if(submit) errs[x.c] = ct("req"); return; }
+    if(x.t === "sel") return;
+    const n = numOf(v, x.t === "num");
+    if(n === null) errs[x.c] = ct(x.t === "num" ? "num" : "int");
+    else if(n > 100000000) errs[x.c] = ct("tooBig");
+  });
+  FIELDS().forEach(x => {
+    if(!x.of || errs[x.c] || errs[x.of]) return;
+    const a = numOf(vals[x.c], true), b = numOf(vals[x.of], true);
+    if(a !== null && b !== null && a > b) errs[x.c] = ct("ofErr", {p: x.of});
+  });
+  return errs;
+}
 VIEWS.lib = (p) => shell("cabinet", `<a class="p-back" href="#cabinet">${esc(ct("back"))}</a><div id="cabEdit"><div class="card p-empty">${esc(ct("wait"))}</div></div>`);
 VIEWS.lib.after = (p) => {
   const id = p[2], y = +p[3] || S.year, q = +p[4] || S.quarter;
@@ -429,69 +506,94 @@ VIEWS.lib.after = (p) => {
     document.getElementById("cabEdit").innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`;
   });
 };
+function fieldInput(x, v){
+  const nm = esc(x.c);
+  if(x.t === "sel") return `<select class="inp" name="${nm}"><option value="">—</option>${x.opt.map(o => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+  if(x.t === "text") return `<textarea class="inp" name="${nm}" rows="${String(v).length > 60 ? 3 : 1}">${esc(v)}</textarea>`;
+  const shown = v === "" ? "" : x.t === "int" ? (numOf(v) === null ? v : nf(numOf(v))) : String(v).replace(".", ",");
+  return `<input class="inp num" data-t="${x.t}" name="${nm}" inputmode="${x.t === "int" ? "numeric" : "decimal"}" autocomplete="off" value="${esc(shown)}">`;
+}
 function drawEdit(d){
   const box = document.getElementById("cabEdit");
   const fx = d.passport ? d.passport.f || {} : {};
-  const cur = d.current, prev = d.previous;
-  const val = f => cur ? String(cur.v[f] == null ? "" : cur.v[f]).replace(/\s/g, "") : (prev ? String(prev.v[f] == null ? "" : prev.v[f]).replace(/\s/g, "") : "");
-  const st = ST_NAME();
+  const cur = d.current, prev = d.previous, st = ST_NAME();
+  const init = x => cur ? String(cur.v[x.c] == null ? "" : cur.v[x.c])
+    : x.r === "last" ? (prev && String(prev.v[x.c] || "") !== "" ? String(prev.v[x.c]) : fromPassport(x, fx[x.c])) : "";
+  const prevHint = x => prev && String(prev.v[x.c] || "") !== "" ? ct("prevQ", {v: fmtV(x, prev.v[x.c]), p: prev.year + " · " + ROMAN[prev.quarter]}) : "";
+  const meta = [];
+  if(cur && cur.submitted_at) meta.push(esc(ct("subBy", {n: cur.submitted_by || cur.user_name, d: fmtTs(cur.submitted_at)})));
+  if(cur && cur.status === "approved" && cur.approved_at) meta.push(esc(ct("apBy", {n: cur.approved_by, d: fmtTs(cur.approved_at)})));
+  const canReturn = d.canApprove && cur && (cur.status === "submitted" || cur.status === "approved");
   box.innerHTML = `
   <div class="card cab-ed-hd">
     <div><span class="pill">${esc(st[d.lib.st] || "")}</span> <span class="pill gray">${esc(d.lib.region + (d.lib.district ? ", " + d.lib.district : ""))}</span>
       <h1>${esc(d.lib.name)}</h1>
-      <p class="cab-k">${esc(ct("period", {y: d.year, q: ROMAN[d.quarter]}))}</p>
-      <p class="cab-upd ${cur ? "" : "warn"}">${cur ? esc(ct("lastUpd", {d: fmtTs(cur.updated_at), n: cur.user_name, i: cur.user_institution || ""})) : esc(ct("neverUpd"))}</p></div>
+      <p class="cab-k">${esc(ct("period", {y: d.year, q: ROMAN[d.quarter]}))} · ${stPill(cur && cur.status)}</p>
+      <p class="cab-upd ${cur ? "" : "warn"}">${cur ? esc(ct("lastUpd", {d: fmtTs(cur.updated_at), n: cur.user_name, i: cur.user_institution || ""})) : esc(ct("neverUpd"))}</p>
+      ${meta.length ? `<p class="cab-k">${meta.join(" · ")}</p>` : ""}
+      ${cur && cur.status === "returned" && cur.comment ? `<div class="cab-warn">↩ ${esc(ct("retBy", {c: cur.comment}))}</div>` : ""}</div>
   </div>
   <form class="card cab-form" id="qForm" novalidate>
     <h3>${esc(ct("qFields"))}</h3>
-    ${S.qfields.map(f => `<label class="fld">
-      <span>${esc(f)} ${esc(pl(f))} <i class="req">*</i></span>
-      <input class="inp num" name="${esc(f)}" inputmode="numeric" autocomplete="off" value="${esc(val(f) ? nf(+val(f)) : "")}" required>
-      <small class="fld-hint">${prev ? esc(ct("prev", {v: nf(+String(prev.v[f]).replace(/\s/g, "") || 0)})) + " (" + esc(prev.year + " · " + ROMAN[prev.quarter]) + ")" : esc(ct("prevNone"))}</small>
-      <small class="fld-err" data-err="${esc(f)}"></small></label>`).join("")}
-    <div class="cab-actions"><a class="cbtn ghost" href="#cabinet">${esc(ct("cancel"))}</a><button class="cbtn primary" type="submit">${esc(ct("save"))}</button></div>
+    <p class="cab-note">${esc(ct("formNote"))}</p>
+    ${(S.form || []).map((sec, i) => `<details class="cab-sec" ${i < 2 ? "open" : ""}><summary><i>${esc(sec.n)}</i>${esc(PF.find(g => g.n === sec.n) ? tx(PF.find(g => g.n === sec.n).t) : sec.t)}</summary>
+      <div class="cab-fgrid">${sec.f.map(x => `<label class="fld${x.of ? " sub" : ""}${x.t === "text" ? " wide" : ""}">
+        <span><em>${esc(x.c)}</em> ${esc(flabel(x))}${x.t !== "text" ? ` <i class="req">*</i>` : ""}</span>
+        ${fieldInput(x, init(x))}
+        <small class="fld-hint"><b class="rule ${x.r}">${esc(ct(x.r === "sum" ? "ruleSum" : "ruleLast"))}</b>${prevHint(x) ? " · " + esc(prevHint(x)) : ""}</small>
+        <small class="fld-err" data-err="${esc(x.c)}"></small></label>`).join("")}</div></details>`).join("")}
+    <div class="cab-actions">
+      <a class="cbtn ghost" href="#cabinet">${esc(ct("cancel"))}</a>
+      ${canReturn ? `<button class="cbtn ghost" type="button" id="qReturn">↩ ${esc(ct("returnBtn"))}</button>` : ""}
+      <button class="cbtn ghost" type="button" id="qDraft">${esc(ct("saveDraft"))}</button>
+      <button class="cbtn primary" type="submit">${esc(ct(d.canApprove ? "saveApprove" : "submit"))}</button></div>
   </form>
+  ${annualBlock(d)}
   ${d.canStatic ? staticEditor(fx) : ""}
   <div class="card"><h3 class="cab-h3">${esc(ct("qHistory"))}</h3>
-    <div class="scroll-x"><table class="tbl"><thead><tr><th>${esc(ct("quarter"))}</th>${S.qfields.map(f => `<th style="text-align:right">${esc(f)}</th>`).join("")}<th>${esc(ct("when"))}</th><th>${esc(ct("who"))}</th></tr></thead>
-    <tbody>${d.history.map(h => `<tr><td>${esc(h.year + " · " + ROMAN[h.quarter])}</td>${S.qfields.map(f => `<td class="v">${esc(h.v[f] === "" || h.v[f] == null ? "—" : nf(+String(h.v[f]).replace(/\s/g, "")))}</td>`).join("")}
+    <div class="scroll-x"><table class="tbl"><thead><tr><th>${esc(ct("quarter"))}</th><th>${esc(ct("state"))}</th>${S.main.map(f => `<th style="text-align:right">${esc(f)}</th>`).join("")}<th>${esc(ct("when"))}</th><th>${esc(ct("who"))}</th></tr></thead>
+    <tbody>${d.history.map(h => `<tr><td><a href="#cabinet/lib/${encodeURIComponent(d.lib.id)}/${h.year}/${h.quarter}">${esc(h.year + " · " + ROMAN[h.quarter])}</a></td><td>${stPill(h.status)}</td>${S.main.map(f => `<td class="v">${esc(fmtV(FLD(f), h.v[f]))}</td>`).join("")}
       <td>${esc(fmtTs(h.updated_at))}</td><td>${esc(h.user_name)}${h.user_institution ? `<br><small class="cab-k">${esc(h.user_institution)}</small>` : ""}</td></tr>`).join("")}
-      ${(d.archive || []).map(a => `<tr class="cab-arch"><td>${esc(a.year + " · " + ct("annual"))}</td>${S.qfields.map(f => `<td class="v">${esc(a.v[f] === "" || a.v[f] == null ? "—" : nf(+String(a.v[f]).replace(/\s/g, "")))}</td>`).join("")}
-      <td>${esc(fmtTs(a.archived_at))}</td><td><span class="pill gray">${esc(ct("archRow"))}</span></td></tr>`).join("")}</tbody></table></div></div>`;
+      ${(d.archive || []).map(a => `<tr class="cab-arch"><td>${esc(a.year + " · " + ct("annual"))}</td><td><span class="pill gray">${esc(ct("archRow"))}</span></td>${S.main.map(f => `<td class="v">${esc(fmtV(FLD(f), a.v[f]))}</td>`).join("")}
+      <td>${esc(fmtTs(a.archived_at))}</td><td></td></tr>`).join("")}</tbody></table></div></div>`;
   const form = document.getElementById("qForm");
   form.querySelectorAll(".num").forEach(i => i.addEventListener("input", () => {
-    const pos = i.value.length - i.selectionStart, raw = i.value.replace(/\D/g, "");
-    i.value = raw ? nf(+raw) : ""; try{ i.setSelectionRange(i.value.length - pos, i.value.length - pos); }catch(e){}
-    i.classList.remove("bad"); const er = form.querySelector('[data-err="' + i.name + '"]'); if(er) er.textContent = "";
+    if(i.dataset.t === "int"){
+      const pos = i.value.length - i.selectionStart, raw = i.value.replace(/\D/g, "");
+      i.value = raw ? nf(+raw) : ""; try{ i.setSelectionRange(i.value.length - pos, i.value.length - pos); }catch(e){}
+    } else i.value = i.value.replace(/[^\d.,]/g, "");
   }));
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const vals = {}, errs = {}, warns = [];
-    S.qfields.forEach(f => {
-      const s = form[f].value.replace(/\s/g, "");
-      if(!s) errs[f] = ct("req");
-      else if(!/^\d+$/.test(s)) errs[f] = ct("int");
-      else if(+s > 100000000) errs[f] = ct("tooBig");
-      else {
-        vals[f] = +s;
-        const pv0 = prev ? +String(prev.v[f]).replace(/\s/g, "") : 0;
-        if(pv0 > 0 && Math.abs(vals[f] - pv0) / pv0 > 0.5) warns.push([f, Math.round((vals[f] - pv0) / pv0 * 100)]);
-      }
-    });
-    S.qfields.forEach(f => { form[f].classList.toggle("bad", !!errs[f]); form.querySelector('[data-err="' + f + '"]').textContent = errs[f] || ""; });
-    if(Object.keys(errs).length){ const first = form.querySelector(".inp.bad"); if(first) first.focus(); return; }
-    const changes = S.qfields.filter(f => !cur || String(cur.v[f]).replace(/\s/g, "") !== String(vals[f]));
-    if(!changes.length){ toast(ct("nochange"), "warn"); return; }
-    const rows = changes.map(f => `<tr><td>${esc(fName(f))}</td><td class="v">${cur && cur.v[f] !== "" ? esc(nf(+String(cur.v[f]).replace(/\s/g, ""))) : "—"}</td><td class="v"><b>${esc(nf(vals[f]))}</b></td></tr>`).join("");
-    const warnHtml = warns.filter(w => changes.indexOf(w[0]) > -1).map(w => `<div class="cab-warn">⚠ ${esc(fName(w[0]))}: ${esc(ct("jump", {a: (w[1] > 0 ? "+" : "") + w[1]}))}</div>`).join("");
-    modal(ct("confirmTitle"), `<p class="cab-p"><b>${esc(d.lib.name)}</b><br>${esc(ct("period", {y: d.year, q: ROMAN[d.quarter]}))}</p>${warnHtml}
-      <table class="tbl"><thead><tr><th>${esc(ct("field"))}</th><th style="text-align:right">${esc(ct("oldV"))}</th><th style="text-align:right">${esc(ct("newV"))}</th></tr></thead><tbody>${rows}</tbody></table>
+  form.addEventListener("input", e => { const n = e.target.name; if(!n) return; e.target.classList.remove("bad"); const er = form.querySelector('[data-err="' + n + '"]'); if(er) er.textContent = ""; });
+  const collect = () => { const v = {}; FIELDS().forEach(x => { const el = form.elements[x.c]; v[x.c] = el ? el.value.trim() : ""; }); return v; };
+  const norm = (x, v) => { if(x.t === "int" || x.t === "num"){ const n = numOf(v, true); return n === null ? String(v).trim() : String(n); } return String(v == null ? "" : v).trim(); };
+  const showErr = errs => {
+    FIELDS().forEach(x => { const el = form.elements[x.c]; if(el) el.classList.toggle("bad", !!errs[x.c]); const er = form.querySelector('[data-err="' + x.c + '"]'); if(er) er.textContent = errs[x.c] || ""; });
+    const first = form.querySelector(".inp.bad");
+    if(first){ const det = first.closest("details"); if(det) det.open = true; first.focus(); }
+  };
+  const send = mode => {
+    const vals = collect(), errs = checkVals(vals, mode !== "draft");
+    showErr(errs);
+    if(Object.keys(errs).length){ toast(ct(mode === "draft" ? "fixErr" : "reqSubmit"), "bad"); return; }
+    const changes = FIELDS().filter(x => norm(x, vals[x.c]) !== norm(x, cur ? cur.v[x.c] : ""));
+    const statusSame = cur && cur.status === (mode === "draft" ? "draft" : d.canApprove ? "approved" : "submitted");
+    if(!changes.length && statusSame){ toast(ct("nochange"), "warn"); return; }
+    const warns = changes.filter(x => (x.t === "int" || x.t === "num") && prev).map(x => {
+      const a = numOf(vals[x.c], true), b = numOf(prev.v[x.c], true);
+      return a !== null && b && Math.abs(a - b) / b > 0.5 ? [x, Math.round((a - b) / b * 100)] : null;
+    }).filter(Boolean);
+    const rows = changes.slice(0, 60).map(x => `<tr><td>${esc(x.c + " " + flabel(x))}</td><td class="v">${esc(fmtV(x, cur ? cur.v[x.c] : ""))}</td><td class="v"><b>${esc(fmtV(x, vals[x.c]))}</b></td></tr>`).join("");
+    const what = mode === "draft" ? ct("saveDraft") : ct(d.canApprove ? "saveApprove" : "submit");
+    modal(ct("confirmTitle"), `<p class="cab-p"><b>${esc(d.lib.name)}</b><br>${esc(ct("period", {y: d.year, q: ROMAN[d.quarter]}))} → <b>${esc(what)}</b></p>
+      ${warns.slice(0, 8).map(w => `<div class="cab-warn">⚠ ${esc(w[0].c + " " + flabel(w[0]))}: ${esc(ct("jump", {a: (w[1] > 0 ? "+" : "") + w[1]}))}</div>`).join("")}
+      ${rows ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>${esc(ct("field"))}</th><th style="text-align:right">${esc(ct("oldV"))}</th><th style="text-align:right">${esc(ct("newV"))}</th></tr></thead><tbody>${rows}</tbody></table></div>` : ""}
+      ${changes.length > 60 ? `<p class="cab-note">+ ${changes.length - 60}</p>` : ""}
       <p class="cab-note">${esc(ct("confirmDesc"))}</p>`, [[ct("cancel"), "", "ghost"], [ct("confirm"), "ok", "primary"]]).then(v => {
       if(v !== "ok") return;
-      const btn = form.querySelector("button[type=submit]"); busy(btn, true);
-      const body = {action: "save", id: d.lib.id, year: d.year, quarter: d.quarter, values: vals, op: uid()};
+      const btn = mode === "draft" ? document.getElementById("qDraft") : form.querySelector("button[type=submit]"); busy(btn, true);
+      const body = {action: "save", id: d.lib.id, year: d.year, quarter: d.quarter, values: vals, mode: mode, op: uid()};
       api("save", body).then(res => {
-        toast(res.nochange ? ct("nochange") : ct("saved"), res.nochange ? "warn" : "ok");
+        toast(res.nochange ? ct("nochange") : ct({draft: "draftOk", submitted: "submittedOk", approved: "approvedOk"}[res.status] || "saved"), res.nochange ? "warn" : "ok");
         S.libs = null; go("cabinet");
       }, err => {
         busy(btn, false);
@@ -499,11 +601,24 @@ function drawEdit(d){
           const a = outbox(); a.push({body: body, ts: Date.now(), label: d.lib.name + " · " + d.year + "/" + ROMAN[d.quarter]}); setOutbox(a);
           toast(ct("queued"), "warn"); refreshBanner(); return;
         }
-        if(err && err.fields) Object.keys(err.fields).forEach(f => { form[f].classList.add("bad"); form.querySelector('[data-err="' + f + '"]').textContent = err.fields[f]; });
+        if(err && err.fields) showErr(err.fields);
         toast(err.msg || err.error, "bad");
       });
     });
+  };
+  form.addEventListener("submit", e => { e.preventDefault(); send("submit"); });
+  document.getElementById("qDraft").addEventListener("click", () => send("draft"));
+  const rb = document.getElementById("qReturn");
+  if(rb) rb.addEventListener("click", () => {
+    modal(ct("returnBtn"), `<p class="cab-p">${esc(ct("returnQ"))}</p><textarea class="inp" id="retC" rows="3"></textarea>`, [[ct("cancel"), "", "ghost"], [ct("returnBtn"), "ok", "primary"]]).then(v => {
+      if(v !== "ok") return;
+      const c = ((modal.vals || {}).retC || "").trim();
+      if(!c){ toast(ct("returnQ"), "bad"); return; }
+      api("approve", {id: d.lib.id, year: d.year, quarter: d.quarter, decision: "return", comment: c})
+        .then(() => { toast(ct("returned")); S.libs = null; go("cabinet/queue"); }, err => toast(err.msg || err.error, "bad"));
+    });
   });
+  bindAnnual(d);
   const sf = document.getElementById("stForm");
   if(sf) sf.addEventListener("submit", e => {
     e.preventDefault();
@@ -517,9 +632,80 @@ function drawEdit(d){
     });
   });
 }
+/* Жылдық есеп: тоқсандар (I–IV) және жыл бойынша жиынтық */
+function annualBlock(d){
+  const qs = {}; d.history.filter(h => h.year === d.year).forEach(h => { qs[h.quarter] = h; });
+  const a = d.annual;
+  const state = !a ? ct("annualNone") : a.qs.length === 4 ? ct("annualFull") : ct("annualPart", {q: a.qs.split("").map(n => ROMAN[n]).join(", ")});
+  return `<details class="card cab-annual" id="annBox"><summary><b>${esc(ct("annualT", {y: d.year}))}</b><span class="cab-k">${esc(state)}</span></summary>
+    <div class="cab-actions" style="justify-content:flex-start;margin:6px 0 10px"><button class="cbtn ghost sm" type="button" data-ann="docx">⬇ ${esc(ct("word"))}</button><button class="cbtn ghost sm" type="button" data-ann="xlsx">${esc(ct("excel"))}</button></div>
+    <div class="scroll-x"><table class="tbl cab-ann"><thead><tr><th>${esc(ct("field"))}</th>${[1, 2, 3, 4].map(q => `<th style="text-align:right">${ROMAN[q]}${qs[q] ? `<br>${stPill(qs[q].status)}` : ""}</th>`).join("")}<th style="text-align:right">${esc(ct("yearCol"))}</th></tr></thead>
+    <tbody>${(S.form || []).map(sec => `<tr class="cab-ann-s"><td colspan="6">${esc(sec.n + ". " + (PF.find(g => g.n === sec.n) ? tx(PF.find(g => g.n === sec.n).t) : sec.t))}</td></tr>` + sec.f.map(x => `<tr${x.of ? ' class="sub"' : ""}>
+      <td>${esc(x.c + " " + flabel(x))}</td>${[1, 2, 3, 4].map(q => `<td class="v${qs[q] && qs[q].status !== "approved" ? " dim" : ""}">${esc(qs[q] ? fmtV(x, qs[q].v[x.c]) : "")}</td>`).join("")}
+      <td class="v"><b>${esc(a ? fmtV(x, a.v[x.c]) : "—")}</b></td></tr>`).join("")).join("")}</tbody></table></div>
+    <p class="cab-note">${esc(ct("annualNote"))}</p></details>`;
+}
+function bindAnnual(d){
+  document.querySelectorAll("[data-ann]").forEach(b => b.addEventListener("click", e => {
+    e.preventDefault(); busy(b, true);
+    const job = b.dataset.ann === "docx" ? Promise.all([needDOCX(), needLogo()]).then(() => buildLibDocx(d)) : buildLibXlsx(d);
+    job.then(() => busy(b, false), err => { busy(b, false); toast(String(err && err.message || err), "bad"); });
+  }));
+}
+function annualRows(d){
+  const qs = {}; d.history.filter(h => h.year === d.year).forEach(h => { qs[h.quarter] = h; });
+  return {qs: qs, rows: FIELDS().map(x => ({x: x, q: [1, 2, 3, 4].map(q => qs[q] ? fmtV(x, qs[q].v[x.c]) : ""), y: d.annual ? fmtV(x, d.annual.v[x.c]) : ""}))};
+}
+function buildLibDocx(d){
+  const D = window.docx, F = "Times New Roman", R = annualRows(d);
+  const txt = (t, o) => new D.TextRun(Object.assign({text: String(t == null ? "" : t), font: F, size: 18}, o || {}));
+  const par = (runs, o) => new D.Paragraph(Object.assign({children: Array.isArray(runs) ? runs : [runs], spacing: {after: 40}}, o || {}));
+  const bd = {style: D.BorderStyle.SINGLE, size: 4, color: "94A3B8"}, borders = {top: bd, bottom: bd, left: bd, right: bd};
+  const cell = (t, o) => new D.TableCell({borders: borders, margins: {top: 30, bottom: 30, left: 70, right: 70}, shading: o && o.fill ? {fill: o.fill} : undefined,
+    columnSpan: o && o.span || 1, children: [par(txt(t, {bold: !!(o && o.bold), size: o && o.size || 17}), {alignment: o && o.right ? D.AlignmentType.RIGHT : D.AlignmentType.LEFT, spacing: {after: 0}})]});
+  const head = new D.TableRow({tableHeader: true, children: [cell(ct("field"), {bold: true, fill: "DBEAFE"})].concat([1, 2, 3, 4].map(q => cell(ROMAN[q], {bold: true, fill: "DBEAFE", right: true})))
+    .concat([cell(ct("yearCol"), {bold: true, fill: "DBEAFE", right: true})])});
+  const body = [];
+  (S.form || []).forEach(sec => {
+    body.push(new D.TableRow({children: [cell(sec.n + ". " + sec.t, {bold: true, fill: "F1F5F9", span: 6})]}));
+    R.rows.filter(r => sec.f.some(x => x.c === r.x.c)).forEach(r => body.push(new D.TableRow({cantSplit: true, children:
+      [cell((r.x.of ? "   " : "") + r.x.c + " " + r.x.l)].concat(r.q.map(v => cell(v, {right: true}))).concat([cell(r.y, {right: true, bold: true})])})));
+  });
+  const st = [1, 2, 3, 4].map(q => ROMAN[q] + ": " + (R.qs[q] ? ct(ST_PILL[R.qs[q].status][1]) : ct("notFilled"))).join("; ");
+  const doc = new D.Document({creator: "LABA", title: ct("annualT", {y: d.year}), styles: {default: {document: {run: {font: F, size: 20}}}},
+    sections: [{properties: {page: {margin: {top: 900, bottom: 900, left: 1000, right: 900}}},
+      headers: logoHeader(D),
+      footers: {default: new D.Footer({children: [par([txt("LABA · " + d.lib.name.slice(0, 60) + " · " + stamp() + "   ", {size: 14}), new D.TextRun({children: [D.PageNumber.CURRENT, " / ", D.PageNumber.TOTAL_PAGES], font: F, size: 14})], {alignment: D.AlignmentType.RIGHT})]})},
+      children: [
+        par(txt(ct("annualT", {y: d.year}).toUpperCase(), {bold: true, size: 26, color: "1D4ED8"}), {alignment: D.AlignmentType.CENTER, spacing: {after: 80}}),
+        par(txt(d.lib.name, {bold: true, size: 24}), {alignment: D.AlignmentType.CENTER}),
+        par(txt(d.lib.region + (d.lib.district ? ", " + d.lib.district : ""), {size: 20, color: "475569"}), {alignment: D.AlignmentType.CENTER, spacing: {after: 120}}),
+        par(txt(st, {size: 18})), par(txt(d.annual ? (d.annual.qs.length === 4 ? ct("annualFull") : ct("annualPart", {q: d.annual.qs.split("").map(n => ROMAN[n]).join(", ")})) : ct("annualNone"), {size: 18, color: "475569"}), {spacing: {after: 120}}),
+        new D.Table({width: {size: 100, type: D.WidthType.PERCENTAGE}, columnWidths: [4700, 1000, 1000, 1000, 1000, 1300], rows: [head].concat(body)}),
+        par(txt(ct("annualNote"), {size: 16, color: "475569"}), {spacing: {before: 120}}),
+        par(txt(ct("genDate", {d: fmtTs(stamp())}), {size: 18})),
+        par(txt(ct("genBy", {n: S.me.full_name + (S.me.institution ? ", " + S.me.institution : "")}), {size: 18}))]}]});
+  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-jyldyq-" + d.lib.id + "-" + d.year + ".docx"));
+}
+function buildLibXlsx(d){
+  const R = annualRows(d);
+  const aoa = [[ct("annualT", {y: d.year}) + ": " + d.lib.name], [d.lib.region + (d.lib.district ? ", " + d.lib.district : "")], [],
+    [ct("field"), ROMAN[1], ROMAN[2], ROMAN[3], ROMAN[4], ct("yearCol")],
+    ["", ...[1, 2, 3, 4].map(q => R.qs[q] ? ct(ST_PILL[R.qs[q].status][1]) : ct("notFilled")), d.annual ? d.annual.qs.split("").map(n => ROMAN[n]).join(",") : ""]]
+    .concat(R.rows.map(r => [r.x.c + " " + r.x.l].concat(r.q.map(v => xnum(v))).concat([xnum(r.y)])))
+    .concat([[], [ct("annualNote")], [ct("genDate", {d: fmtTs(stamp())})]]);
+  return excelBook(ct("annualT", {y: d.year}).slice(0, 30), aoa, {title: 0, head: 3, cols: [58, 12, 12, 12, 12, 14]})
+    .then(wb => saveBook(wb, "laba-jyldyq-" + d.lib.id + "-" + d.year + ".xlsx"));
+}
+/* Excel-ге сан ретінде: «1 250» → 1250 */
+const xnum = v => { const n = numOf(v, true); return n === null ? (v === "—" ? "" : v) : n; };
+function logoHeader(D){
+  return {default: new D.Header({children: logoBuf ? [new D.Paragraph({children: [new D.ImageRun({data: logoBuf,
+    transformation: {width: 110, height: Math.round(110 * LOGO.h / LOGO.w)}})], spacing: {after: 60}})] : []})};
+}
 function staticEditor(fx){
-  const codes = [];
-  PF.forEach(g => g.f.forEach(f => { if(S.qfields.indexOf(f[0]) < 0) codes.push(f[0]); }));
+  const rep = FIELDS().map(x => x.c), codes = [];
+  PF.forEach(g => g.f.forEach(f => { if(rep.indexOf(f[0]) < 0 && !f[2]) codes.push(f[0]); }));
   return `<details class="card cab-static"><summary>${esc(ct("staticT"))}</summary>
     <form id="stForm" class="cab-st-grid">${codes.map(c => `<label class="fld"><span>${esc(fName(c))}</span>
       <input class="inp" data-code="${esc(c)}" value="${esc(fx[c] || "")}"></label>`).join("")}
@@ -608,12 +794,13 @@ VIEWS.reports.after = () => {
   if(f.unit) f.unit.addEventListener("change", fill);
   api("archiveYears").then(r => {
     const sel2 = document.getElementById("rArch"); if(!sel2) return;
-    sel2.innerHTML += (r.years || []).map(y => `<option value="${y.year}">${esc(ct("repPerA", {y: y.year}))}</option>`).join("");
+    sel2.innerHTML += `<option value="ytd">${esc(ct("repPerY", {y: S.year}))}</option>` + (r.years || []).map(y => `<option value="${y.year}">${esc(ct("repPerA", {y: y.year}))}</option>`).join("");
   }, () => {});
   f.st.addEventListener("change", fill);
   f.querySelectorAll("[data-fmt]").forEach(b => b.addEventListener("click", () => {
     const p = {year: S.year, quarter: S.quarter, unit: f.unit ? f.unit.value : "", st: f.st.value, lib: f.lib.value, from: f.from.value, to: f.to.value};
-    if(f.arch.value){ p.archive = +f.arch.value; delete p.from; delete p.to; }
+    if(f.arch.value === "ytd"){ p.quarter = 0; delete p.from; delete p.to; }
+    else if(f.arch.value){ p.archive = +f.arch.value; delete p.from; delete p.to; }
     const lbl = {unit: f.unit && f.unit.value ? f.unit.selectedOptions[0].textContent : "", st: f.st.value ? f.st.selectedOptions[0].textContent : "",
                  lib: f.lib.value ? f.lib.selectedOptions[0].textContent : ""};
     busy(b, true);
@@ -633,7 +820,7 @@ function repMeta(rep, p, lbl){
     if(r.updated_at > last) last = r.updated_at;
   });
   return {scope: scope, filt: filt, people: Object.keys(people).map(k => people[k]).sort((a, b) => b.c - a.c), last: last,
-          period: rep.archive ? ct("periodArch", {y: rep.archive}) : ct("period", {y: rep.year, q: ROMAN[rep.quarter]})};
+          period: rep.archive ? ct("periodArch", {y: rep.archive}) : rep.annual ? ct("periodYtd", {y: rep.year}) : ct("period", {y: rep.year, q: ROMAN[rep.quarter]})};
 }
 const num0 = v => (v === "" || v == null) ? "" : nf(+String(v).replace(/\s/g, ""));
 function buildDocx(rep, p, lbl){
@@ -655,7 +842,7 @@ function buildDocx(rep, p, lbl){
     const vals = rep.fields.map((f, j) => { const v = r.v ? r.v[f[0]] : ""; const n = +String(v || "").replace(/\s/g, ""); if(n) sums[j] += n; return num0(v); });
     rows.push(new D.TableRow({cantSplit: true, children: [cell(i + 1), cell(r.name), cell(r.district || r.region)]
       .concat(vals.map(v => cell(v || "—", {right: true})))
-      .concat([cell(r.updated_at ? fmtTs(r.updated_at) : ct("noData")), cell(r.user_name ? r.user_name + "\n" + [r.user_institution, r.user_phone].filter(Boolean).join(", ") : "—", {bold: true, small: true})])}));
+      .concat([cell((r.updated_at ? fmtTs(r.updated_at) : ct("noData")) + (r.qstatus ? "\n" + r.qstatus : ""), {small: true}), cell(r.user_name ? r.user_name + "\n" + [r.user_institution, r.user_phone].filter(Boolean).join(", ") : "—", {bold: true, small: true})])}));
   });
   rows.push(new D.TableRow({children: [cell(""), cell(ct("total"), {bold: true}), cell("")].concat(sums.map(s => cell(nf(s), {right: true, bold: true}))).concat([cell(""), cell("")])}));
   const doc = new D.Document({
@@ -684,20 +871,20 @@ function buildDocx(rep, p, lbl){
       ]
     }]
   });
-  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-esep-" + rep.year + "-" + (rep.archive ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".docx"));
+  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-esep-" + rep.year + "-" + (rep.archive || rep.annual ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".docx"));
 }
 function buildXlsx(rep, p, lbl){
   const m = repMeta(rep, p, lbl);
-  const head = ["№", ct("lib"), ct("region"), "Аудан / қала", ct("type")].concat(rep.fields.map(f => f[0] + " " + f[1])).concat([ct("when"), ct("resp"), ct("inst"), ct("phone")]);
+  const head = ["№", ct("lib"), ct("region"), "Аудан / қала", ct("type")].concat(rep.fields.map(f => f[0] + " " + f[1])).concat([ct("when"), ct("state"), ct("resp"), ct("inst"), ct("phone")]);
   const aoa = [[ct("repTitle")], [ct("repPeriod", {p: m.period})], [ct("repScope", {s: m.scope})], [], head]
     .concat(rep.rows.map((r, i) => [i + 1, r.name, r.region, r.district, r.status]
       .concat(rep.fields.map(f => { const v = r.v ? String(r.v[f[0]] || "").replace(/\s/g, "") : ""; return v === "" ? "" : +v; }))
-      .concat([r.updated_at, r.user_name, r.user_institution, r.user_phone])))
+      .concat([r.updated_at, r.qstatus || "", r.user_name, r.user_institution, r.user_phone])))
     .concat([[], [ct("respList")]]).concat(m.people.map(x => ["", x.n, x.i, x.p]))
     .concat([[], [ct("lastDate", {d: m.last ? fmtTs(m.last) : "—"})], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
-  const cols = [5, 50, 24, 24, 14].concat(rep.fields.map(() => 14)).concat([18, 28, 28, 16]);
+  const cols = [5, 50, 24, 24, 14].concat(rep.fields.map(() => 14)).concat([18, 16, 28, 28, 16]);
   return excelBook("Есеп", aoa, {title: 0, head: 4, cols: cols})
-    .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + (rep.archive ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".xlsx"));
+    .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + (rep.archive || rep.annual ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".xlsx"));
 }
 
 /* Аккаунттар (бас әкімші) */
@@ -844,6 +1031,126 @@ function bulkImport(file){
   }).catch(err => toast(String(err && (err.msg || err.message) || err), "bad"));
 }
 
+/* Бекіту кезегі (бас әкімші, облыстық әдіскер) */
+VIEWS.queue = () => shell("cabinet/queue", `
+  <div class="ph"><h2>${esc(ct("tQueue"))}</h2><p>${esc(ct("queueDesc"))}</p></div>
+  <div id="qBox"><div class="card p-empty">${esc(ct("wait"))}</div></div>`);
+VIEWS.queue.after = () => {
+  api("queue").then(r => {
+    const box = document.getElementById("qBox"); if(!box) return;
+    if(!r.rows.length){ box.innerHTML = `<div class="card p-empty">✓ ${esc(ct("queueNone"))}</div>`; return; }
+    box.innerHTML = `<div class="card scroll-x" style="padding:8px"><table class="tbl"><thead><tr><th>${esc(ct("lib"))}</th><th>${esc(ct("quarter"))}</th><th>${esc(ct("sentAt"))}</th>
+      ${r.fields.map(f => `<th style="text-align:right">${esc(f[0])}</th>`).join("")}<th></th></tr></thead>
+      <tbody>${r.rows.map(x => `<tr><td><b>${esc(x.name)}</b><br><small class="cab-k">${esc(x.region + (x.district ? ", " + x.district : ""))}</small></td>
+        <td class="nw">${esc(x.year + " · " + ROMAN[x.quarter])}</td><td>${esc(fmtTs(x.submitted_at))}<br><small class="cab-k">${esc(x.submitted_by)}</small></td>
+        ${r.fields.map(f => `<td class="v">${esc(fmtV(FLD(f[0]), x.v[f[0]]))}</td>`).join("")}
+        <td><a class="cbtn primary sm" href="#cabinet/lib/${encodeURIComponent(x.id)}/${x.year}/${x.quarter}">${esc(ct("check"))}</a></td></tr>`).join("")}</tbody></table></div>`;
+  }, err => { document.getElementById("qBox").innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
+};
+
+/* Жиынтық: аймақтар бойынша тапсырылуы және негізгі көрсеткіштер; толық деректерді жүктеу */
+VIEWS.summary = () => {
+  const y0 = new Date().getFullYear(), ys = [];
+  for(let y = y0; y >= 2026; y--) ys.push(y);
+  if(S.sumQ == null) S.sumQ = S.quarter;
+  const units = (S.units || []).filter(u => u.type !== "republic" || S.me.role === "admin");
+  return shell("cabinet/summary", `
+  <div class="ph"><h2>${esc(ct("tSum"))}</h2><p>${esc(ct("sumDesc"))}</p></div>
+  <div class="card cab-period">
+    <label>${esc(ct("year"))} <select class="pick" id="sYear">${ys.map(y => `<option ${y === S.year ? "selected" : ""}>${y}</option>`).join("")}</select></label>
+    <div class="seg">${[1, 2, 3, 4, 0].map(q => `<button data-sq="${q}" class="${q === S.sumQ ? "on" : ""}">${q ? ROMAN[q] : esc(ct("perYear"))}</button>`).join("")}</div>
+    ${units.length > 1 ? `<select class="pick" id="sUnit"><option value="">${esc(ct("allUnits"))}</option>${units.map(u => `<option value="${esc(u.id)}" ${S.sumUnit === u.id ? "selected" : ""}>${esc(u.full)}</option>`).join("")}</select>` : ""}
+    <span class="cab-actions" style="margin-left:auto"><button class="cbtn ghost sm" id="sXls">${esc(ct("xlsFull"))}</button><button class="cbtn ghost sm" id="sDoc">⬇ ${esc(ct("wordSum"))}</button></span>
+  </div>
+  <div id="sBox"><div class="card p-empty">${esc(ct("wait"))}</div></div>`);
+};
+VIEWS.summary.after = () => {
+  const params = () => ({year: S.year, quarter: S.sumQ, unit: S.sumUnit || ""});
+  const load = () => {
+    const box = document.getElementById("sBox"); box.innerHTML = `<div class="card p-empty">${esc(ct("wait"))}</div>`;
+    api("summary", params()).then(r => { S.sum = r; drawSum(r); }, err => { box.innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
+  };
+  document.getElementById("sYear").addEventListener("change", e => { S.year = +e.target.value; load(); });
+  document.querySelectorAll("[data-sq]").forEach(b => b.addEventListener("click", () => {
+    S.sumQ = +b.dataset.sq; document.querySelectorAll("[data-sq]").forEach(x => x.classList.toggle("on", x === b)); load();
+  }));
+  const su = document.getElementById("sUnit"); if(su) su.addEventListener("change", e => { S.sumUnit = e.target.value; load(); });
+  document.getElementById("sBox").addEventListener("click", e => {
+    const a = e.target.closest("[data-unit]"); if(!a) return;
+    e.preventDefault(); S.sumUnit = a.dataset.unit; if(su) su.value = S.sumUnit; load();
+  });
+  const xb = document.getElementById("sXls");
+  xb.addEventListener("click", () => {
+    busy(xb, true);
+    api("export", params()).then(r => buildExportXlsx(r)).then(() => busy(xb, false), err => { busy(xb, false); toast(err.msg || err.error || err.message, "bad"); });
+  });
+  const db = document.getElementById("sDoc");
+  db.addEventListener("click", () => {
+    if(!S.sum) return;
+    busy(db, true);
+    Promise.all([needDOCX(), needLogo()]).then(() => buildSumDocx(S.sum)).then(() => busy(db, false), err => { busy(db, false); toast(String(err && err.message || err), "bad"); });
+  });
+  load();
+};
+const sumPeriod = r => r.quarter ? ct("period", {y: r.year, q: ROMAN[r.quarter]}) : ct("periodYtd", {y: r.year});
+const sumScope = () => { const u = (S.units || []).find(x => x.id === S.sumUnit); return u ? u.full : (S.me.unit_name || ""); };
+function drawSum(r){
+  const box = document.getElementById("sBox"); if(!box) return;
+  const t = r.total, pct = x => x.libs ? x.approved / x.libs : 0;
+  const line = (x, drill) => `<tr${drill ? "" : ' class="cab-tot"'}><td>${drill && r.by === "oblast" && x.id !== "KZ" ? `<a href="#" data-unit="${esc(x.id)}">${esc(x.name)}</a>` : `<b>${esc(x.name)}</b>`}</td>
+    <td class="v">${nf(x.libs)}</td><td class="v ok">${nf(x.approved)}</td><td class="v">${nf(x.submitted)}</td><td class="v">${nf(x.draft)}</td><td class="v bad">${nf(x.none)}</td>
+    ${r.quarter ? "" : `<td class="v">${nf(x.full)}</td>`}<td style="min-width:120px">${meter(pct(x))}<small class="cab-k">${pf(pct(x) * 100)}</small></td>
+    ${r.fields.map(f => `<td class="v">${nf(x.sums[f[0]])}</td>`).join("")}</tr>`;
+  box.innerHTML = `<div class="card cab-sum">
+      <div><span class="cab-k">${esc(sumPeriod(r))}</span><b>${esc(sumScope())}</b><span class="cab-k">${esc(ct("libsN", {a: nf(t.libs)}))}</span></div>
+      <div class="cab-prog"><div class="cab-prog-t">${esc(ct("progress", {a: nf(t.approved), b: nf(t.libs)}))}${t.submitted ? ` · ${esc(ct("cntSub"))}: ${nf(t.submitted)}` : ""}</div>${meter(pct(t))}</div></div>
+    <div class="card scroll-x" style="padding:8px"><table class="tbl cab-sumt"><thead><tr><th>${esc(ct(r.by === "oblast" ? "region" : "unitCol"))}</th>
+      <th style="text-align:right">${esc(ct("cntLibs"))}</th><th style="text-align:right">${esc(ct("cntOk"))}</th><th style="text-align:right">${esc(ct("cntSub"))}</th>
+      <th style="text-align:right">${esc(ct("cntOther"))}</th><th style="text-align:right">${esc(ct("cntNone"))}</th>${r.quarter ? "" : `<th style="text-align:right">${esc(ct("cntFull"))}</th>`}<th></th>
+      ${r.fields.map(f => `<th style="text-align:right" title="${esc(f[1])}">${esc(f[0])}</th>`).join("")}</tr></thead>
+      <tbody>${r.rows.map(x => line(x, true)).join("")}${line(Object.assign({}, t, {name: ct("total")}), false)}</tbody></table></div>
+    <p class="cab-note">${r.fields.map(f => esc(f[0] + " — " + (PFL[f[0]] ? pl(f[0]) : f[1]))).join(" · ")}</p>
+    <p class="cab-note">${esc(ct("sumNote"))}</p>`;
+}
+function buildExportXlsx(r){
+  const head = ["№", ct("lib"), ct("region"), "Аудан / қала", ct("type"), ct("state")].concat(r.fields.map(f => f[0] + " " + f[1] + (f[2] === "sum" ? " (" + ct("ruleSum") + ")" : "")))
+    .concat([ct("when"), ct("resp"), ct("phone"), ct("apCol")]);
+  const aoa = [[ct("sumTitle")], [ct("repPeriod", {p: sumPeriod(r)})], [ct("repScope", {s: sumScope()})], [], head]
+    .concat(r.rows.map((x, i) => [i + 1, x.name, x.region, x.district, x.status_type, x.status].concat(r.fields.map(f => xnum(x.v[f[0]] == null ? "" : x.v[f[0]])))
+      .concat([x.updated_at, x.user_name, x.user_phone, x.approved_by])))
+    .concat([[], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
+  const cols = [5, 46, 22, 22, 14, 16].concat(r.fields.map(() => 14)).concat([18, 26, 16, 22]);
+  return excelBook(ct("tSum"), aoa, {title: 0, head: 4, cols: cols})
+    .then(wb => saveBook(wb, "laba-jiyntyq-" + r.year + "-" + (r.quarter ? ROMAN[r.quarter] : "jyl") + "-" + stamp().slice(0, 10) + ".xlsx"));
+}
+function buildSumDocx(r){
+  const D = window.docx, F = "Times New Roman";
+  const txt = (t, o) => new D.TextRun(Object.assign({text: String(t == null ? "" : t), font: F, size: 18}, o || {}));
+  const par = (runs, o) => new D.Paragraph(Object.assign({children: Array.isArray(runs) ? runs : [runs], spacing: {after: 40}}, o || {}));
+  const bd = {style: D.BorderStyle.SINGLE, size: 4, color: "94A3B8"}, borders = {top: bd, bottom: bd, left: bd, right: bd};
+  const cell = (t, o) => new D.TableCell({borders: borders, margins: {top: 30, bottom: 30, left: 60, right: 60}, shading: o && o.fill ? {fill: o.fill} : undefined,
+    children: [par(txt(t, {bold: !!(o && o.bold), size: 16}), {alignment: o && o.right ? D.AlignmentType.RIGHT : D.AlignmentType.LEFT, spacing: {after: 0}})]});
+  const hd = [ct(r.by === "oblast" ? "region" : "unitCol"), ct("cntLibs"), ct("cntOk"), ct("cntSub"), ct("cntOther"), ct("cntNone")].concat(r.quarter ? [] : [ct("cntFull")]).concat(r.fields.map(f => f[0] + " " + f[1]));
+  const row = (x, b) => new D.TableRow({cantSplit: true, children: [cell(x.name, {bold: b})].concat([x.libs, x.approved, x.submitted, x.draft, x.none].concat(r.quarter ? [] : [x.full]).map(n => cell(nf(n), {right: true, bold: b})))
+    .concat(r.fields.map(f => cell(nf(x.sums[f[0]]), {right: true, bold: b})))});
+  const doc = new D.Document({creator: "LABA", title: ct("sumTitle"), styles: {default: {document: {run: {font: F, size: 20}}}},
+    sections: [{properties: {page: {size: {orientation: D.PageOrientation.LANDSCAPE}, margin: {top: 900, bottom: 900, left: 900, right: 900}}},
+      headers: logoHeader(D),
+      footers: {default: new D.Footer({children: [par([txt("LABA · " + ct("sumTitle") + " · " + stamp() + "   ", {size: 14}), new D.TextRun({children: [D.PageNumber.CURRENT, " / ", D.PageNumber.TOTAL_PAGES], font: F, size: 14})], {alignment: D.AlignmentType.RIGHT})]})},
+      children: [
+        par(txt("ҚАЗАҚСТАН РЕСПУБЛИКАСЫНЫҢ ҰЛТТЫҚ КІТАПХАНАСЫ · ҒЫЛЫМИ-ӘДІСТЕМЕЛІК ҚЫЗМЕТ", {size: 16, color: "475569"}), {alignment: D.AlignmentType.CENTER}),
+        par(txt(ct("sumTitle"), {bold: true, size: 28}), {alignment: D.AlignmentType.CENTER, spacing: {before: 100, after: 80}}),
+        par(txt(ct("repPeriod", {p: sumPeriod(r)})), {alignment: D.AlignmentType.CENTER}),
+        par(txt(ct("repScope", {s: sumScope()})), {alignment: D.AlignmentType.CENTER, spacing: {after: 160}}),
+        new D.Table({width: {size: 100, type: D.WidthType.PERCENTAGE}, columnWidths: [2600].concat(hd.slice(1).map(() => Math.round(11400 / (hd.length - 1)))),
+          rows: [new D.TableRow({tableHeader: true, children: hd.map((h, i) => cell(h, {bold: true, fill: "DBEAFE", right: i > 0}))})]
+          .concat(r.rows.map(x => row(x, false))).concat([row(Object.assign({}, r.total, {name: ct("total")}), true)])}),
+        par(txt(ct("sumNote"), {size: 16, color: "475569"}), {spacing: {before: 120}}),
+        par(txt(ct("genDate", {d: fmtTs(stamp())}), {size: 18})),
+        par(txt(ct("genBy", {n: S.me.full_name + (S.me.institution ? ", " + S.me.institution : "")}), {size: 18}))]}]});
+  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-jiyntyq-" + r.year + "-" + (r.quarter ? ROMAN[r.quarter] : "jyl") + "-" + stamp().slice(0, 10) + ".docx"));
+}
+
 /* Мұрағат (бас әкімші) */
 VIEWS.archive = () => {
   const cy = new Date().getFullYear(), ys = [];
@@ -888,6 +1195,8 @@ function route(hash){
     if(p[1] === "lib") return ["lib", p];
     if(p[1] === "history") return ["history", p];
     if(p[1] === "reports") return ["reports", p];
+    if(p[1] === "queue") return ["queue", p];
+    if(p[1] === "summary") return ["summary", p];
     return ["cabinet", p];
   }
   if(p[0] === "admin") return [p[1] === "log" ? "log" : p[1] === "archive" ? "archive" : "users", p];
@@ -910,9 +1219,9 @@ function draw(hash){
     refreshBanner();
     window.scrollTo(0, 0);
   };
-  if(name !== "login" && !S.me){
+  if(name !== "login" && (!S.me || !S.form)){
     document.getElementById("content").innerHTML = `<div class="page on"><div class="card p-empty">${esc(ct("wait"))}</div></div>`;
-    api("me").then(res => { S.me = res.user; S.units = res.units; S.qfields = res.qfields || S.qfields; ss_set("laba_me", JSON.stringify(res.user)); updateBtn(); go2(); flushOutbox(); },
+    api("me").then(res => { S.me = res.user; S.units = res.units; S.form = res.form || S.form; S.main = res.main || S.main; ss_set("laba_me", JSON.stringify(res.user)); updateBtn(); go2(); flushOutbox(); },
       () => { if(!S.token) go("login"); });
     return;
   }

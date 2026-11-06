@@ -94,7 +94,23 @@ const PASSPORT_FIELDS = [
   ['5.2',  'Кітапхана директорының, кітапхана-филиалының меңгерушісінің аты-жөні, байланыс телефоны'],
   ['6.1',  'Пайдаланушылар саны'],
   ['6.2',  'Берілген құжат саны'],
-  ['6.3',  'Келушілер саны']
+  ['6.3',  'Келушілер саны'],
+  // тоқсандық есептен келетін қосымша көрсеткіштер (тізілімде бағаны жоқ, мұрағатта сақталады)
+  ['2.5',  'Ғимараттың жағдайы'],
+  ['2.6',  'Жаңғыртылған (модельдік) кітапхана'],
+  ['3.12', 'Цифрланған құжаттар (дана)'],
+  ['4.5',  'Қордағы мемлекеттік тілдегі құжаттар'],
+  ['4.6',  'Түскен құжаттар'],
+  ['4.7',  'Түскен құжаттар: мемлекеттік тілде'],
+  ['4.8',  'Есептен шығарылған құжаттар'],
+  ['5.3',  'Кітапхана мамандары (нақты саны)'],
+  ['5.4',  'Жоғары кітапханалық білімі бар'],
+  ['5.5',  'Арнаулы орта кітапханалық білімі бар'],
+  ['6.4',  'Пайдаланушылар: 14 жасқа дейінгі балалар'],
+  ['6.5',  'Пайдаланушылар: 15–29 жастағы жастар'],
+  ['6.6',  'Берілген құжаттар: мемлекеттік тілде'],
+  ['6.7',  'Виртуалды кірулер'],
+  ['6.8',  'Өткізілген іс-шаралар саны']
 ];
 
 /** «Кітапханалар паспорты»: тізілімнің бағандары және олардың сайттағы кодтары.
@@ -121,9 +137,9 @@ const PASSPORT_REGIONS = ['Республикалық деңгей', 'Абай �
   'Түркістан облысы', 'Ұлытау облысы', 'Шығыс Қазақстан облысы', 'Астана қаласы', 'Алматы қаласы', 'Шымкент қаласы'];
 const PASSPORT_TYPES = ['Республикалық', 'Облыстық', 'Республикалық маңызы бар қала', 'Қалалық', 'Аудандық', 'Ауылдық'];
 /** Толтырылу есебіне кірмейтін өрістер (сурет пен сайт міндетті емес) */
-const PASSPORT_OPTIONAL = ['1.2', '1.6'];
+const PASSPORT_OPTIONAL = ['1.2', '1.6', '2.5', '2.6', '3.12', '4.5', '4.6', '4.7', '4.8', '5.3', '5.4', '5.5', '6.4', '6.5', '6.6', '6.7', '6.8'];
 /** Сайттағы тізімге (жеңіл нұсқаға) жіберілетін бағандар */
-const PASSPORT_INDEX_COLS = ['id', 'r', 'd', 't', 'cat', 'lvl', 'c', '1.1', '1.2', '1.3', '4.1', '6.1', '6.2', '6.3', 'q', 'u'];
+const PASSPORT_INDEX_COLS = ['id', 'r', 'd', 't', 'cat', 'lvl', 'c', '1.1', '1.2', '1.3', '4.1', '6.1', '6.2', '6.3', 'q', 'qs', 'u'];
 const PASSPORT_CACHE_SEC = 21600;
 
 // ═══════════════ ВЕБ-ҚОСЫМША ═══════════════
@@ -433,27 +449,40 @@ function passportById_(id) {
   if (!rowNum) return null;
   const row = L.sh.getRange(rowNum, 1, 1, lastCol).getDisplayValues()[0];
   const x = passportRow_(row, L.map, rowNum, PASSPORT_REQUIRED_());
-  if (x) quarterOverlay_(x, quarterLatestMap_());
+  if (x) quarterOverlay_(x, pubLatest_());
   return x;
 }
 
-/** Әр кітапхананың ең соңғы тоқсандық жазбасы (ашық сайт үшін — жаңартушының аты көрсетілмейді) */
-function quarterLatestMap_() {
+/**
+ * Ашық сайт үшін әр кітапхананың соңғы жылдағы бекітілген есептерінің жиынтығы (жаңартушының аты көрсетілмейді):
+ * {id: {year, v, qs ("123" — бекітілген тоқсандар), q, at}}
+ */
+function pubLatest_() {
   const sh = SpreadsheetApp.getActive().getSheetByName(CAB.SH.QDATA);
   if (!sh || sh.getLastRow() < 2) return {};
-  const all = cabQAll_(), best = {};
-  Object.keys(all).forEach(k => {
-    const o = all[k], id = String(o.lib_id);
-    if (!best[id] || Number(o.year) * 10 + Number(o.quarter) > Number(best[id].year) * 10 + Number(best[id].quarter)) best[id] = o;
+  const cache = CacheService.getScriptCache();
+  const hit = cacheBigGet_(cache, 'pub_latest');
+  if (hit) return hit;
+  const out = {};
+  cabQYears_().forEach(y => {
+    const agg = cabAggYear_(y);
+    Object.keys(agg).forEach(id => { if (!out[id]) out[id] = Object.assign({ year: y }, agg[id]); });
   });
-  return best;
+  cacheBigPut_(cache, 'pub_latest', out, 3600);
+  return out;
 }
 function quarterOverlay_(x, latest) {
   const o = latest[String(x.id)];
   if (!o) return;
-  CAB.Q_FIELDS.forEach(f => { if (o.v[f] !== '' && o.v[f] != null) x.f[f] = String(o.v[f]); });
-  x.q = o.year + '-' + o.quarter;
-  x.u = String(o.updated_at || '').slice(0, 10);
+  REPORT_CODES.forEach(c => {
+    let v = o.v[c];
+    if (v === '' || v == null) return;
+    if (c === '5.2') { v = directorClean_(v); if (!v) return; }
+    x.f[c] = String(v);
+  });
+  x.q = o.year + '-' + o.q;
+  x.qs = o.qs;
+  x.u = String(o.at || '').slice(0, 10);
 }
 
 /** Сайттағы тізімге арналған ықшам нұсқа: {cols:[…], rows:[[…]]}. Толық паспорт ашқанда бөлек жүктеледі. */
@@ -470,7 +499,7 @@ function passportIndex_() {
   } catch (err) { /* кэш бүлінсе, қайта құрамыз */ }
 
   const cols = PASSPORT_INDEX_COLS;
-  const latest = quarterLatestMap_();
+  const latest = pubLatest_();
   const rows = getPassports_().map(x => { quarterOverlay_(x, latest); return x; })
     .map(x => cols.map(k => /^\d+\.\d+$/.test(k) ? (x.f[k] || '') : (x[k] == null ? '' : x[k])));
   const out = { cols: cols, rows: rows };
@@ -753,7 +782,6 @@ function createDailyTrigger() {
 
 const CAB = {
   SH: { QDATA: 'Тоқсандық', USERS: 'Пайдаланушылар', UNITS: 'Бірліктер', LOG: 'Журнал' },
-  Q_FIELDS: ['6.1', '6.2', '6.3'],           // тоқсан сайын жаңартылатын негізгі көрсеткіштер
   Q_MAX: 100000000,                          // бір көрсеткіштің ең үлкен мәні
   SESSION_IDLE_SEC: 7200,                    // 2 сағат әрекетсіз болса — сессия жабылады
   SESSION_MAX_HOURS: 12,                     // бір сессияның ең ұзақ мерзімі
@@ -769,16 +797,79 @@ const ROLES = {
 };
 const USER_COLS = ['user_id', 'login', 'full_name', 'position', 'role', 'unit_id', 'library_id', 'institution', 'phone',
   'status', 'pass_hash', 'salt', 'iter', 'failed_count', 'locked_until', 'last_login', 'created_at', 'created_by', 'updated_at'];
-const QDATA_COLS = ['key', 'lib_id', 'year', 'quarter'].concat(CAB.Q_FIELDS)
-  .concat(['updated_at', 'user_id', 'user_name', 'user_institution', 'user_phone', 'user_role']);
 const LOG_COLS = ['Уақыт', 'Пайдаланушы', 'Деңгейі', 'Аймақ', 'Мекеме', 'Кітапхана', 'Жыл', 'Тоқсан', 'Өріс',
   'Ескі мән', 'Жаңа мән', 'Әрекет', 'user_id', 'lib_id', 'oblast_id', 'op_id', 'hash'];
 const Q_ROMAN = ['', 'I', 'II', 'III', 'IV'];
+/**
+ * Тоқсандық есеп формасы: паспорттың 2–6 бөлімдері және сайттың аналитикасына керек көрсеткіштер (қайталанбайды).
+ *  t: int — бүтін сан, num — бөлшек сан, text — мәтін, sel — тізімнен таңдау (opt)
+ *  r: sum — тоқсан ішіндегі мән (жылдық есепте 4 тоқсан қосылады), last — тоқсан соңындағы жағдай (жылдықта IV тоқсан)
+ *  of: «соның ішінде» — қай өрістің бөлігі (одан аспауы керек)
+ * Өріс қосу немесе алу үшін осы тізімді өзгерту жеткілікті: «Тоқсандық» парағына жаңа баған өзі қосылады.
+ */
+const REPORT_FORM = [
+  { n: '6', t: 'Негізгі көрсеткіштер (тоқсан ішінде)', f: [
+    { c: '6.1', l: 'Пайдаланушылар саны', t: 'int', r: 'sum' },
+    { c: '6.4', l: 'соның ішінде 14 жасқа дейінгі балалар', t: 'int', r: 'sum', of: '6.1' },
+    { c: '6.5', l: 'соның ішінде 15–29 жастағы жастар', t: 'int', r: 'sum', of: '6.1' },
+    { c: '6.2', l: 'Берілген құжат саны', t: 'int', r: 'sum' },
+    { c: '6.6', l: 'соның ішінде мемлекеттік тілде', t: 'int', r: 'sum', of: '6.2' },
+    { c: '6.3', l: 'Келушілер саны', t: 'int', r: 'sum' },
+    { c: '6.7', l: 'Сайтқа және әлеуметтік желілерге виртуалды кірулер', t: 'int', r: 'sum' },
+    { c: '6.8', l: 'Өткізілген іс-шаралар саны', t: 'int', r: 'sum' }] },
+  { n: '4', t: 'Қор', f: [
+    { c: '4.1', l: 'Кітапхананың жалпы қоры (тоқсан соңында)', t: 'int', r: 'last' },
+    { c: '4.5', l: 'соның ішінде мемлекеттік тілде', t: 'int', r: 'last', of: '4.1' },
+    { c: '4.6', l: 'Тоқсан ішінде түскен құжаттар', t: 'int', r: 'sum' },
+    { c: '4.7', l: 'соның ішінде мемлекеттік тілде', t: 'int', r: 'sum', of: '4.6' },
+    { c: '4.8', l: 'Тоқсан ішінде есептен шығарылған құжаттар', t: 'int', r: 'sum' },
+    { c: '4.2', l: 'Мерзімді басылымдар (атау саны)', t: 'int', r: 'last' },
+    { c: '4.3', l: 'Электронды ресурстар', t: 'int', r: 'last' },
+    { c: '4.4', l: 'Электрондық каталогтың болуы', t: 'text', r: 'last' }] },
+  { n: '5', t: 'Кадрлар', f: [
+    { c: '5.1', l: 'Штат саны (бірлік)', t: 'num', r: 'last' },
+    { c: '5.3', l: 'Кітапхана мамандары (нақты саны)', t: 'int', r: 'last' },
+    { c: '5.4', l: 'соның ішінде жоғары кітапханалық білімі бар', t: 'int', r: 'last', of: '5.3' },
+    { c: '5.5', l: 'соның ішінде арнаулы орта кітапханалық білімі бар', t: 'int', r: 'last', of: '5.3' },
+    { c: '5.2', l: 'Басшысының аты-жөні, байланыс телефоны', t: 'text', r: 'last' }] },
+  { n: '3', t: 'Материалдық-техникалық жабдықталуы', f: [
+    { c: '3.1', l: 'Интернетке қолжетімділік', t: 'sel', r: 'last', opt: ['иә', 'жоқ'] },
+    { c: '3.2', l: 'Автоматтандырылған кітапханалық ақпараттық жүйенің (АКАЖ) атауы', t: 'text', r: 'last' },
+    { c: '3.3', l: 'Электрондық кітапханаларға қолжетімділік', t: 'text', r: 'last' },
+    { c: '3.4', l: 'Пайдаланатын электрондық кітапханалардың ресурстары', t: 'text', r: 'last' },
+    { c: '3.5', l: 'Компьютер (дана)', t: 'int', r: 'last' },
+    { c: '3.6', l: 'Сканер', t: 'int', r: 'last' },
+    { c: '3.7', l: 'Принтер', t: 'int', r: 'last' },
+    { c: '3.8', l: 'Көпфункционалды құрылғы (МФУ)', t: 'int', r: 'last' },
+    { c: '3.9', l: 'Телевизор', t: 'int', r: 'last' },
+    { c: '3.10', l: 'Бейнекамера', t: 'int', r: 'last' },
+    { c: '3.11', l: 'Фотоаппарат', t: 'int', r: 'last' },
+    { c: '3.12', l: 'Цифрланған құжаттар (дана)', t: 'int', r: 'last' }] },
+  { n: '2', t: 'Ғимарат', f: [
+    { c: '2.2', l: 'Кітапхана орналасқан ғимарат', t: 'text', r: 'last' },
+    { c: '2.3', l: 'Кітапхана көлемі, м²', t: 'num', r: 'last' },
+    { c: '2.4', l: 'Оқырман залының болуы', t: 'sel', r: 'last', opt: ['иә', 'жоқ', 'абонемент бөлімімен біріктірілген'] },
+    { c: '2.5', l: 'Ғимараттың жағдайы', t: 'sel', r: 'last', opt: ['жақсы', 'ағымдағы жөндеуді қажет етеді', 'күрделі жөндеуді қажет етеді', 'апатты'] },
+    { c: '2.6', l: 'Жаңғыртылған (модельдік) кітапхана', t: 'sel', r: 'last', opt: ['иә', 'жоқ'] }] }
+];
+const REPORT_FIELDS = [].concat.apply([], REPORT_FORM.map(s => s.f));
+const REPORT_CODES = REPORT_FIELDS.map(x => x.c);
+const RF = {}; REPORT_FIELDS.forEach(x => { RF[x.c] = x; });
+/** Тізімдер мен Word/Excel есептеріндегі негізгі көрсеткіштер */
+const REPORT_MAIN = ['6.1', '6.2', '6.3', '4.1', '4.6', '5.3'];
+const Q_STATUS = { draft: 'Жоба', submitted: 'Бекітуде', approved: 'Бекітілді', returned: 'Түзетуге қайтарылды' };
+/** «Тоқсандық» парағының қызметтік бағандары (өріс кодтары солардан кейін) */
+const QDATA_META = ['key', 'lib_id', 'year', 'quarter', 'updated_at', 'user_id', 'user_name', 'user_institution', 'user_phone',
+  'user_role', 'status', 'submitted_at', 'submitted_by', 'approved_at', 'approved_by', 'comment'];
+const QDATA_LIGHT = QDATA_META.concat(REPORT_MAIN);
+
 /** «Мұрағат» парағы: әр жылдың толық паспорты, бір кітапхананың бір жылы — бір жол */
 const ARCH_SHEET = 'Мұрағат';
 const ARCH_META = ['Жыл', 'Мұрағатталған уақыты', 'Кім мұрағаттады'];
-const ARCH_COLS = ARCH_META.concat(PASSPORT_HEAD.map(h => h[0]));
-const ARCH_KEYS = PASSPORT_HEAD.map(h => h[1]);
+/** Тізілімнің бағандары + тоқсандық есептің тізілімде жоқ өрістері (соңына қосылады) */
+const ARCH_EXTRA = REPORT_CODES.filter(c => !PASSPORT_HEAD.some(h => h[1] === c));
+const ARCH_COLS = ARCH_META.concat(PASSPORT_HEAD.map(h => h[0])).concat(ARCH_EXTRA.map(c => c + ' ' + RF[c].l));
+const ARCH_KEYS = PASSPORT_HEAD.map(h => h[1]).concat(ARCH_EXTRA);
 
 // ───────── API: POST сұраулары (JSON, Content-Type: text/plain) ─────────
 function doPost(e) {
@@ -801,7 +892,7 @@ function cabDispatch_(b) {
   const u = s.user;
   switch (a) {
     case 'logout': cabLogout_(b.token); return { ok: true };
-    case 'me': return { ok: true, user: cabPublicUser_(u), units: cabUnitsFor_(u), qfields: CAB.Q_FIELDS, roles: ROLES };
+    case 'me': return { ok: true, user: cabPublicUser_(u), units: cabUnitsFor_(u), form: REPORT_FORM, main: REPORT_MAIN, qstatus: Q_STATUS, roles: ROLES };
     case 'libs': return cabLibs_(u, b);
     case 'lib': return cabLib_(u, b);
     case 'save': return cabSave_(u, b);
@@ -816,6 +907,10 @@ function cabDispatch_(b) {
     case 'userBulk': cabNeed_(u, 'admin'); return cabUserBulk_(u, b.rows || []);
     case 'allUnits': cabNeed_(u, 'admin'); return { ok: true, units: cabAllUnits_(), libs: cabRepLibs_() };
     case 'archiveYears': return { ok: true, years: archiveYears_() };
+    case 'approve': return cabApprove_(u, b);
+    case 'queue': return cabQueue_(u);
+    case 'summary': return cabSummary_(u, b);
+    case 'export': return cabExport_(u, b);
     case 'archive': cabNeed_(u, 'admin'); return archiveYear_(u, Number(b.year), !!b.overwrite);
     default: throw cabErr_('bad_action', 'Белгісіз әрекет');
   }
@@ -889,7 +984,7 @@ function cabLogin_(login, password) {
     const token = randHex_(48);
     const sess = { uid: u.user_id, exp: now + CAB.SESSION_MAX_HOURS * 3600000 };
     CacheService.getScriptCache().put('sess_' + sha256hex_(token), JSON.stringify(sess), CAB.SESSION_IDLE_SEC);
-    return { ok: true, token: token, user: cabPublicUser_(u), units: cabUnitsFor_(u), qfields: CAB.Q_FIELDS, roles: ROLES,
+    return { ok: true, token: token, user: cabPublicUser_(u), units: cabUnitsFor_(u), form: REPORT_FORM, main: REPORT_MAIN, qstatus: Q_STATUS, roles: ROLES,
              idle: CAB.SESSION_IDLE_SEC };
   } finally { lock.releaseLock(); }
 }
@@ -1136,37 +1231,55 @@ function cabLibOr403_(u, id) {
   return m;
 }
 
-// ───────── Тоқсандық деректер ─────────
+// ───────── Тоқсандық есеп ─────────
 function cabQKey_(lib, y, q) { return lib + '|' + y + '|' + q; }
-/** Тоқсандық парақтың бәрі: {key: {lib_id, year, quarter, v:{6.1:…}, updated_at, user_*, _row}} (кэштеледі) */
+/** Парақ пен оның бағандары: жоқ бағандар соңына қосылады (бұрынғы 13 бағанды парақ та жарайды) */
+function qSheet_() {
+  const sh = cabSheet_(CAB.SH.QDATA, QDATA_META.slice(0, 4).concat(['6.1', '6.2', '6.3']).concat(QDATA_META.slice(4)));
+  let head = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getDisplayValues()[0].map(h => String(h).trim());
+  while (head.length && !head[head.length - 1]) head.pop();
+  const need = QDATA_META.concat(REPORT_CODES).filter(c => head.indexOf(c) < 0);
+  if (need.length) {
+    if (sh.getMaxColumns() < head.length + need.length) sh.insertColumnsAfter(sh.getMaxColumns(), head.length + need.length - sh.getMaxColumns());
+    sh.getRange(1, head.length + 1, 1, need.length).setValues([need]).setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF');
+    head = head.concat(need);
+  }
+  const ix = {}; head.forEach((h, i) => { ix[h] = i; });
+  return { sh: sh, head: head, ix: ix };
+}
+function qObj_(r, ix, rowNum, codes) {
+  const o = { _row: rowNum, v: {} };
+  QDATA_META.forEach(c => { o[c] = c in ix ? String(r[ix[c]] == null ? '' : r[ix[c]]) : ''; });
+  o.year = Number(o.year); o.quarter = Number(o.quarter);
+  if (!o.status) o.status = 'approved';                       // бекіту енгізілгенге дейінгі жазбалар
+  codes.forEach(c => { o.v[c] = c in ix ? String(r[ix[c]] == null ? '' : r[ix[c]]) : ''; });
+  return o;
+}
+/** Жеңіл индекс: {key: {мета, v: негізгі көрсеткіштер}} — тізімдер мен бекіту кезегі үшін (кэштеледі) */
 function cabQAll_() {
   const cache = CacheService.getScriptCache();
   const hit = cacheBigGet_(cache, 'cab_q');
   if (hit) return hit;
-  const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
-  const last = sh.getLastRow(), out = {};
+  const Q = qSheet_(), last = Q.sh.getLastRow(), out = {};
   if (last >= 2) {
-    sh.getRange(2, 1, last - 1, QDATA_COLS.length).getDisplayValues().forEach((r, i) => {
-      if (!r[0]) return;
-      const o = { _row: i + 2, v: {} };
-      QDATA_COLS.forEach((c, j) => { if (CAB.Q_FIELDS.indexOf(c) > -1) o.v[c] = r[j]; else o[c] = r[j]; });
-      out[r[0]] = o;
+    Q.sh.getRange(2, 1, last - 1, Q.head.length).getDisplayValues().forEach((r, i) => {
+      if (!r[Q.ix.key]) return;
+      out[r[Q.ix.key]] = qObj_(r, Q.ix, i + 2, REPORT_MAIN);
     });
   }
   cacheBigPut_(cache, 'cab_q', out, 3600);
   return out;
 }
-function cabQFor_(all, lib, y, q) { return all[cabQKey_(lib, y, q)] || null; }
-/** Кітапхананың ең соңғы толтырылған тоқсаны */
-function cabQLatest_(all, lib) {
-  let best = null;
-  Object.keys(all).forEach(k => {
-    const o = all[k];
-    if (String(o.lib_id) !== String(lib)) return;
-    if (!best || Number(o.year) * 10 + Number(o.quarter) > Number(best.year) * 10 + Number(best.quarter)) best = o;
-  });
-  return best;
+/** Бір кітапхананың барлық тоқсаны (барлық өрісімен) */
+function cabQLib_(id) {
+  const Q = qSheet_(), last = Q.sh.getLastRow();
+  if (last < 2) return [];
+  return Q.sh.getRange(2, Q.ix.lib_id + 1, last - 1, 1).createTextFinder(String(id)).matchEntireCell(true).findAll()
+    .map(c => qObj_(Q.sh.getRange(c.getRow(), 1, 1, Q.head.length).getDisplayValues()[0], Q.ix, c.getRow(), REPORT_CODES))
+    .filter(o => String(o.lib_id) === String(id))
+    .sort((a, b) => (b.year * 10 + b.quarter) - (a.year * 10 + a.quarter));
 }
+function cabQFor_(all, lib, y, q) { return all[cabQKey_(lib, y, q)] || null; }
 function cabPrevQ_(y, q) { return q > 1 ? [y, q - 1] : [y - 1, 4]; }
 function cabPeriod_(b) {
   const y = Number(b.year), q = Number(b.quarter);
@@ -1175,70 +1288,272 @@ function cabPeriod_(b) {
   if (y * 10 + q > cy * 10 + cq) throw cabErr_('invalid', 'Әлі басталмаған тоқсанға дерек енгізуге болмайды');
   return [y, q];
 }
+/** Санды оқу: «1 250» → 1250, «0,5» → 0.5 (бөлшек тек num өрісінде) */
+function cabNum_(v, frac) {
+  const s = String(v == null ? '' : v).replace(/[\s ]/g, '').replace(',', '.');
+  if (!(frac ? /^\d+(\.\d+)?$/ : /^\d+$/).test(s)) return null;
+  return Number(s);
+}
+/**
+ * Жылдық есеп: бекітілген тоқсандардан жиналады.
+ *  sum өрістері — тоқсандар қосылады; last өрістері — ең соңғы бекітілген тоқсанның мәні.
+ *  rows — бір кітапхананың бір жылдағы тоқсандары (кез келген күйде: тек бекітілгені есептеледі)
+ */
+function cabAgg_(rows) {
+  const ok = rows.filter(o => o.status === 'approved').sort((a, b) => a.quarter - b.quarter);
+  if (!ok.length) return null;
+  const v = {};
+  REPORT_FIELDS.forEach(x => {
+    if (x.r === 'sum') {
+      let s = 0, any = false;
+      ok.forEach(o => { const n = cabNum_(o.v[x.c], x.t === 'num'); if (n !== null) { s += n; any = true; } });
+      v[x.c] = any ? String(Math.round(s * 100) / 100) : '';
+    } else {
+      let val = '';
+      ok.forEach(o => { if (String(o.v[x.c] || '').trim() !== '') val = o.v[x.c]; });
+      v[x.c] = val;
+    }
+  });
+  const last = ok[ok.length - 1];
+  return { v: v, qs: ok.map(o => o.quarter).join(''), q: last.quarter,
+           at: ok.reduce((m, o) => (o.approved_at > m ? o.approved_at : m), '') || last.updated_at };
+}
+/** Бір жылдың барлық кітапханасының жылдық жиынтығы {id: agg} (кэштеледі, есеп сақталса тазартылады) */
+function cabAggYear_(year) {
+  const cache = CacheService.getScriptCache(), key = 'agg_' + year;
+  const hit = cacheBigGet_(cache, key);
+  if (hit) return hit;
+  const Q = qSheet_(), last = Q.sh.getLastRow(), by = {};
+  if (last >= 2) {
+    Q.sh.getRange(2, 1, last - 1, Q.head.length).getDisplayValues().forEach((r, i) => {
+      if (!r[Q.ix.key] || Number(r[Q.ix.year]) !== year) return;
+      const o = qObj_(r, Q.ix, i + 2, REPORT_CODES);
+      (by[o.lib_id] = by[o.lib_id] || []).push(o);
+    });
+  }
+  const out = {};
+  Object.keys(by).forEach(id => { const a = cabAgg_(by[id]); if (a) out[id] = a; });
+  cacheBigPut_(cache, key, out, 3600);
+  return out;
+}
+/** Есептер бар жылдар (кемуі бойынша) */
+function cabQYears_() {
+  const all = cabQAll_(), ys = {};
+  Object.keys(all).forEach(k => { ys[all[k].year] = 1; });
+  return Object.keys(ys).map(Number).filter(Boolean).sort((a, b) => b - a);
+}
+function cabQClearCache_(year) {
+  const keys = ['cab_q_n', 'pidx_n', 'pub_latest_n'];
+  if (year) keys.push('agg_' + year + '_n');
+  CacheService.getScriptCache().removeAll(keys);
+}
+/** Бекітуші: аудан/облыстық бағынысты қала кітапханасын — облыстық әдіскер, қалғанын — бас әкімші */
+function cabCanApprove_(u, m) {
+  if (u.role === 'admin') return true;
+  return u.role === 'oblast' && String(m.unit).indexOf('D:') === 0 && m.oblast === u.unit_id;
+}
 function cabLibs_(u, b) {
   const yq = cabPeriod_(b), all = cabQAll_();
   const libs = cabScopeLibs_(u).map(m => {
     const r = cabQFor_(all, m.id, yq[0], yq[1]);
     return { id: m.id, name: m.name, region: m.region, district: m.district, st: m.st, cat: m.cat, lvl: m.lvl, unit: m.unit,
-             filled: !!r, updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '', user_institution: r ? r.user_institution : '' };
+             filled: !!r, status: r ? r.status : '', updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '',
+             user_institution: r ? r.user_institution : '' };
   }).sort((a, b2) => a.lvl - b2.lvl || (a.district > b2.district ? 1 : a.district < b2.district ? -1 : 0) || (a.name > b2.name ? 1 : -1));
   return { ok: true, year: yq[0], quarter: yq[1], libs: libs };
 }
+function cabQPublic_(o) {
+  return o ? { year: o.year, quarter: o.quarter, v: o.v, status: o.status, updated_at: o.updated_at, user_name: o.user_name,
+               user_institution: o.user_institution, submitted_at: o.submitted_at, submitted_by: o.submitted_by,
+               approved_at: o.approved_at, approved_by: o.approved_by, comment: o.comment } : null;
+}
 function cabLib_(u, b) {
-  const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b), all = cabQAll_();
-  const cur = cabQFor_(all, m.id, yq[0], yq[1]);
+  const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b);
+  const rows = cabQLib_(m.id);
+  const cur = rows.find(o => o.year === yq[0] && o.quarter === yq[1]) || null;
   const p = cabPrevQ_(yq[0], yq[1]);
-  const prev = cabQFor_(all, m.id, p[0], p[1]) || (cur ? null : cabQLatest_(all, m.id));
-  const history = Object.keys(all).map(k => all[k]).filter(o => String(o.lib_id) === String(m.id))
-    .sort((a, c) => (Number(c.year) * 10 + Number(c.quarter)) - (Number(a.year) * 10 + Number(a.quarter)))
-    .map(o => ({ year: o.year, quarter: o.quarter, v: o.v, updated_at: o.updated_at, user_name: o.user_name, user_institution: o.user_institution }));
-  const archive = archiveLib_(m.id).map(a => ({ year: a.year, archived_at: a.archived_at,
-    v: CAB.Q_FIELDS.reduce((o, f) => { o[f] = a.f[f] || ''; return o; }, {}) }));
-  return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1], archive: archive,
-           current: cur ? { v: cur.v, updated_at: cur.updated_at, user_name: cur.user_name, user_institution: cur.user_institution } : null,
-           previous: prev ? { year: prev.year, quarter: prev.quarter, v: prev.v } : null,
-           history: history, canStatic: u.role === 'admin' };
+  const prev = rows.find(o => o.year === p[0] && o.quarter === p[1]) || rows.find(o => o.year * 10 + o.quarter < yq[0] * 10 + yq[1]) || null;
+  const archive = archiveLib_(m.id).map(a => ({ year: a.year, archived_at: a.archived_at, v: a.f }));
+  const annual = cabAgg_(rows.filter(o => o.year === yq[0]));
+  return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1],
+           current: cabQPublic_(cur), previous: cabQPublic_(prev), history: rows.map(cabQPublic_),
+           annual: annual, archive: archive, canStatic: u.role === 'admin', canApprove: cabCanApprove_(u, m) };
 }
-function cabNum_(v) {
-  const s = String(v == null ? '' : v).replace(/[\s ]/g, '');
-  if (!/^\d+$/.test(s)) return null;
-  return Number(s);
+/** Мәндерді тексеру → {vals, errors} (submit: бос сандық өріс қате; draft: бос өріс рұқсат) */
+function cabValidate_(values, submit) {
+  const vals = {}, errors = {};
+  REPORT_FIELDS.forEach(x => {
+    const raw = String((values || {})[x.c] == null ? '' : values[x.c]).trim();
+    if (x.t === 'text') { vals[x.c] = raw.slice(0, 1000); return; }
+    if (!raw) { vals[x.c] = ''; if (submit) errors[x.c] = 'Міндетті өріс'; return; }
+    if (x.t === 'sel') {
+      const hit = x.opt.find(o => o.toLowerCase() === raw.toLowerCase());
+      if (!hit) errors[x.c] = 'Тізімнен таңдаңыз'; else vals[x.c] = hit;
+      return;
+    }
+    const n = cabNum_(raw, x.t === 'num');
+    if (n === null) errors[x.c] = x.t === 'num' ? 'Сан енгізіңіз (0 немесе одан көп)' : 'Бүтін сан енгізіңіз (0 немесе одан көп)';
+    else if (n > CAB.Q_MAX) errors[x.c] = 'Мән тым үлкен';
+    else vals[x.c] = String(n);
+  });
+  REPORT_FIELDS.forEach(x => {
+    if (!x.of || errors[x.c] || errors[x.of] || vals[x.c] === '' || vals[x.of] === '') return;
+    if (Number(vals[x.c]) > Number(vals[x.of])) errors[x.c] = '«Соның ішінде» мәні ' + x.of + ' жалпы мәнінен аспауы керек';
+  });
+  return { vals: vals, errors: errors };
 }
+/** Тоқсандық есепті сақтау: mode = draft (жоба) | submit (бекітуге жіберу; бекітуші өзі жіберсе — бірден бекітіледі) */
 function cabSave_(u, b) {
   const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b);
   const op = String(b.op || '');
   const cache = CacheService.getScriptCache();
   if (op && cache.get('op_' + op)) return { ok: true, duplicate: true };       // кезектен қайта жіберілген сұрау
-  const vals = {}, errors = {};
-  CAB.Q_FIELDS.forEach(f => {
-    const n = cabNum_((b.values || {})[f]);
-    if (n === null) errors[f] = 'Бүтін сан енгізіңіз (0 немесе одан көп)';
-    else if (n > CAB.Q_MAX) errors[f] = 'Мән тым үлкен';
-    else vals[f] = n;
-  });
-  if (Object.keys(errors).length) return { ok: false, error: 'invalid', fields: errors, msg: 'Өрістерді тексеріңіз' };
+  const submit = b.mode !== 'draft';
+  // ескі клиент тек 6.1–6.3 жібереді: қалған өрістер бұрынғы мәнінде қалады
   const lock = LockService.getScriptLock(); lock.waitLock(30000);
   try {
-    cache.remove('cab_q_n');                          // соңғы күйді парақтан оқимыз
-    const all = cabQAll_();
-    const cur = cabQFor_(all, m.id, yq[0], yq[1]);
+    const rows = cabQLib_(m.id);
+    const cur = rows.find(o => o.year === yq[0] && o.quarter === yq[1]) || null;
+    const values = Object.assign({}, cur ? cur.v : {}, b.values || {});
+    const chk = cabValidate_(values, submit);
+    if (Object.keys(chk.errors).length) return { ok: false, error: 'invalid', fields: chk.errors, msg: 'Өрістерді тексеріңіз' };
+    const canAp = cabCanApprove_(u, m);
+    const status = submit ? (canAp ? 'approved' : 'submitted') : 'draft';
+    const act = { draft: 'Жоба сақталды', submitted: 'Бекітуге жіберілді', approved: 'Бекітілді' }[status];
     const changes = [];
-    CAB.Q_FIELDS.forEach(f => {
-      const old = cur ? String(cur.v[f]).replace(/\s/g, '') : '';
-      if (old !== String(vals[f])) changes.push({ lib: m, year: yq[0], quarter: yq[1], field: f + ' ' + cabFieldName_(f), old: old, val: String(vals[f]),
-                                                  action: cur ? 'Өзгертілді' : 'Жаңа жазба' });
+    REPORT_FIELDS.forEach(x => {
+      const old = cur ? String(cur.v[x.c] || '') : '';
+      if (old !== chk.vals[x.c]) changes.push({ lib: m, year: yq[0], quarter: yq[1], field: x.c + ' ' + x.l, old: old, val: chk.vals[x.c],
+                                                action: (cur ? 'Өзгертілді' : 'Жаңа жазба') + ' · ' + act });
     });
-    if (!changes.length) return { ok: true, nochange: true };
-    const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
-    const row = [cabQKey_(m.id, yq[0], yq[1]), m.id, yq[0], yq[1]].concat(CAB.Q_FIELDS.map(f => vals[f]))
-      .concat([cabNow_(), u.user_id, u.full_name, u.institution, u.phone, ROLES[u.role]]);
-    writeRows_(sh, cur ? cur._row : sh.getLastRow() + 1, [row]);
+    const prevStatus = cur ? cur.status : '';
+    if (!changes.length && prevStatus === status) return { ok: true, nochange: true, status: status };
+    if (!changes.length) changes.push({ lib: m, year: yq[0], quarter: yq[1], field: 'Күйі', old: Q_STATUS[prevStatus] || '', val: Q_STATUS[status], action: act });
+    const Q = qSheet_(), now = cabNow_();
+    const row = cur ? Q.sh.getRange(cur._row, 1, 1, Q.head.length).getDisplayValues()[0] : Q.head.map(() => '');
+    const set = (k, v) => { if (k in Q.ix) row[Q.ix[k]] = v; };
+    set('key', cabQKey_(m.id, yq[0], yq[1])); set('lib_id', m.id); set('year', yq[0]); set('quarter', yq[1]);
+    REPORT_CODES.forEach(c => set(c, chk.vals[c]));
+    set('updated_at', now); set('user_id', u.user_id); set('user_name', u.full_name); set('user_institution', u.institution);
+    set('user_phone', u.phone); set('user_role', ROLES[u.role]); set('status', status);
+    if (submit) { set('submitted_at', now); set('submitted_by', u.full_name); set('comment', ''); }
+    if (status === 'approved') { set('approved_at', now); set('approved_by', u.full_name); }
+    else { set('approved_at', ''); set('approved_by', ''); }
+    writeRows_(Q.sh, cur ? cur._row : Q.sh.getLastRow() + 1, [row]);
     cabLogAppend_(u, changes, op);
     if (op) cache.put('op_' + op, '1', 21600);
-    cache.removeAll(['cab_q_n', 'pidx_n']);
-    return { ok: true, changed: changes.length, updated_at: row[4 + CAB.Q_FIELDS.length] };
+    cabQClearCache_(yq[0]);
+    return { ok: true, changed: changes.length, status: status, updated_at: now };
   } finally { lock.releaseLock(); }
 }
+/** Бекіту немесе түзетуге қайтару */
+function cabApprove_(u, b) {
+  const m = cabLibOr403_(u, b.id), yq = cabPeriod_(b);
+  if (!cabCanApprove_(u, m)) throw cabErr_('forbidden', 'Бұл есепті бекітуге рұқсатыңыз жоқ');
+  const approve = b.decision === 'approve';
+  const comment = String(b.comment || '').trim().slice(0, 500);
+  if (!approve && !comment) return { ok: false, error: 'invalid', msg: 'Қайтару себебін жазыңыз' };
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const cur = cabQLib_(m.id).find(o => o.year === yq[0] && o.quarter === yq[1]);
+    if (!cur) throw cabErr_('not_found', 'Бұл тоқсанға есеп жоқ');
+    if (approve && cur.status === 'approved') return { ok: true, nochange: true, status: 'approved' };
+    if (approve) { const chk = cabValidate_(cur.v, true); if (Object.keys(chk.errors).length) return { ok: false, error: 'invalid', fields: chk.errors, msg: 'Есеп толық емес — бекітуге болмайды' }; }
+    const Q = qSheet_(), now = cabNow_(), status = approve ? 'approved' : 'returned';
+    const cell = (k, v) => { if (k in Q.ix) Q.sh.getRange(cur._row, Q.ix[k] + 1).setNumberFormat('@').setValue(String(v)); };
+    cell('status', status); cell('approved_at', approve ? now : ''); cell('approved_by', approve ? u.full_name : ''); cell('comment', approve ? '' : comment);
+    cabLogAppend_(u, [{ lib: m, year: yq[0], quarter: yq[1], field: 'Күйі', old: Q_STATUS[cur.status] || '', val: Q_STATUS[status] + (comment ? ': ' + comment : ''),
+                        action: approve ? 'Бекітілді' : 'Түзетуге қайтарылды' }]);
+    cabQClearCache_(yq[0]);
+    return { ok: true, status: status };
+  } finally { lock.releaseLock(); }
+}
+/** Бекітуді күтіп тұрған есептер (осы пайдаланушы бекіте алатындары) */
+function cabQueue_(u) {
+  const all = cabQAll_(), meta = cabLibMeta_();
+  const rows = Object.keys(all).map(k => all[k]).filter(o => o.status === 'submitted').map(o => {
+    const m = meta[String(o.lib_id)];
+    if (!m || !cabCanApprove_(u, m)) return null;
+    return { id: m.id, name: m.name, region: m.region, district: m.district, year: o.year, quarter: o.quarter,
+             submitted_at: o.submitted_at, submitted_by: o.submitted_by || o.user_name, user_institution: o.user_institution, v: o.v };
+  }).filter(Boolean).sort((a, b) => (a.submitted_at > b.submitted_at ? 1 : -1));
+  return { ok: true, rows: rows, fields: REPORT_MAIN.map(c => [c, RF[c].l]) };
+}
+/** Бір жылдың барлық тоқсандық жазбасы (барлық өрісімен): {lib_id: [жазбалар]} */
+function cabQYearRows_(year) {
+  const Q = qSheet_(), last = Q.sh.getLastRow(), by = {};
+  if (last < 2) return by;
+  Q.sh.getRange(2, 1, last - 1, Q.head.length).getDisplayValues().forEach((r, i) => {
+    if (!r[Q.ix.key] || Number(r[Q.ix.year]) !== year) return;
+    const o = qObj_(r, Q.ix, i + 2, REPORT_CODES);
+    (by[o.lib_id] = by[o.lib_id] || []).push(o);
+  });
+  return by;
+}
+function cabFilterLibs_(u, b) {
+  let libs = cabScopeLibs_(u);
+  if (b.unit) libs = libs.filter(m => m.oblast === b.unit || m.unit === b.unit || (b.unit === 'KZ' && !m.oblast));
+  if (b.st) libs = libs.filter(m => m.st === b.st);
+  if (b.lib) libs = libs.filter(m => String(m.id) === String(b.lib));
+  return libs.sort((a, c) => (a.region > c.region ? 1 : a.region < c.region ? -1 : 0) || (a.district > c.district ? 1 : a.district < c.district ? -1 : 0) ||
+                              a.lvl - c.lvl || (a.name > c.name ? 1 : -1));
+}
+function cabYearOnly_(b) {
+  const y = Number(b.year), cy = new Date().getFullYear();
+  if (!(y >= 2020 && y <= cy)) throw cabErr_('invalid', 'Жыл дұрыс емес');
+  return y;
+}
+/**
+ * Жиынтық (бас үйлестіруші орталық, облыс): аймақтар бойынша кім тапсырды, кім бекітті, негізгі көрсеткіштердің қосындысы.
+ * quarter = 1–4 — тоқсан; 0 — жыл басынан бергі жылдық жиынтық (тек бекітілген тоқсандар)
+ */
+function cabSummary_(u, b) {
+  const q = Number(b.quarter) || 0;
+  const year = q ? cabPeriod_(b)[0] : cabYearOnly_(b);
+  const libs = cabFilterLibs_(u, b);
+  const all = cabQAll_(), agg = q ? null : cabAggYear_(year);
+  const obls = {}; libs.forEach(m => { obls[m.oblast || 'KZ'] = 1; });
+  const byOblast = Object.keys(obls).length > 1;
+  const groups = {}, order = [];
+  const sum0 = () => REPORT_MAIN.reduce((o, c) => { o[c] = 0; return o; }, {});
+  const tot = { name: 'Барлығы', libs: 0, approved: 0, submitted: 0, draft: 0, none: 0, full: 0, sums: sum0() };
+  libs.forEach(m => {
+    const gid = byOblast ? (m.oblast || 'KZ') : m.unit;
+    const gname = byOblast ? (m.region || 'Республикалық деңгей') : (m.district || m.region || 'Республикалық деңгей');
+    if (!groups[gid]) { groups[gid] = { id: gid, name: gname, libs: 0, approved: 0, submitted: 0, draft: 0, none: 0, full: 0, sums: sum0() }; order.push(gid); }
+    const g = groups[gid];
+    let v = null, st = '';
+    if (q) { const r = cabQFor_(all, m.id, year, q); st = r ? r.status : ''; if (st === 'approved') v = r.v; }
+    else { const a = agg[String(m.id)]; st = a ? 'approved' : ''; if (a) { v = a.v; if (a.qs.length === 4) { g.full++; tot.full++; } } }
+    [g, tot].forEach(t => {
+      t.libs++;
+      if (st === 'approved') t.approved++; else if (st === 'submitted') t.submitted++; else if (st) t.draft++; else t.none++;
+      if (v) REPORT_MAIN.forEach(c => { const n = cabNum_(v[c], true); if (n !== null) t.sums[c] += n; });
+    });
+  });
+  return { ok: true, year: year, quarter: q, by: byOblast ? 'oblast' : 'unit', rows: order.map(k => groups[k]), total: tot,
+           fields: REPORT_MAIN.map(c => [c, RF[c].l]) };
+}
+/** Толық экспорт: әр кітапхана — бір жол, барлық өріс (тоқсан: кез келген күйдегі есеп + күйі; жыл: бекітілген тоқсандардың жиынтығы) */
+function cabExport_(u, b) {
+  const q = Number(b.quarter) || 0;
+  const year = q ? cabPeriod_(b)[0] : cabYearOnly_(b);
+  const libs = cabFilterLibs_(u, b);
+  const by = q ? cabQYearRows_(year) : null, agg = q ? null : cabAggYear_(year);
+  const rows = libs.map(m => {
+    const base = { id: m.id, name: m.name, region: m.region, district: m.district, status_type: m.status };
+    if (q) {
+      const r = (by[String(m.id)] || []).find(o => o.quarter === q);
+      return Object.assign(base, { status: r ? Q_STATUS[r.status] : 'Тапсырылмаған', v: r ? r.v : {}, updated_at: r ? r.updated_at : '',
+        user_name: r ? r.user_name : '', user_phone: r ? r.user_phone : '', approved_by: r ? r.approved_by : '' });
+    }
+    const a = agg[String(m.id)];
+    return Object.assign(base, { status: a ? (a.qs.length === 4 ? 'Толық жыл' : 'Тоқсандар: ' + a.qs.split('').map(n => Q_ROMAN[n]).join(', ')) : 'Бекітілген тоқсан жоқ',
+      v: a ? a.v : {}, updated_at: a ? a.at : '', user_name: '', user_phone: '', approved_by: '' });
+  });
+  return { ok: true, year: year, quarter: q, fields: REPORT_FIELDS.map(x => [x.c, x.l, x.r]), rows: rows };
+}
+
 function cabFieldName_(code) {
   const f = PASSPORT_FIELDS.find(x => x[0] === code);
   return f ? f[1] : code;
@@ -1256,7 +1571,7 @@ function cabSaveStatic_(u, b) {
     const r = cell.getRow(), changes = [];
     const rowVals = L.sh.getRange(r, 1, 1, L.sh.getLastColumn()).getDisplayValues()[0];
     Object.keys(b.fields || {}).forEach(code => {
-      if (CAB.Q_FIELDS.indexOf(code) > -1 || !(code in L.map) || !/^\d+\.\d+$/.test(code)) return;
+      if (REPORT_CODES.indexOf(code) > -1 || !(code in L.map) || !/^\d+\.\d+$/.test(code)) return;
       const v = String(b.fields[code] == null ? '' : b.fields[code]).trim().slice(0, 2000);
       const old = String(rowVals[L.map[code]] || '').trim();
       if (v === old) return;
@@ -1348,6 +1663,7 @@ function cabHistory_(u, b, full) {
 /** Есепке арналған деректер (тек пайдаланушының аймағы бойынша) */
 function cabReport_(u, b) {
   if (b.archive) return cabReportArchive_(u, b);
+  if (Number(b.quarter) === 0) return cabReportAnnual_(u, b);
   const yq = cabPeriod_(b), all = cabQAll_();
   const from = b.from ? String(b.from) : '', to = b.to ? String(b.to) + ' 99' : '';
   let libs = cabScopeLibs_(u);
@@ -1360,17 +1676,29 @@ function cabReport_(u, b) {
       const r = cabQFor_(all, m.id, yq[0], yq[1]);
       if ((from || to) && (!r || (from && r.updated_at < from) || (to && r.updated_at > to))) return;
       rows.push({ id: m.id, name: m.name, region: m.region, district: m.district, status: m.status, cat: m.cat,
-                  v: r ? r.v : null, updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '',
+                  v: r ? r.v : null, qstatus: r ? Q_STATUS[r.status] : '', updated_at: r ? r.updated_at : '', user_name: r ? r.user_name : '',
                   user_institution: r ? r.user_institution : '', user_phone: r ? r.user_phone : '' });
     });
   return { ok: true, year: yq[0], quarter: yq[1], generated_by: u.full_name, generated_inst: u.institution,
-           fields: CAB.Q_FIELDS.map(f => [f, cabFieldName_(f)]), rows: rows };
+           fields: REPORT_MAIN.map(f => [f, RF[f].l]), rows: rows };
+}
+/** Жыл басынан бергі жылдық есеп (бекітілген тоқсандардың жиынтығы) */
+function cabReportAnnual_(u, b) {
+  const year = cabYearOnly_(b), agg = cabAggYear_(year);
+  const rows = cabFilterLibs_(u, b).map(m => {
+    const a = agg[String(m.id)];
+    return { id: m.id, name: m.name, region: m.region, district: m.district, status: m.status, cat: m.cat,
+             v: a ? a.v : null, qstatus: a ? (a.qs.length === 4 ? 'Толық жыл' : a.qs.split('').map(n => Q_ROMAN[n]).join(', ')) : '',
+             updated_at: a ? a.at : '', user_name: '', user_institution: '', user_phone: '' };
+  });
+  return { ok: true, annual: true, year: year, quarter: 0, generated_by: u.full_name, generated_inst: u.institution,
+           fields: REPORT_MAIN.map(f => [f, RF[f].l]), rows: rows };
 }
 
 /** Мұрағаттағы жыл бойынша есеп (жылдық қорытынды): мәндер «Мұрағат» парағынан */
 function cabReportArchive_(u, b) {
   const year = Number(b.archive);
-  const data = archiveYearValues_(year, CAB.Q_FIELDS);
+  const data = archiveYearValues_(year, REPORT_MAIN);
   if (!data) throw cabErr_('not_found', year + ' жылдың мұрағаты жоқ');
   let libs = cabScopeLibs_(u);
   if (b.unit) libs = libs.filter(m => m.oblast === b.unit || m.unit === b.unit || (b.unit === 'KZ' && !m.oblast));
@@ -1383,7 +1711,7 @@ function cabReportArchive_(u, b) {
                v: r ? r.v : null, updated_at: r ? r.at : '', user_name: '', user_institution: '', user_phone: '' };
     });
   return { ok: true, archive: year, year: year, quarter: 0, generated_by: u.full_name, generated_inst: u.institution,
-           fields: CAB.Q_FIELDS.map(f => [f, cabFieldName_(f)]), rows: rows };
+           fields: REPORT_MAIN.map(f => [f, RF[f].l]), rows: rows };
 }
 
 // ───────── Жылдық мұрағат ─────────
@@ -1397,6 +1725,13 @@ function archiveSheet_() {
       p.removeEditors(p.getEditors());
       if (p.canDomainEdit()) p.setDomainEdit(false);
     } catch (e) { /* қорғау мүмкін болмаса — елемейміз */ }
+  }
+  // бұрынғы нұсқаның парағында жаңа өрістердің бағандары жоқ болса — соңына қосамыз
+  const have = sh.getLastColumn();
+  if (have > 0 && have < ARCH_COLS.length) {
+    if (sh.getMaxColumns() < ARCH_COLS.length) sh.insertColumnsAfter(sh.getMaxColumns(), ARCH_COLS.length - sh.getMaxColumns());
+    sh.getRange(1, have + 1, 1, ARCH_COLS.length - have).setValues([ARCH_COLS.slice(have)])
+      .setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF');
   }
   return sh;
 }
@@ -1469,15 +1804,9 @@ function archiveYear_(u, year, overwrite) {
     const had = archiveYears_().find(o => o.year === year);
     if (had && !overwrite) throw cabErr_('exists', year + ' жыл бұрын мұрағатталған (' + had.archived_at + ')');
     if (had) archiveDeleteYear_(sh, year);
-    // жылдың ең соңғы тоқсаны
-    CacheService.getScriptCache().remove('cab_q_n');
-    const all = cabQAll_(), lastQ = {};
-    Object.keys(all).forEach(k => {
-      const o = all[k];
-      if (Number(o.year) !== year) return;
-      const id = String(o.lib_id);
-      if (!lastQ[id] || Number(o.quarter) > Number(lastQ[id].quarter)) lastQ[id] = o;
-    });
+    // жылдың бекітілген тоқсандық есептерінің жиынтығы
+    cabQClearCache_(year);
+    const agg = cabAggYear_(year);
     const last = L.sh.getLastRow();
     const values = last > L.headRow ? L.sh.getRange(L.headRow + 1, 1, last - L.headRow, L.sh.getLastColumn()).getDisplayValues() : [];
     const now = cabNow_(), rows = [];
@@ -1485,10 +1814,10 @@ function archiveYear_(u, year, overwrite) {
       const g = k => (k in L.map) ? String(r[L.map[k]] == null ? '' : r[L.map[k]]).trim() : '';
       if (!g('1.1')) return;
       const id = g('id') || String(L.headRow + 1 + i);
-      const q = lastQ[id];
+      const a = agg[id];
       rows.push([year, now, u.full_name].concat(ARCH_KEYS.map(k => {
         if (k === 'id') return id;
-        if (q && CAB.Q_FIELDS.indexOf(k) > -1 && q.v[k] !== '' && q.v[k] != null) return String(q.v[k]).replace(/\s/g, '');
+        if (a && k in RF && a.v[k] !== '' && a.v[k] != null) return String(a.v[k]);
         return g(k);
       })));
     });
@@ -1563,7 +1892,7 @@ function setupCabinet() {
   CacheService.getScriptCache().removeAll(['cab_meta_n', 'cab_q_n', 'pidx_n', 'cab_users']);
   const sysU = { user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' };
   // 2025 жылдың қорытындысы: тізілімдегі деректер мұрағатқа жылдық паспорт ретінде сақталады (бір рет)
-  cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  qSheet_();
   CacheService.getScriptCache().remove('arch_years');
   if (!archiveYears_().some(o => o.year === CAB.BASE_YEAR)) {
     const r = archiveYear_(sysU, CAB.BASE_YEAR, false);
@@ -1602,11 +1931,11 @@ function setupCabinet() {
 }
 /** «Тоқсандық» парағындағы импорт жолдарын (user_id = import) өшіру. Өшірілген жол санын қайтарады */
 function cabRemoveImportRows_() {
-  const sh = cabSheet_(CAB.SH.QDATA, QDATA_COLS);
+  const Q = qSheet_(), sh = Q.sh;
   const n = sh.getLastRow() - 1;
   if (n < 1) return 0;
   if (sh.getMaxRows() <= n + 1) sh.insertRowsAfter(sh.getMaxRows(), 1);   // Sheets барлық жолды өшіртпейді
-  const col = QDATA_COLS.indexOf('user_id');
+  const col = Q.ix.user_id;
   const v = sh.getRange(2, col + 1, n, 1).getDisplayValues();
   let cnt = 0, end = -1;
   for (let i = n - 1; i >= -1; i--) {
@@ -1618,7 +1947,7 @@ function cabRemoveImportRows_() {
     cabLogAppend_({ user_id: 'system', full_name: 'Жүйе', role: 'admin', institution: 'ҚР Ұлттық кітапханасы', unit_id: 'KZ' },
       [{ lib: null, year: CAB.BASE_YEAR, quarter: 0, field: 'Тоқсандық', old: cnt + ' импорт жолы', val: '',
          action: 'Импорт деректері ' + CAB.BASE_YEAR + ' жылдың мұрағатына көшірілді' }]);
-    CacheService.getScriptCache().removeAll(['cab_q_n', 'pidx_n']);
+    cabQClearCache_(2026);
   }
   return cnt;
 }

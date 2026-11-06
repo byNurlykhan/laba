@@ -540,6 +540,37 @@ select.pick:hover{border-color:var(--faint)}
 .cab-static summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:14px}
 .cab-st-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
 .cab-st-grid .cab-actions{grid-column:1/-1}
+/* Тоқсандық есеп формасы */
+.cab-sec{border:1px solid var(--line);border-radius:12px;padding:0 14px;background:var(--card)}
+.cab-sec[open]{padding-bottom:14px}
+.cab-sec summary{cursor:pointer;display:flex;align-items:center;gap:9px;font-weight:600;color:var(--ink);font-size:14.5px;padding:12px 0;list-style:none}
+.cab-sec summary::-webkit-details-marker{display:none}
+.cab-sec summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .2s}
+.cab-sec:not([open]) summary::after{transform:rotate(-90deg)}
+.cab-sec summary i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--blue);color:#fff;font-size:12px}
+.cab-fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+.cab-fgrid .fld.wide{grid-column:1/-1}
+.cab-fgrid .fld.sub{padding-left:14px;border-left:2px solid var(--soft-line)}
+.cab-fgrid .fld > span em{font-style:normal;color:var(--muted);font-size:12px;margin-right:2px;font-variant-numeric:tabular-nums}
+.cab-fgrid textarea.inp{resize:vertical;min-height:38px;font:inherit;line-height:1.4;padding-top:8px}
+.fld-hint .rule{font-weight:600;font-size:11px;padding:1px 6px;border-radius:6px;background:var(--surface);color:var(--muted)}
+.fld-hint .rule.sum{background:var(--soft);color:var(--blue)}
+.cab-annual summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;list-style:none}
+.cab-annual summary::-webkit-details-marker{display:none}
+.cab-annual summary b{font-size:15px;color:var(--ink)}
+.cab-annual summary::before{content:"▸";color:var(--muted)}
+.cab-annual[open] summary::before{content:"▾"}
+.cab-ann td.v{white-space:nowrap}
+.cab-ann td:first-child{min-width:300px}
+.cab-ann td.dim{color:var(--faint)}
+.cab-ann tr.sub td:first-child{padding-left:22px;color:var(--muted)}
+.cab-ann tr.cab-ann-s td{background:var(--surface);font-weight:600;color:var(--ink)}
+.cab-ann th .pill{font-size:10px;padding:2px 6px;margin-top:3px}
+.cab-sumt td.v.ok{color:#15803D;font-weight:600}
+.cab-sumt td.v.bad{color:var(--red)}
+.cab-sumt tr.cab-tot td{background:var(--surface);font-weight:700}
+.cab-sumt a{color:var(--blue);font-weight:600;text-decoration:none}
+@media (max-width:720px){.cab-fgrid{grid-template-columns:1fr}.cab-fgrid .fld.sub{padding-left:10px}}
 .cab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .cab-dates{display:flex;gap:8px;flex-wrap:wrap}
 .cab-log td,.cab-users td{vertical-align:top;font-size:13px}
@@ -4406,6 +4437,16 @@ const TXT = {
 "ru":"Основные показатели: {y} год, {q} квартал",
 "en":"Key indicators: {y}, Q{q}"
 },
+"p.qytd":{
+"kk":"Көрсеткіштер: {y} жыл, {q} тоқсан (алдын ала)",
+"ru":"Показатели: {y} год, {q} кв. (предварительно)",
+"en":"Indicators: {y}, Q{q} (preliminary)"
+},
+"p.qfull":{
+"kk":"Көрсеткіштер: {y} жылдың қорытындысы (4 тоқсан)",
+"ru":"Показатели: итоги {y} года (4 квартала)",
+"en":"Indicators: {y} annual results (4 quarters)"
+},
 "p.qupd":{
 "kk":"жаңартылды {d}",
 "ru":"обновлено {d}",
@@ -5232,7 +5273,9 @@ const PF = [
     ["2.1",{kk:"Кітапхананың құрылған жылы",ru:"Год основания библиотеки",en:"Year founded"}],
     ["2.2",{kk:"Кітапхана орналасқан ғимарат",ru:"Здание, в котором расположена библиотека",en:"Building"}],
     ["2.3",{kk:"Кітапхана көлемі",ru:"Площадь библиотеки",en:"Library area"}],
-    ["2.4",{kk:"Оқырман залының болуы (иә, жоқ, абонемент бөлімімен біріктірілген)",ru:"Наличие читального зала (да, нет, совмещён с абонементом)",en:"Reading room (yes, no, combined with lending)"}]]},
+    ["2.4",{kk:"Оқырман залының болуы (иә, жоқ, абонемент бөлімімен біріктірілген)",ru:"Наличие читального зала (да, нет, совмещён с абонементом)",en:"Reading room (yes, no, combined with lending)"}],
+    ["2.5",{kk:"Ғимараттың жағдайы",ru:"Состояние здания",en:"Building condition"},1],
+    ["2.6",{kk:"Жаңғыртылған (модельдік) кітапхана",ru:"Модернизированная (модельная) библиотека",en:"Modernized (model) library"},1]]},
   {n:"3", t:{kk:"Материалдық-техникалық жабдықталуы",ru:"Материально-техническое оснащение",en:"Equipment and facilities"}, f:[
     ["3.1",{kk:"Интернетке қолжетімділік",ru:"Доступ к Интернету",en:"Internet access"}],
     ["3.2",{kk:"Кітапхананың автоматтандырылған кітапханалық ақпараттық жүйесінің атауы",ru:"Название автоматизированной библиотечно-информационной системы",en:"Integrated library system"}],
@@ -5244,24 +5287,39 @@ const PF = [
     ["3.8",{kk:"Көпфункционалды құрылғы (МФУ)",ru:"Многофункциональное устройство (МФУ)",en:"Multifunction printer (MFP)"}],
     ["3.9",{kk:"Телевизор",ru:"Телевизор",en:"TV set"}],
     ["3.10",{kk:"Бейнекамера",ru:"Видеокамера",en:"Video camera"}],
-    ["3.11",{kk:"Фотоаппарат",ru:"Фотоаппарат",en:"Photo camera"}]]},
+    ["3.11",{kk:"Фотоаппарат",ru:"Фотоаппарат",en:"Photo camera"}],
+    ["3.12",{kk:"Цифрланған құжаттар (дана)",ru:"Оцифрованные документы (ед.)",en:"Digitized documents (items)"},1]]},
   {n:"4", t:{kk:"Қор туралы ақпарат",ru:"Информация о фонде",en:"Collection"}, f:[
     ["4.1",{kk:"Кітапхананың жалпы қоры",ru:"Общий фонд библиотеки",en:"Total collection"}],
+    ["4.5",{kk:"соның ішінде мемлекеттік тілде",ru:"в том числе на государственном языке",en:"of which in Kazakh"},1],
+    ["4.6",{kk:"Түскен құжаттар",ru:"Поступило документов",en:"New acquisitions"},1],
+    ["4.7",{kk:"соның ішінде мемлекеттік тілде",ru:"в том числе на государственном языке",en:"of which in Kazakh"},1],
+    ["4.8",{kk:"Есептен шығарылған құжаттар",ru:"Выбыло документов",en:"Documents written off"},1],
     ["4.2",{kk:"Мерзімді басылымдар",ru:"Периодические издания",en:"Periodicals"}],
     ["4.3",{kk:"Электронды ресурстар",ru:"Электронные ресурсы",en:"Electronic resources"}],
     ["4.4",{kk:"Электрондық каталогтың болуы",ru:"Наличие электронного каталога",en:"Electronic catalogue"}]]},
   {n:"5", t:{kk:"Кітапхана кадрлары туралы ақпарат",ru:"Информация о кадрах библиотеки",en:"Library staff"}, f:[
     ["5.1",{kk:"Штат саны",ru:"Штатная численность",en:"Number of staff"}],
+    ["5.3",{kk:"Кітапхана мамандары (нақты саны)",ru:"Библиотечные специалисты (фактически)",en:"Library specialists (actual)"},1],
+    ["5.4",{kk:"соның ішінде жоғары кітапханалық білімі бар",ru:"в том числе с высшим библиотечным образованием",en:"of which with higher library education"},1],
+    ["5.5",{kk:"соның ішінде арнаулы орта кітапханалық білімі бар",ru:"в том числе со средним специальным библиотечным",en:"of which with specialized secondary library education"},1],
     ["5.2",{kk:"Кітапхана директорының, кітапхана-филиалының меңгерушісінің аты-жөні, байланыс телефоны",ru:"ФИО директора библиотеки, заведующего библиотекой-филиалом, контактный телефон",en:"Director / branch head: full name, phone"}]]},
   {n:"6", t:{kk:"Кітапхананың негізгі көрсеткіштері",ru:"Основные показатели библиотеки",en:"Key indicators"}, f:[
     ["6.1",{kk:"Пайдаланушылар саны",ru:"Число пользователей",en:"Users"}],
+    ["6.4",{kk:"соның ішінде 14 жасқа дейінгі балалар",ru:"в том числе дети до 14 лет",en:"of which children under 14"},1],
+    ["6.5",{kk:"соның ішінде 15–29 жастағы жастар",ru:"в том числе молодёжь 15–29 лет",en:"of which youth aged 15–29"},1],
     ["6.2",{kk:"Берілген құжат саны",ru:"Количество выданных документов",en:"Documents issued"}],
-    ["6.3",{kk:"Келушілер саны",ru:"Число посещений",en:"Visits"}]]}
+    ["6.6",{kk:"соның ішінде мемлекеттік тілде",ru:"в том числе на государственном языке",en:"of which in Kazakh"},1],
+    ["6.3",{kk:"Келушілер саны",ru:"Число посещений",en:"Visits"}],
+    ["6.7",{kk:"Виртуалды кірулер (сайт, әлеуметтік желі)",ru:"Виртуальные посещения (сайт, соцсети)",en:"Virtual visits (website, social media)"},1],
+    ["6.8",{kk:"Өткізілген іс-шаралар саны",ru:"Количество проведённых мероприятий",en:"Events held"},1]]}
 ];
 const PFL = {};
 PF.forEach(g=>g.f.forEach(x=>{ PFL[x[0]] = x[1]; }));
 /* Толтырылу есебіне кіретін өрістер: сурет (1.2) пен сайт (1.6) міндетті емес */
-const PREQ = Object.keys(PFL).filter(c=>c!=="1.2" && c!=="1.6");
+const PFX = {};                                         // есептен келетін қосымша өрістер: мәні болса ғана көрсетіледі
+PF.forEach(g=>g.f.forEach(x=>{ if(x[2]) PFX[x[0]] = 1; }));
+const PREQ = Object.keys(PFL).filter(c=>c!=="1.2" && c!=="1.6" && !PFX[c]);
 const tx  = o => (o && (o[LANG] || o.kk)) || "";
 const pl  = c => tx(PFL[c]) || c;
 /* Өріс мәні: орыс/ағылшын тілінде аудармасы болса — соны, болмаса түпнұсқаны береміз */
@@ -5353,7 +5411,7 @@ function typeOf(s){
   return "rural";
 }
 /* Мәнді тазалау: «https: / / сайт» → «https://сайт», «1 796937» → «1 796 937» */
-const NUMF = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11","4.1","4.2","4.3","5.1","6.1","6.2","6.3"];
+const NUMF = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11","3.12","4.1","4.2","4.3","4.5","4.6","4.7","4.8","5.1","5.3","5.4","5.5","6.1","6.2","6.3","6.4","6.5","6.6","6.7","6.8"];
 function cleanVal(c, v){
   v = String(v==null ? "" : v).replace(/\s+/g," ").trim();
   if(!v) return "";
@@ -5375,7 +5433,7 @@ function normPass(x){
   });
   return {id:String(x.id), r: r ? r.k : "", d: String(x.d||"").trim(), t: typeOf(x.t),
           cat: String(x.cat||"").trim(), lvl: Number(x.lvl)||99, f: f, tr: tr,
-          q: String(x.q||""), u: String(x.u||""),
+          q: String(x.q||""), qs: String(x.qs||""), u: String(x.u||""),
           c: typeof x.c === "number" ? x.c / PREQ.length : fillOf(f)};
 }
 /* Ықшам жауап: {cols:[…], rows:[[…]]} → [{id, r, …, f:{…}}] */
@@ -5746,7 +5804,7 @@ function passRow(c, v){
   return `<tr><td class="c">${c}</td><td>${esc(pl(c))}</td><td class="pv${v?"":" none"}">${v?linkify(v):"—"}</td></tr>`;
 }
 function secTable(g, skip){
-  const rows = g.f.filter(f=>(skip||[]).indexOf(f[0])<0).map(f=>passRow(f[0], pv(PASS._cur,f[0]))).join("");
+  const rows = g.f.filter(f=>(skip||[]).indexOf(f[0])<0 && !(f[2] && !pv(PASS._cur,f[0]))).map(f=>passRow(f[0], pv(PASS._cur,f[0]))).join("");
   return panel(null, g.n+". "+tx(g.t), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
 }
 /* Сайттағы дерек файлдары (тізілім): Google Sheets-тен дерек келмесе, осылар көрсетіледі */
@@ -5807,9 +5865,17 @@ function qInfo(x){
     const h = PASS.hist[x.id], y = h && h.length ? h[0].year : PASS_BASE_YEAR;
     return `<div class="q-info">${svg(PI.info)}<span>${esc(T("p.qbase",{y:y}))}</span></div>`;
   }
-  const per = T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]});
+  const per = qLabel(x);
   const d = String(x.u || "").split("-");
   return `<div class="q-info">${svg(PI.info)}<span>${esc(per)}${d.length===3 ? " · " + esc(T("p.qupd",{d:d[2]+"."+d[1]+"."+d[0]})) : ""}</span></div>`;
+}
+/* Кезеңнің жазуы: бекітілген тоқсандар (qs) бойынша — «2026 жыл, I–II тоқсан (алдын ала)» немесе «2026 жылдың қорытындысы» */
+function qLabel(x){
+  const q = String(x.q || "").split("-"), R = ["","I","II","III","IV"];
+  const qs = String(x.qs || "");
+  if(qs.length===4) return T("p.qfull",{y:q[0]});
+  if(qs) return T("p.qytd",{y:q[0], q: qs.length===1 ? R[+qs] : qs.split("").map(n=>R[+n]).join(", ")});
+  return T("p.qper",{y:q[0], q:R[+q[1]] || q[1]});
 }
 /* ── Паспорттың баспа нұсқасы: A4, ықшам, 2 беттен аспайды ── */
 const PP_MAX = 520;                                   // өте ұзын мәтін қысқартылады (толығы сайтта)
@@ -5832,7 +5898,7 @@ function ppRow(f, c){
   return `<tr><td class="c">${c}</td><td class="l">${esc(pl(c))}</td><td class="v${v ? "" : " no"}">${v ? esc(v) : "—"}</td></tr>`;
 }
 function ppSec(f, g, skip){
-  const rows = g.f.filter(x => (skip || []).indexOf(x[0]) < 0).map(x => ppRow(f, x[0])).join("");
+  const rows = g.f.filter(x => (skip || []).indexOf(x[0]) < 0 && !(x[2] && !pv(f, x[0]))).map(x => ppRow(f, x[0])).join("");
   return `<section class="pp-sec"><h3><i>${g.n}</i>${esc(tx(g.t))}</h3><table><tbody>${rows}</tbody></table></section>`;
 }
 function passPrint(f, x, label){
@@ -5847,7 +5913,7 @@ function passPrint(f, x, label){
     const shortNote = note.length > 70 ? note.slice(0, 70).replace(/\s+\S*$/, "") + " …" : note;
     return `<div><b${big || !v ? "" : ' class="t"'}>${esc(big || (v ? shortNote : "—"))}</b>${big && note ? `<em>${esc(shortNote)}</em>` : ""}<span>${esc(pl(c))}</span></div>`; }).join("");
   const q = String(f.q || "").split("-"), u = String(f.u || "").split("-");
-  const per = q.length === 2 ? T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]}) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "")
+  const per = q.length === 2 ? qLabel(f) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "")
     : label ? "" : T("p.qbase",{y: (PASS.hist[x.id]||[])[0] ? PASS.hist[x.id][0].year : PASS_BASE_YEAR});
   return `<div class="pp" aria-hidden="true">
     <header class="pp-head"><img src="img/laba-logo.png" alt="">
@@ -5859,7 +5925,7 @@ function passPrint(f, x, label){
     <div class="pp-grid">
       ${ppSec(f, PF[0], ["1.1","1.2"])}${ppSec(f, PF[1])}
       <section class="pp-sec pp-full"><h3><i>3</i>${esc(tx(PF[2].t))}</h3><div class="pp-eq">${eq}</div>
-        <table><tbody>${["3.1","3.2","3.3","3.4"].map(c => ppRow(f, c)).join("")}</tbody></table></section>
+        <table><tbody>${["3.1","3.2","3.3","3.4"].concat(pv(f,"3.12") ? ["3.12"] : []).map(c => ppRow(f, c)).join("")}</tbody></table></section>
       ${ppSec(f, PF[3])}${ppSec(f, PF[4])}
       <section class="pp-sec pp-full">${ppSec(f, PF[5]).replace(/^<section class="pp-sec">|<\/section>$/g, "")}${per ? `<p class="pp-per">${esc(per)}</p>` : ""}</section>
     </div>
@@ -5904,7 +5970,7 @@ function passDetail(x, yr){
     const big = m ? m[1].trim() : "", note = m ? m[2].replace(/^[-–,;:()\s]+/,"") : v;
     return `<div class="${v?"":"none"}">${svg(PI[c])}${big||!v?`<b>${big||"—"}</b>`:`<b class="txt">${esc(note)}</b>`}
       ${big&&note?`<em>${esc(note)}</em>`:""}<span>${esc(pl(c))}</span></div>`; }).join("");
-  const eqRows = ["3.1","3.2","3.3","3.4"].map(c=>passRow(c, pv(f,c))).join("");
+  const eqRows = ["3.1","3.2","3.3","3.4"].concat(pv(f,"3.12") ? ["3.12"] : []).map(c=>passRow(c, pv(f,c))).join("");
   /* облыс орташасымен салыстыру */
   const peers = passData().filter(z=>z.r===x.r && z.t===x.t);
   const cmp = ["4.1","6.1","6.2","6.3"].map(c=>{
@@ -6085,7 +6151,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=3"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=4"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
