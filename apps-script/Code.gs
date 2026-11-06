@@ -156,6 +156,7 @@ function doGet(e) {
     else if (action === 'passport') { out = { ok: true, passport: passportById_(p.id) }; }
     else if (action === 'passHistory') { out = { ok: true, years: archiveLib_(p.id) }; }
     else if (action === 'archiveYears') { out = { ok: true, years: archiveYears_() }; }
+    else if (action === 'yearData') { out = Object.assign({ ok: true }, yearData_(Number(p.year) || 0)); }
     else { out = getPayload_(); }
   } catch (err) {
     out = { ok: false, error: String(err && err.message || err) };
@@ -1478,6 +1479,39 @@ function cabQueue_(u) {
              submitted_at: o.submitted_at, submitted_by: o.submitted_by || o.user_name, user_institution: o.user_institution, v: o.v };
   }).filter(Boolean).sort((a, b) => (a.submitted_at > b.submitted_at ? 1 : -1));
   return { ok: true, rows: rows, fields: REPORT_MAIN.map(c => [c, RF[c].l]) };
+}
+/**
+ * «Кітапхана — сандар тілінде» беттері үшін жылдың жиынтығы (ашық, аты-жөнсіз):
+ * бекітілген тоқсандық есептердің жыл басынан бергі қосындысы — барлығы және өңірлер бойынша.
+ * Республикалық кітапханалар жеке жол болып беріледі (name: 'lib:<атауы>').
+ */
+const YEAR_SUM = ['6.1', '6.4', '6.5', '6.2', '6.6', '6.3', '6.7', '6.8', '4.1', '4.5', '4.6', '4.7', '4.8', '5.1', '5.3', '5.4', '5.5', '3.5', '3.12'];
+function yearData_(year) {
+  const years = cabQYears_().filter(y => Object.keys(cabAggYear_(y)).length);
+  if (!year) year = years[0];
+  if (!year || years.indexOf(year) < 0) return { years: years };
+  const agg = cabAggYear_(year), meta = cabLibMeta_();
+  const z = () => YEAR_SUM.reduce((o, c) => { o[c] = 0; return o; }, {});
+  const regions = {}, qs = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  const tot = { libs: 0, rep: 0, full: 0, s: z(), automation: 0, internet: 0, needRepair: 0, modernized: 0 };
+  Object.keys(meta).forEach(id => {
+    const m = meta[id];
+    const rk = m.st === 'rep' ? 'lib:' + m.name : (m.region || 'Республикалық деңгей');
+    const r = regions[rk] = regions[rk] || { name: rk, libs: 0, rep: 0, s: z() };
+    r.libs++; tot.libs++;
+    const a = agg[id];
+    if (!a) return;
+    r.rep++; tot.rep++;
+    if (a.qs.length === 4) tot.full++;
+    a.qs.split('').forEach(n => { qs[n]++; });
+    YEAR_SUM.forEach(c => { const n = cabNum_(a.v[c], true); if (n !== null) { r.s[c] += n; tot.s[c] += n; } });
+    const abis = String(a.v['3.2'] || '').trim();
+    if (abis && !/^(жоқ|нет|-|—|0)$/i.test(abis)) tot.automation++;
+    if (String(a.v['3.1'] || '').toLowerCase() === 'иә') tot.internet++;
+    if (/күрделі|апатты/.test(String(a.v['2.5'] || ''))) tot.needRepair++;
+    if (String(a.v['2.6'] || '').toLowerCase() === 'иә') tot.modernized++;
+  });
+  return { years: years, year: year, total: tot, qs: qs, regions: Object.keys(regions).map(k => regions[k]) };
 }
 /** Бір жылдың барлық тоқсандық жазбасы (барлық өрісімен): {lib_id: [жазбалар]} */
 function cabQYearRows_(year) {

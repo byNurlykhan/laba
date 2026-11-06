@@ -231,5 +231,12 @@ ok(pp.f['6.4'] === '600' && pp.f['4.1'] === '20300', 'Ашық паспортт�
 g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 3, values: FULL({ '6.1': 99999 }) });
 ok(JSON.parse(g.get({ action: 'passport', id: lib.id })).passport.f['6.1'] === '2550', 'Бекітілмеген есеп ашық сайтқа шықпайды');
 ok(JSON.stringify(pub).indexOf('Облыс Әдіскері') < 0, 'Ашық сайтта жаңартқан адамның аты көрсетілмейді');
+const yd = JSON.parse(g.get({ action: 'yearData' }));
+ok(yd.year === 2026 && yd.years[0] === 2026 && yd.total.rep === 2 && yd.total.libs === 3875 && yd.total.s['6.1'] === 2550 + 10,
+   '«Сандар тілінде» 2026: бекітілген есептердің жиынтығы (2 кітапхана)');
+const tr2 = yd.regions.find(r => r.name === 'Түркістан облысы');
+ok(tr2 && tr2.rep === 1 && tr2.s['6.4'] === 600 && yd.qs[1] === 2 && yd.qs[2] === 1, 'Өңірлер бойынша және тоқсандар бойынша жиынтық');
+ok(JSON.stringify(yd).indexOf('Әдіскер') < 0, 'Жиынтықта аты-жөн жоқ');
+ok(JSON.stringify(JSON.parse(g.get({ action: 'yearData', year: 2019 })).years) === '[2026]', 'Есебі жоқ жыл — тек жылдар тізімі');
 
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');

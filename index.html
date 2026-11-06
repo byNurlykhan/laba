@@ -475,6 +475,9 @@ select.pick:hover{border-color:var(--faint)}
 .cab-btn:hover,.cab-btn.on{border-color:var(--blue);color:var(--blue)}
 .cab-btn.on{background:var(--soft)}
 .q-info{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px}
+.year-note{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--ink);background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:10px 14px;margin:0 0 18px}
+.year-note svg{width:17px;height:17px;flex-shrink:0;margin-top:2px;stroke:#B45309;fill:none;stroke-width:2}
+:root[data-theme="dark"] .year-note{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35)}
 .q-info.arch{color:var(--ink);background:var(--soft);border:1px solid var(--soft-line);border-radius:10px;padding:9px 12px;margin:0 0 16px}
 .cab-arch td{background:var(--surface)}
 .yr-sw{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
@@ -6116,7 +6119,11 @@ function loadRemote(){
     if(!res || !res.ok) return;
     if(res.txt)   Object.keys(res.txt).forEach(k=>{ TXT[k] = Object.assign(TXT[k]||{}, res.txt[k]); });
     if(res.names) Object.keys(res.names).forEach(k=>{ NAMES[k] = Object.assign(NAMES[k]||{}, res.names[k]); });
-    if(res.data)  Object.keys(res.data).forEach(k=>{ DATA[k] = res.data[k]; });
+    if(res.data){
+      const tgt = YEAR.base || DATA;                                       // басқа жыл таңдалса — бастапқы деректерді жаңартамыз
+      Object.keys(res.data).forEach(k=>{ tgt[k] = res.data[k]; });
+      if(YEAR.base && YEAR.cur!==YEAR.baseYear){ const yd = YEAR.cache[YEAR.cur]; if(yd) applyData(buildYearData(YEAR.base, yd)); }
+    }
     buildNav();
     render(location.hash.slice(1) || "home");
   });
@@ -6170,7 +6177,7 @@ function render(id){
   const sec = SECTIONS.find(s=>s.id===parts[0]) || SECTIONS[0];
   const sub = sec.id===parts[0] ? decodeURIComponent(parts.slice(1).join("/")) : "";
   Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
-  document.getElementById("content").innerHTML = `<div class="page on">${P[sec.id](sub)}</div>`;
+  document.getElementById("content").innerHTML = `<div class="page on">${yearBanner(sec.id)}${P[sec.id](sub)}</div>`;
   document.getElementById("crumb").textContent = T(sec.key);
   document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.id===sec.id));
   document.title = T(sec.key)+" · LABA";
@@ -6241,10 +6248,127 @@ function fillPeriods(){
   qSel.value = DATA.meta.current.period;
 }
 ySel.value = DATA.meta.current.year;
-ySel.addEventListener("change",()=>{
-  DATA.meta.current.year = +ySel.value;
-  render(location.hash.slice(1)||"home");
-});
+ySel.addEventListener("change",()=>{ setYear(+ySel.value); });
+
+/* ─────────────── ЖЫЛДАР: 2025 — бастапқы деректер, 2026-дан бастап — тоқсандық есептердің жиынтығы ─────────────── */
+const YEAR = {base:null, baseYear:DATA.meta.current.year, cur:DATA.meta.current.year, cache:{}, txt:null};
+const R4 = ["","I","II","III","IV"];
+function applyData(obj){ Object.keys(DATA).forEach(k=>{ delete DATA[k]; }); Object.assign(DATA, JSON.parse(JSON.stringify(obj))); }
+/* Кезең белгілері: «Жыл қорытындысы», «2024 / 2025» бағандары — таңдалған жылға сай */
+const YEAR_SHIFT = ["vsPrev","h.desc","h.p1.t","s2.p.d","s6.anote","s8.k1s","s8.p4.d","s8.p4.n","s5.note"];
+function yearLabels(y, ytd){
+  if(!YEAR.txt){ YEAR.txt = {period:TXT.period, y2024:TXT.y2024, y2025:TXT.y2025}; YEAR_SHIFT.forEach(k=>{ YEAR.txt[k] = TXT[k]; }); }
+  if(y===YEAR.baseYear){ Object.assign(TXT, YEAR.txt); return; }
+  const same = v => ({kk:v, ru:v, en:v});
+  TXT.y2024 = same(String(y-1)); TXT.y2025 = same(String(y));
+  /* мәтіндегі жылдарды ауыстыру: 2025 → таңдалған жыл, 2024 → алдыңғы жыл */
+  YEAR_SHIFT.forEach(k=>{ const o = YEAR.txt[k]; if(!o) return; const n = {};
+    Object.keys(o).forEach(l=>{ n[l] = String(o[l]).replace(/2025/g,"\u0001").replace(/2024/g,String(y-1)).replace(/\u0001/g,String(y)); });
+    TXT[k] = n; });
+  TXT["s5.note"] = {kk:"Көрсеткіш — өңірдегі пайдаланушылар санының халық санына қатынасы (халық саны — "+YEAR.baseYear+" жылғы).",
+    ru:"Показатель — отношение числа пользователей к численности населения региона (население — на "+YEAR.baseYear+" год).",
+    en:"Indicator: users as a share of the regional population (population as of "+YEAR.baseYear+")."};
+  TXT.period = ytd ? {kk:"Жыл басынан (алдын ала)", ru:"С начала года (предв.)", en:"Year to date (preliminary)"} : YEAR.txt.period;
+}
+function setYear(y){
+  if(!YEAR.base) YEAR.base = JSON.parse(JSON.stringify(DATA));
+  const done = () => { YEAR.cur = y; ySel.value = y; fillPeriods(); render(location.hash.slice(1)||"home"); };
+  if(y===YEAR.baseYear){ applyData(YEAR.base); yearLabels(y); return done(); }
+  const go2 = yd => { const D = buildYearData(YEAR.base, yd); applyData(D); yearLabels(y, D.meta.ytd); done(); };
+  if(YEAR.cache[y]) return go2(YEAR.cache[y]);
+  jsonp({action:"yearData", year:y}, res=>{
+    if(!res || !res.ok || !res.total){ ySel.value = YEAR.cur; return; }
+    YEAR.cache[y] = res; go2(res);
+  }, 25000, ()=>{ ySel.value = YEAR.cur; });
+}
+/* Тоқсандық есептерде бар жылдарды жыл таңдағышқа қосу */
+function loadYears(){
+  if(!API_URL) return;
+  jsonp({action:"yearData"}, res=>{
+    if(!res || !res.ok) return;
+    if(res.total) YEAR.cache[res.year] = res;
+    (res.years||[]).slice().sort((a,b)=>a-b).forEach(y=>{
+      if(y===YEAR.baseYear || [].some.call(ySel.options, o=>+o.value===y)) return;
+      ySel.add(new Option(y+" ж.", y), 0);
+    });
+  }, 25000);
+}
+/* Өңір атауы (тізілім) → аналитикадағы атауы */
+function yearRegKey(n){
+  if(n.indexOf("lib:")===0){
+    if(/академиялық/i.test(n)) return "ҚР ҰАК";
+    if(/[Зз]ағип|нашар көретін/.test(n)) return "ҚР ЗНКААК";
+    return "ҚР ҰК";
+  }
+  return ({"Алматы қаласы":"Алматы","Астана қаласы":"Астана","Шымкент қаласы":"Шымкент"})[n] ? "city:"+n.split(" ")[0] : n.replace(/ облысы$/,"");
+}
+function regMatch(name, key){
+  if(key.indexOf("city:")===0) return name.indexOf(key.slice(5))===0 && /қ\.|қалалық/.test(name);
+  return name===key;
+}
+const r1 = v => Math.round(v*10)/10;
+const pctOf = (a,b) => b ? r1(a/b*100) : 0;
+/* 2025 құрылымындағы DATA-ны жылдың жиынтығымен толтыру: есептерде жоқ көрсеткіштер 2025 жылғы күйінде қалады */
+function buildYearData(B, yd){
+  const D = JSON.parse(JSON.stringify(B)), t = yd.total, s = t.s, y = yd.year;
+  const full = t.libs && t.full/t.libs >= 0.9;                      // жылдың есебі толық (90%-дан көп кітапхана 4 тоқсан)
+  const P = v => full ? v : null;                                    // алдыңғы жылмен салыстыру — тек толық жылда
+  const qn = [1,2,3,4].filter(q=>yd.qs[q]).map(q=>R4[q]);
+  D.meta = Object.assign({}, B.meta, {current:{year:y, period:"period"}, ytd:!full, yd:{rep:t.rep, libs:t.libs, full:t.full, q:qn.join(", ")},
+    asOf: y + (qn.length ? " · " + qn.join(", ") + " " + (LANG==="ru"?"кв.":LANG==="en"?"Q":"тоқсан") : "")});
+  const regs = {};
+  (yd.regions||[]).forEach(r=>{ regs[yearRegKey(r.name)] = r; });
+  const regOfName = name => { const k = Object.keys(regs).find(k=>regMatch(name,k)); return k ? regs[k] : null; };
+  D.totals = {
+    libs:{v:t.libs, p:P(B.totals.libs.v), label:B.totals.libs.label}, users:{v:s["6.1"], p:P(B.totals.users.v), label:B.totals.users.label},
+    visits:{v:s["6.3"], p:P(B.totals.visits.v), label:B.totals.visits.label}, loans:{v:s["6.2"], p:P(B.totals.loans.v), label:B.totals.loans.label},
+    fund:{v:s["4.1"], p:P(B.totals.fund.v), label:B.totals.fund.label}, staff:{v:s["5.3"], p:P(B.totals.staff.v), label:B.totals.staff.label}};
+  const adults = Math.max(s["6.1"]-s["6.4"]-s["6.5"], 0), perLib = t.rep ? Math.round(s["6.1"]/t.rep) : 0;
+  D.users = Object.assign({}, B.users, {total:s["6.1"], prev:P(B.users.total), children:s["6.4"], childrenPct:pctOf(s["6.4"],s["6.1"]),
+    youth:s["6.5"], youthPct:pctOf(s["6.5"],s["6.1"]), adults:adults, adultsPct:pctOf(adults,s["6.1"]), perLib:perLib, perLibDiff:full ? perLib-B.users.perLib : 0});
+  D.visits = {total:s["6.3"], internet:s["6.7"], internetPct:pctOf(s["6.7"],s["6.3"])};
+  D.loans = {total:s["6.2"], kz:s["6.6"], kzPct:pctOf(s["6.6"],s["6.2"])};
+  D.fund = Object.assign({}, B.fund, {total:s["4.1"], kazakh:s["4.5"], kazakhPct:pctOf(s["4.5"],s["4.1"])});
+  D.acq = Object.assign({}, B.acq, {total:s["4.6"], kz:s["4.7"], kzPct:pctOf(s["4.7"],s["4.6"]), diff:full ? s["4.6"]-B.acq.total : 0,
+    diffKz:full ? s["4.7"]-B.acq.kz : 0, perLib:t.rep ? Math.round(s["4.6"]/t.rep) : 0, perLibKz:t.rep ? Math.round(s["4.7"]/t.rep) : 0,
+    byRegion:B.acq.byRegion.map(x=>{ const r = regOfName(x.region); return Object.assign({}, x, {total:r ? r.s["4.6"] : 0}); })});
+  D.renewal = Object.assign({}, B.renewal, {fact:pctOf(s["4.6"],s["4.1"]), prev:B.renewal.fact,
+    byRegion:B.renewal.byRegion.map(x=>{ const r = regOfName(x.region); return {region:x.region, y2024:x.y2025, y2025:r ? pctOf(r.s["4.6"],r.s["4.1"]) : 0}; })});
+  D.supply = Object.assign({}, B.supply, {value:s["6.1"] ? r1(s["4.1"]/s["6.1"]) : 0, prev:B.supply.value,
+    byRegion:B.supply.byRegion.map(x=>{ const r = regOfName(x.region); return {region:x.region, y2024:x.y2025, y2025:r && r.s["6.1"] ? r1(r.s["4.1"]/r.s["6.1"]) : 0}; })});
+  D.regions = B.regions.map(x=>{ const r = regOfName(x.name);
+    return Object.assign({}, x, {libs:r ? r.libs : x.libs, fund:r ? r.s["4.1"] : 0, fundKz:r ? r.s["4.5"] : 0, loans:r ? r.s["6.2"] : 0, loansKz:r ? r.s["6.6"] : 0,
+      users:r ? r.s["6.1"] : 0, visits:r ? r.s["6.3"] : 0, staff:r ? r.s["5.3"] : 0,
+      p_libs:x.libs, p_fund:x.fund, p_loans:x.loans, p_users:x.users, p_visits:x.visits, p_staff:x.staff}); });
+  D.reading = B.reading.map(x=>{ const r = regOfName(x.region); const u = r ? r.s["6.1"] : 0; return Object.assign({}, x, {users:u, pct:pctOf(u,x.pop)}); });
+  D.country = Object.assign({}, B.country, {readingPct:pctOf(s["6.1"], B.country.population)});
+  D.staff = Object.assign({}, B.staff, {total:s["5.3"], prev:P(B.staff.total), higherLib:s["5.4"], higherPct:pctOf(s["5.4"],s["5.3"]),
+    secondary:s["5.5"], secondaryPct:pctOf(s["5.5"],s["5.3"]), noProfPct:s["5.3"] ? r1(100-pctOf(s["5.4"],s["5.3"])-pctOf(s["5.5"],s["5.3"])) : 0});
+  D.digital = Object.assign({}, B.digital, {automationCount:t.automation, automationPct:pctOf(t.automation,t.rep), internetPct:pctOf(t.internet,t.rep),
+    copies:s["3.12"]});
+  D.infra = Object.assign({}, B.infra, {needRepair:t.needRepair, modernized:t.modernized});
+  return D;
+}
+/* 2026-дан кейінгі жылдардағы ескерту: қай тоқсандар, қанша кітапхана, қай көрсеткіштер 2025 жылғы күйінде */
+const YEAR_NOCALC = ["method","publish","events","compare"];
+function yearBanner(id){
+  const m = DATA.meta;
+  if(!m.yd || id==="passport") return "";
+  const yd = m.yd;
+  const kk = YEAR_NOCALC.indexOf(id)>-1
+    ? "Бұл бөлімнің деректері тоқсандық есептерден жиналмайды — " + YEAR.baseYear + " жылдың деректері көрсетілген."
+    : (m.ytd ? m.current.year + " жыл: " + (yd.q || "—") + " тоқсандардың бекітілген есептері бойынша алдын ала деректер" : m.current.year + " жылдың қорытындысы")
+      + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " кітапхана). Тоқсандық есепте жиналмайтын көрсеткіштер (ведомстволар, қор құрамы, жас топтары, АКАЖ түрлері т.б.) " + YEAR.baseYear + " жылғы күйінде.";
+  const ru = YEAR_NOCALC.indexOf(id)>-1
+    ? "Данные этого раздела не собираются из квартальных отчётов — показаны данные за " + YEAR.baseYear + " год."
+    : (m.ytd ? m.current.year + " год: предварительные данные по утверждённым отчётам за " + (yd.q || "—") + " кв." : "Итоги " + m.current.year + " года")
+      + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " библиотек). Показатели, не входящие в квартальный отчёт (ведомства, состав фонда, возраст, виды АБИС и др.), — за " + YEAR.baseYear + " год.";
+  const en = YEAR_NOCALC.indexOf(id)>-1
+    ? "This section is not compiled from quarterly reports — " + YEAR.baseYear + " data are shown."
+    : (m.ytd ? m.current.year + ": preliminary data from approved reports for Q " + (yd.q || "—") : m.current.year + " annual results")
+      + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " libraries). Indicators not in the quarterly report are shown as of " + YEAR.baseYear + ".";
+  return `<div class="year-note">${svg(PI.info)}<span>${esc(LANG==="ru"?ru:LANG==="en"?en:kk)}</span></div>`;
+}
 
 const sidebar = document.getElementById("sidebar"), scrim = document.getElementById("scrim");
 function closeSidebar(){ sidebar.classList.remove("open"); scrim.classList.remove("on"); }
@@ -6281,6 +6405,7 @@ try{ if(sessionStorage.getItem("laba_tok")) loadCabinet(); }catch(e){}
 render(location.hash.slice(1)||"home");
 loadRemote();
 loadPassports();
+loadYears();
 </script>
 </body>
 </html>
