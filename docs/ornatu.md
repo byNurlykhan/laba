@@ -71,7 +71,7 @@
 ## Әзірлеушіге: автоматты тесттер
 
 ```bash
-node tools/test/api-test.js     # 114 серверлік тексеру (Apps Script эмуляторында, нақты тізіліммен)
+node tools/test/api-test.js     # 130 серверлік тексеру (Apps Script эмуляторында, нақты тізіліммен)
 ```
 
 `tools/test/gas-emulator.js` — Code.gs-ті Node.js-те іске қосатын жеңіл эмулятор (SpreadsheetApp, CacheService т.б.).

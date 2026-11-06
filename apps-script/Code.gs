@@ -794,9 +794,12 @@ const CAB = {
   BASE_YEAR: 2025                            // «Тізілім» парағындағы бастапқы деректер — 2025 жылдың қорытындысы
 };
 const ROLES = {
-  admin: 'Бас әкімші', oblast: 'Облыстық әдіскер', district: 'Аудандық әдіскер',
+  admin: 'Бас әкімші', staff: 'Бас орталық маманы', oblast: 'Облыстық әдіскер', district: 'Аудандық әдіскер',
   city: 'Қалалық әдіскер', republic: 'Республикалық кітапхана әдіскері'
 };
+/** Бас орталық маманы: деректер бойынша бас әкімшімен бірдей (барлық кітапхана, бекіту, тұрақты өрістер, кітаптар),
+ *  бірақ аккаунттар, журнал, өзгерістер тарихы және мұрағат — тек бас әкімшіде */
+const cabFull_ = u => u.role === 'admin' || u.role === 'staff';
 const USER_COLS = ['user_id', 'login', 'full_name', 'position', 'role', 'unit_id', 'library_id', 'institution', 'phone',
   'status', 'pass_hash', 'salt', 'iter', 'failed_count', 'locked_until', 'last_login', 'created_at', 'created_by', 'updated_at'];
 const LOG_COLS = ['Уақыт', 'Пайдаланушы', 'Деңгейі', 'Аймақ', 'Мекеме', 'Кітапхана', 'Жыл', 'Тоқсан', 'Өріс',
@@ -898,7 +901,7 @@ function cabDispatch_(b) {
     case 'libs': return cabLibs_(u, b);
     case 'lib': return cabLib_(u, b);
     case 'save': return cabSave_(u, b);
-    case 'saveStatic': cabNeed_(u, 'admin'); return cabSaveStatic_(u, b);
+    case 'saveStatic': if (!cabFull_(u)) throw cabErr_('forbidden', 'Рұқсат жоқ'); return cabSaveStatic_(u, b);
     case 'history': return cabHistory_(u, b, false);
     case 'log': cabNeed_(u, 'admin'); return cabHistory_(u, b, true);
     case 'report': return cabReport_(u, b);
@@ -1062,7 +1065,7 @@ function cabUserValidate_(x, isNew) {
     const libs = cabRepLibs_();
     if (!libs.some(l => String(l.id) === String(x.library_id))) throw cabErr_('invalid', 'Республикалық кітапхананы таңдаңыз');
     x.unit_id = 'KZ';
-  } else if (role === 'admin') {
+  } else if (role === 'admin' || role === 'staff') {
     x.unit_id = 'KZ'; x.library_id = '';
   } else {
     const unit = units.find(n => n.id === x.unit_id);
@@ -1209,7 +1212,7 @@ function cabRepLibs_() {
 function cabCan_(u, m) {
   if (!m) return false;
   switch (u.role) {
-    case 'admin': return true;
+    case 'admin': case 'staff': return true;
     case 'oblast': return m.oblast === u.unit_id;
     case 'city': return m.oblast === u.unit_id;
     case 'district': return m.unit === u.unit_id;
@@ -1220,7 +1223,7 @@ function cabCan_(u, m) {
 /** Сүзгілер үшін пайдаланушыға көрінетін бірліктер */
 function cabUnitsFor_(u) {
   const all = cabAllUnits_();
-  if (u.role === 'admin') return all;
+  if (cabFull_(u)) return all;
   if (u.role === 'oblast' || u.role === 'city') return all.filter(n => n.id === u.unit_id || n.parent === u.unit_id);
   return all.filter(n => n.id === u.unit_id);
 }
@@ -1353,7 +1356,7 @@ function cabQClearCache_(year) {
 }
 /** Бекітуші: аудан/облыстық бағынысты қала кітапханасын — облыстық әдіскер, қалғанын — бас әкімші */
 function cabCanApprove_(u, m) {
-  if (u.role === 'admin') return true;
+  if (cabFull_(u)) return true;
   return u.role === 'oblast' && String(m.unit).indexOf('D:') === 0 && m.oblast === u.unit_id;
 }
 function cabLibs_(u, b) {
@@ -1381,7 +1384,7 @@ function cabLib_(u, b) {
   const annual = cabAgg_(rows.filter(o => o.year === yq[0]));
   return { ok: true, lib: m, passport: passportById_(m.id), year: yq[0], quarter: yq[1],
            current: cabQPublic_(cur), previous: cabQPublic_(prev), history: rows.map(cabQPublic_),
-           annual: annual, archive: archive, canStatic: u.role === 'admin', canApprove: cabCanApprove_(u, m) };
+           annual: annual, archive: archive, canStatic: cabFull_(u), canApprove: cabCanApprove_(u, m) };
 }
 /** Мәндерді тексеру → {vals, errors} (submit: бос сандық өріс қате; draft: бос өріс рұқсат) */
 function cabValidate_(values, submit) {
@@ -1546,7 +1549,7 @@ function bookOwners_() {
     .sort((a, b) => ord[a.st] - ord[b.st] || (a.st === 'rep' ? Number(a.id) - Number(b.id) : (a.region > b.region ? 1 : -1)));
 }
 function bookCanEdit_(u, o) {
-  if (u.role === 'admin') return true;
+  if (cabFull_(u)) return true;
   if (u.role === 'oblast' || u.role === 'city') return o.unit === u.unit_id;
   if (u.role === 'republic') return String(o.id) === String(u.library_id);
   return false;

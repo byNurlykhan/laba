@@ -81,7 +81,7 @@ const CTX = {
     passOnce:"Парольді қазір көшіріп алып, әдіскерге беріңіз — ол қайта көрсетілмейді.", copy:"Көшіру", copied:"Көшірілді",
     newPassQ:"Жаңа парольді енгізіңіз (бос қалдырсаңыз — жүйе жасайды):", blockQ:"{n} аккаунтын бұғаттау керек пе? Журнал жазбалары сақталады.",
     bulkRes:"Нәтиже: {a} жасалды, {b} қате", bulkDl:"Парольдер тізімін жүктеу (CSV)", choose:"Таңдаңыз…",
-    rAdmin:"Бас әкімші", rOblast:"Облыстық әдіскер", rDistrict:"Аудандық әдіскер", rCity:"Қалалық әдіскер", rRepublic:"Республикалық кітапхана әдіскері",
+    rAdmin:"Бас әкімші", rStaff:"Бас орталық маманы", rOblast:"Облыстық әдіскер", rDistrict:"Аудандық әдіскер", rCity:"Қалалық әдіскер", rRepublic:"Республикалық кітапхана әдіскері",
     sessionEnd:"Сессия уақыты аяқталды. Қайта кіріңіз.", netErr:"Серверге қосылу мүмкін болмады. Интернетті тексеріңіз.",
     apiMissing:"Сервердің мекенжайы (API_URL) бапталмаған.", done:"Дайын", close:"Жабу", yes:"Иә", no:"Жоқ"
   },
@@ -155,7 +155,7 @@ const CTX = {
     passOnce:"Скопируйте пароль сейчас и передайте методисту — повторно он не показывается.", copy:"Копировать", copied:"Скопировано",
     newPassQ:"Введите новый пароль (если оставить пустым — будет сгенерирован):", blockQ:"Заблокировать аккаунт {n}? Записи журнала сохранятся.",
     bulkRes:"Итог: создано {a}, ошибок {b}", bulkDl:"Скачать список паролей (CSV)", choose:"Выберите…",
-    rAdmin:"Главный администратор", rOblast:"Областной методист", rDistrict:"Районный методист", rCity:"Городской методист", rRepublic:"Методист республиканской библиотеки",
+    rAdmin:"Главный администратор", rStaff:"Специалист головного центра", rOblast:"Областной методист", rDistrict:"Районный методист", rCity:"Городской методист", rRepublic:"Методист республиканской библиотеки",
     sessionEnd:"Сессия истекла. Войдите снова.", netErr:"Не удалось подключиться к серверу. Проверьте интернет.",
     apiMissing:"Адрес сервера (API_URL) не настроен.", done:"Готово", close:"Закрыть", yes:"Да", no:"Нет"
   }
@@ -167,7 +167,7 @@ function ct(k, v){
   return s;
 }
 const ROMAN = ["", "I", "II", "III", "IV"];
-const ROLE_KEY = {admin:"rAdmin", oblast:"rOblast", district:"rDistrict", city:"rCity", republic:"rRepublic"};
+const ROLE_KEY = {admin:"rAdmin", staff:"rStaff", oblast:"rOblast", district:"rDistrict", city:"rCity", republic:"rRepublic"};
 const ROLE_UNIT = {oblast:["oblast"], district:["district","city"], city:["rcity"]};
 const ST_NAME = () => ({rep:tx(LTM.rep), obl:tx(LTM.obl), rcity:tx(LTM.rcity), city:tx(LTM.city), dist:tx(LTM.dist), rural:tx(LTM.rural)});
 
@@ -355,9 +355,9 @@ function shell(active, inner){
   const me = S.me, adm = me.role === "admin";
   const tabs = [["cabinet", "tLibs"]];
   if(["admin","oblast","city"].indexOf(me.role) > -1) tabs.push(["cabinet/history", "tHistory"]);
-  if(["admin","oblast"].indexOf(me.role) > -1) tabs.push(["cabinet/queue", "tQueue"]);
+  if(["admin","staff","oblast"].indexOf(me.role) > -1) tabs.push(["cabinet/queue", "tQueue"]);
   tabs.push(["cabinet/summary", "tSum"]);
-  if(["admin","oblast","city","republic"].indexOf(me.role) > -1) tabs.push(["cabinet/books", "tBooks"]);
+  if(["admin","staff","oblast","city","republic"].indexOf(me.role) > -1) tabs.push(["cabinet/books", "tBooks"]);
   tabs.push(["cabinet/reports", "tReports"]);
   if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"], ["admin/archive", "tArch"]);
   return `<div class="cab">
@@ -779,7 +779,7 @@ function bindHist(full){
 
 /* Есептер */
 VIEWS.reports = () => {
-  const st = ST_NAME(), units = (S.units || []).filter(u => u.type !== "republic" || S.me.role === "admin");
+  const st = ST_NAME(), units = (S.units || []).filter(u => u.type !== "republic" || ["admin", "staff"].indexOf(S.me.role) > -1);
   return shell("cabinet/reports", `
   <div class="ph"><h2>${esc(ct("tReports"))}</h2><p>${esc(ct("repDesc"))}</p></div>
   <form class="card cab-form cab-rep" id="rForm">
@@ -917,7 +917,8 @@ VIEWS.users.after = () => {
       ["turk.oblys", "Сәрсенова Айгүл Маратқызы", "Бас әдіскер", "облыстық", "Түркістан облысы", "", "Түркістан облыстық кітапханасы", "+7 701 000 00 00", ""],
       ["keles.audan", "Әлиев Нұрлан", "Әдіскер", "аудандық", "Түркістан облысы, Келес ауданы", "", "Келес ОКЖ", "+7 702 000 00 00", ""],
       ["astana.qala", "Иванова Анна", "Әдіскер", "қалалық", "Астана қаласы", "", "Астана ОКЖ", "", "Astana2026x"],
-      ["nlrk", "Омарова Дана", "Әдіскер", "республикалық", "", "1", "ҚР Ұлттық кітапханасы", "", ""]];
+      ["nlrk", "Омарова Дана", "Әдіскер", "республикалық", "", "1", "ҚР Ұлттық кітапханасы", "", ""],
+      ["nlrk.maman", "Ахметова Сәуле", "Жетекші маман", "бас орталық маманы", "", "", "ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет", "", ""]];
     return excelBook("Аккаунттар", aoa, {head: 0, cols: [16, 32, 18, 16, 34, 14, 32, 18, 14]})
       .then(wb => saveBook(wb, "laba-akkaunttar-ulgi.xlsx"));
   }).catch(err => toast(String(err && (err.msg || err.message) || err), "bad")));
@@ -1018,7 +1019,7 @@ function bulkImport(file){
     const ix = {login: col(/логин|login/), full_name: col(/аты|фио|name/), position: col(/лауазым|должн/), role: col(/деңгей|уров|role/),
                 unit_name: col(/аймақ|аймағ|регион|облыс|unit/), library_id: col(/республикалық кітапхана|№/), institution: col(/мекеме|учрежд/),
                 phone: col(/телефон|phone/), password: col(/пароль|password/)};
-    const roleOf = s => { s = String(s).toLowerCase(); return /облыс|област|oblast/.test(s) ? "oblast" : /аудан|район|district/.test(s) ? "district" : /респ|republic/.test(s) ? "republic" : /қала|город|city/.test(s) ? "city" : /әкімші|админ/.test(s) ? "admin" : ""; };
+    const roleOf = s => { s = String(s).toLowerCase(); return /маман|специалист|staff/.test(s) ? "staff" : /облыс|област|oblast/.test(s) ? "oblast" : /аудан|район|district/.test(s) ? "district" : /респ|republic/.test(s) ? "republic" : /қала|город|city/.test(s) ? "city" : /әкімші|админ/.test(s) ? "admin" : ""; };
     const lines = [];                                    // әр жолдың файлдағы нөмірі (нәтиже терезесі үшін)
     const rows = aoa.map((r, i) => [r, i]).slice(hi + 1).filter(x => x[0].some(c => String(c).trim())).map(x => {
       const r = x[0], o = {}; Object.keys(ix).forEach(k => { o[k] = ix[k] > -1 ? String(r[ix[k]]).trim() : ""; });
@@ -1064,7 +1065,7 @@ VIEWS.summary = () => {
   const y0 = new Date().getFullYear(), ys = [];
   for(let y = y0; y >= 2026; y--) ys.push(y);
   if(S.sumQ == null) S.sumQ = S.quarter;
-  const units = (S.units || []).filter(u => u.type !== "republic" || S.me.role === "admin");
+  const units = (S.units || []).filter(u => u.type !== "republic" || ["admin", "staff"].indexOf(S.me.role) > -1);
   return shell("cabinet/summary", `
   <div class="ph"><h2>${esc(ct("tSum"))}</h2><p>${esc(ct("sumDesc"))}</p></div>
   <div class="card cab-period">
