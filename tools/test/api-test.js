@@ -14,10 +14,24 @@ const msg = g.setupCabinet();
 console.log('   ' + msg.replace(/\n/g, '\n   '));
 const pass = (msg.match(/уақытша пароль: (\S+)/) || [])[1];
 ok(g.ss.getSheetByName('Тізілім').getLastRow() === 3876, 'Тізілім: 3 875 кітапхана + тақырып');
-ok(g.ss.getSheetByName('Тоқсандық').getLastRow() === 3876, 'Тоқсандық: 2026-III тоқсаны 3 875 жол');
+ok(g.ss.getSheetByName('Тоқсандық').getLastRow() === 1, 'Тоқсандық бос (2026 жылдың тоқсандары әдіскерлер енгізгенде толады)');
+ok(g.ss.getSheetByName('Мұрағат').getLastRow() === 3876, 'Мұрағат: 2025 жылдың 3 875 паспорты');
+ok(JSON.stringify(JSON.parse(g.get({ action: 'archiveYears' })).years.map(y => [y.year, y.count])) === '[[2025,3875]]', 'Мұрағаттағы жылдар: 2025');
 ok(!!pass, 'Бас әкімшінің уақытша паролі берілді');
 ok(/Өзгеріс жоқ/.test(g.setupCabinet()), 'Қайта іске қосу қауіпсіз (өзгеріс жоқ)');
-ok(g.ss.getSheetByName('Тоқсандық').getLastRow() === 3876, 'Қайта орнатқанда деректер көбеймеді');
+ok(g.ss.getSheetByName('Мұрағат').getLastRow() === 3876, 'Қайта орнатқанда мұрағат көбеймеді');
+{ // бұрынғы нұсқадан көшу: тізілім «2026 III тоқсан» деп жазылған болса
+  const g2 = createEnv();
+  g2.cabImportRegistry_();
+  const qs = g2.cabSheet_('Тоқсандық', ['key', 'lib_id', 'year', 'quarter', '6.1', '6.2', '6.3', 'updated_at', 'user_id', 'user_name', 'user_institution', 'user_phone', 'user_role']);
+  const rows = g2.getPassports_().map(x => [x.id + '|2026|3', x.id, 2026, 3, x.f['6.1'] || '', x.f['6.2'] || '', x.f['6.3'] || '',
+    '2026-10-01 00:00', 'import', 'Тізілім 01.10.2026 (импорт)', 'ҚР Ұлттық кітапханасы', '', 'Импорт']);
+  g2.writeRows_(qs, 2, rows);
+  ok(qs.getMaxRows() === 3876, 'Ескі нұсқа: Тоқсандық толық (3 875 импорт жолы, бос жол жоқ)');
+  const m2 = g2.setupCabinet();
+  ok(qs.getLastRow() === 1 && /импорт жолдары \(3875\)/.test(m2), 'Көшу: импорт жолдары алынды');
+  ok(g2.ss.getSheetByName('Мұрағат').getLastRow() === 3876, 'Көшу: деректер 2025 жылдың мұрағатында');
+}
 
 step('1. Кіру жүйесі');
 let r = g.post({ action: 'login', login: 'admin', password: 'wrong-pass-1' });
@@ -75,7 +89,8 @@ ok(!g.post({ action: 'saveStatic', token: tO, id: L_o[0].id, fields: { '1.1': 'X
 step('4. Тоқсандық жаңарту');
 const lib = L_d.find(l => l.st === 'rural') || L_d[0];
 x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 4 });
-ok(x.ok && !x.current && x.previous && String(x.previous.quarter) === '3', 'IV тоқсан бос, алдыңғы (III) тоқсан мәндері көрсетіледі');
+ok(x.ok && !x.current && !x.previous && x.archive.length === 1 && x.archive[0].year === 2025, 'IV тоқсан бос, 2025 жылдың мұрағаты көрсетіледі');
+const arch61 = x.archive[0].v['6.1'];
 x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 4, values: { '6.1': 'abc', '6.2': -5, '6.3': '' } });
 ok(!x.ok && Object.keys(x.fields).length === 3, 'Қате мәндер (мәтін, теріс сан, бос) қабылданбайды');
 x = g.post({ action: 'save', token: tD, id: lib.id, year: 2027, quarter: 4, values: { '6.1': 1, '6.2': 1, '6.3': 1 } });
@@ -86,10 +101,9 @@ ok(g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 4, value
    'Кезектен қайта жіберілген сұрау екі рет жазылмайды');
 x = g.post({ action: 'save', token: tO, id: lib.id, year: 2026, quarter: 4, values: { '6.1': 1300, '6.2': 18000, '6.3': 9000 } });
 ok(x.ok && x.changed === 1, 'Облыстық әдіскер аудандағы кітапхананы түзете алады (1 өріс)');
-x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 3 });
-ok(x.current && x.current.user_name.indexOf('Тізілім') > -1, 'III тоқсан тарихта сақталды (өшпеді)');
 x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 4 });
-ok(x.current.user_name === 'Облыс Әдіскері' && x.history.length === 2, 'Соңғы жаңартқан адам және тоқсандар тарихы көрінеді');
+ok(x.archive[0].v['6.1'] === arch61, '2025 жылдың мәні мұрағатта өзгерген жоқ');
+ok(x.current.user_name === 'Облыс Әдіскері' && x.history.length === 1, 'Соңғы жаңартқан адам және тоқсандар тарихы көрінеді');
 
 step('5. Журнал');
 let lg = g.post({ action: 'log', token: admin, limit: 50 });
@@ -132,6 +146,22 @@ rp = g.post({ action: 'report', token: tO, year: 2026, quarter: 3, unit: U('Тү
 ok(rp.rows.length === L_d.length, 'Облыстық есеп: аудан бойынша сүзгі');
 rp = g.post({ action: 'report', token: tO, year: 2026, quarter: 3, unit: U('Абай облысы') });
 ok(rp.rows.length === 0, 'Басқа облыстың сүзгісін қойса да — дерек берілмейді');
+
+step('7а. Жылдық мұрағат');
+rp = g.post({ action: 'report', token: tD, archive: 2025 });
+ok(rp.ok && rp.rows.length === L_d.length && rp.rows.find(r => String(r.id) === String(lib.id)).v['6.1'] === arch61, 'Мұрағаттағы 2025 жыл бойынша есеп');
+ok(!g.post({ action: 'report', token: tD, archive: 2019 }).ok, 'Мұрағатта жоқ жыл — қате');
+ok(g.post({ action: 'archive', token: tO, year: 2026 }).error === 'forbidden', 'Жылды мұрағатқа тек бас әкімші жаба алады');
+x = g.post({ action: 'archive', token: admin, year: 2026 });
+ok(x.ok && x.count === 3875, '2026 жыл мұрағатқа жабылды (3 875)');
+ok(g.post({ action: 'archive', token: admin, year: 2026 }).error === 'exists', 'Қайта жабу — тек растаумен (overwrite)');
+ok(g.post({ action: 'archive', token: admin, year: 2026, overwrite: true }).replaced, 'Растаумен ауыстыруға болады');
+ok(g.ss.getSheetByName('Мұрағат').getLastRow() === 1 + 3875 * 2, 'Ауыстырғанда жолдар екі еселенбеді');
+const hist = JSON.parse(g.get({ action: 'passHistory', id: lib.id })).years;
+ok(hist.length === 2 && hist[0].year === 2026 && hist[0].f['6.1'] === '1300' && hist[1].f['6.1'] === arch61,
+   'Паспорт тарихы: 2026 (соңғы тоқсанның мәні) және 2025');
+ok(JSON.stringify(hist).indexOf('Бас әкімші') < 0, 'Ашық тарихта кім мұрағаттағаны көрсетілмейді');
+ok(g.post({ action: 'log', token: admin, q: 'мұрағатқа жабылды' }).rows.length >= 1, 'Мұрағатқа жабу журналға жазылды');
 
 step('8. Ашық сайт');
 const pub = JSON.parse(g.get({ action: 'passports' }));

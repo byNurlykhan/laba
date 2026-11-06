@@ -475,6 +475,15 @@ select.pick:hover{border-color:var(--faint)}
 .cab-btn:hover,.cab-btn.on{border-color:var(--blue);color:var(--blue)}
 .cab-btn.on{background:var(--soft)}
 .q-info{display:flex;gap:9px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 12px}
+.q-info.arch{color:var(--ink);background:var(--soft);border:1px solid var(--soft-line);border-radius:10px;padding:9px 12px;margin:0 0 16px}
+.cab-arch td{background:var(--surface)}
+.yr-sw{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.yr-sw span{font-size:13px;color:var(--muted);margin-right:2px}
+.yr-sw a{font-size:13px;font-weight:600;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);text-decoration:none}
+.yr-sw a:hover{border-color:var(--blue);color:var(--blue)}
+.yr-sw a.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.kpi-d{font-size:12px;font-weight:600;margin-top:4px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kpi-d.up{color:#059669}.kpi-d.down{color:#DC2626}
 .q-info svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:2;flex-shrink:0}
 .cab{display:flex;flex-direction:column;gap:16px}
 .cab-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px}
@@ -4402,6 +4411,36 @@ const TXT = {
 "ru":"обновлено {d}",
 "en":"updated {d}"
 },
+"p.cur":{
+"kk":"Ағымдағы",
+"ru":"Текущие",
+"en":"Current"
+},
+"p.years":{
+"kk":"Жыл:",
+"ru":"Год:",
+"en":"Year:"
+},
+"p.qbase":{
+"kk":"Деректер: {y} жылдың қорытындысы",
+"ru":"Данные: итоги {y} года",
+"en":"Data: {y} annual results"
+},
+"p.arch":{
+"kk":"{y} жылдың мұрағаттағы деректері · сақталған күні {d}",
+"ru":"Архивные данные за {y} год · сохранено {d}",
+"en":"Archived data for {y} · saved {d}"
+},
+"p.archT":{
+"kk":"{y} жыл (мұрағат)",
+"ru":"{y} год (архив)",
+"en":"{y} (archive)"
+},
+"p.archNone":{
+"kk":"Бұл кітапхананың {y} жылғы мұрағаты табылмады.",
+"ru":"Архив этой библиотеки за {y} год не найден.",
+"en":"No {y} archive found for this library."
+},
 "pp.title":{
 "kk":"Кітапхана паспорты",
 "ru":"Паспорт библиотеки",
@@ -5177,7 +5216,9 @@ P.events.charts = () => {};
 
 /* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
    Кестеде дерек әлі болмаса, бет демо (үлгі) деректермен көрсетіледі. */
-const PASS = {list:[], status:"loading", src:"", full:{}, pending:{},
+/* Сайттағы бастапқы деректер — 2025 жылдың қорытындысы; кейінгі жылдар мұрағатта сақталады */
+const PASS_BASE_YEAR = 2025;
+const PASS = {list:[], status:"loading", src:"", full:{}, pending:{}, hist:{}, histPending:{},
   hq:"", q:"", type:"", cat:"", dist:"", sort:"lvl", view:"cards", shown:24, metric:"count", region:""};
 const PF = [
   {n:"1", t:{kk:"Кітапхана туралы ақпарат",ru:"Информация о библиотеке",en:"Library information"}, f:[
@@ -5712,8 +5753,28 @@ function secTable(g, skip){
 const PASS_STATIC = "data/passports-index.json";
 const passChunk = id => "data/passports/" + Math.floor(Number(id)/200) + ".json";
 function rerenderIfOpen(id){
-  if(location.hash.slice(1)==="passport/"+encodeURIComponent(id)) render(location.hash.slice(1));
+  const h = location.hash.slice(1), base = "passport/"+encodeURIComponent(id);
+  if(h===base || h.indexOf(base+"/")===0) render(h);
 }
+/* Паспорттың мұрағаттағы жылдары (тек тірі деректе; сайттың файлдарында — тек 2025 жыл) */
+function requestHist(id){
+  if(PASS.histPending[id] || PASS.hist[id]) return;
+  if(PASS.src!=="live"){ PASS.hist[id] = []; return; }
+  PASS.histPending[id] = 1;
+  jsonp({action:"passHistory", id:id}, res=>{
+    PASS.histPending[id] = 0;
+    PASS.hist[id] = (res && res.ok && res.years || []).map(y=>Object.assign(normPass(y), {year:Number(y.year), at:String(y.archived_at||"")}));
+    rerenderIfOpen(id);
+  }, 20000, ()=>{ PASS.histPending[id] = 0; PASS.hist[id] = []; rerenderIfOpen(id); });
+}
+/* Мұрағаттағы мән ағымдағымен бірдей болса — ағымдағы паспорттың аудармасын қолданамыз */
+function archTr(a, cur){
+  if(!cur || !cur.tr) return a;
+  ["ru","en"].forEach(l=>{ const t = cur.tr[l]||{};
+    Object.keys(t).forEach(c=>{ if(c==="d" ? a.d===cur.d : (a.f[c] && a.f[c]===cur.f[c])) a.tr[l][c] = t[c]; }); });
+  return a;
+}
+const fmtDay = s => { const d = String(s||"").slice(0,10).split("-"); return d.length===3 ? d[2]+"."+d[1]+"."+d[0] : ""; };
 function requestFull(id){
   if(PASS.pending[id]) return;
   PASS.pending[id] = 1;
@@ -5742,7 +5803,10 @@ function requestFull(id){
 /* Негізгі көрсеткіштердің кезеңі мен жаңартылған күні (аты-жөні ашық сайтта көрсетілмейді) */
 function qInfo(x){
   const q = String(x.q || "").split("-");
-  if(q.length !== 2) return "";
+  if(q.length !== 2){
+    const h = PASS.hist[x.id], y = h && h.length ? h[0].year : PASS_BASE_YEAR;
+    return `<div class="q-info">${svg(PI.info)}<span>${esc(T("p.qbase",{y:y}))}</span></div>`;
+  }
   const per = T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]});
   const d = String(x.u || "").split("-");
   return `<div class="q-info">${svg(PI.info)}<span>${esc(per)}${d.length===3 ? " · " + esc(T("p.qupd",{d:d[2]+"."+d[1]+"."+d[0]})) : ""}</span></div>`;
@@ -5771,7 +5835,7 @@ function ppSec(f, g, skip){
   const rows = g.f.filter(x => (skip || []).indexOf(x[0]) < 0).map(x => ppRow(f, x[0])).join("");
   return `<section class="pp-sec"><h3><i>${g.n}</i>${esc(tx(g.t))}</h3><table><tbody>${rows}</tbody></table></section>`;
 }
-function passPrint(f, x){
+function passPrint(f, x, label){
   const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
   const d = new Date(), p2 = n => String(n).padStart(2, "0");
   const tags = [tx(ty), x.cat ? catName(x.cat) : "", r ? tx(r.n) + (x.d ? ", " + x.d : "") : ""].filter(Boolean);
@@ -5783,10 +5847,11 @@ function passPrint(f, x){
     const shortNote = note.length > 70 ? note.slice(0, 70).replace(/\s+\S*$/, "") + " …" : note;
     return `<div><b${big || !v ? "" : ' class="t"'}>${esc(big || (v ? shortNote : "—"))}</b>${big && note ? `<em>${esc(shortNote)}</em>` : ""}<span>${esc(pl(c))}</span></div>`; }).join("");
   const q = String(f.q || "").split("-"), u = String(f.u || "").split("-");
-  const per = q.length === 2 ? T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]}) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "") : "";
+  const per = q.length === 2 ? T("p.qper",{y:q[0], q:["","I","II","III","IV"][+q[1]] || q[1]}) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "")
+    : label ? "" : T("p.qbase",{y: (PASS.hist[x.id]||[])[0] ? PASS.hist[x.id][0].year : PASS_BASE_YEAR});
   return `<div class="pp" aria-hidden="true">
     <header class="pp-head"><img src="img/laba-logo.png" alt="">
-      <div><b>${esc(T("pp.title"))}</b><span>${esc(T("owner"))} · ${esc(T("dept"))}</span>
+      <div><b>${esc(T("pp.title"))}${label ? ` · ${esc(label)}` : ""}</b><span>${esc(T("owner"))} · ${esc(T("dept"))}</span>
       <span>${esc(T("pp.printed",{d:p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()}))}</span></div></header>
     <div class="pp-title"><div class="pp-tags">${tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>
       <h1>${esc(pv(f,"1.1"))}</h1></div>
@@ -5801,10 +5866,25 @@ function passPrint(f, x){
     <footer class="pp-foot"><span>${esc(T("source"))}: ${esc(T("s15.src"))}</span><span>bynurlykhan.github.io/laba/#passport/${esc(x.id)}</span></footer>
   </div>`;
 }
-function passDetail(x){
+function passDetail(x, yr){
   const full = x.demo ? x : PASS.full[x.id];
   if(!full && !isDemo()) requestFull(x.id);
-  const f = full ? Object.assign({}, full, {c: full.c, cat: full.cat || x.cat}) : x;
+  const hist = PASS.hist[x.id];
+  if(hist===undefined && !isDemo()) requestHist(x.id);
+  const arch = yr && hist ? hist.find(h=>String(h.year)===String(yr)) : null;
+  if(yr && !arch){
+    const msg = hist===undefined ? T("p.loadingOne") : T("p.archNone",{y:yr});
+    return `<div class="crumbs"><a href="#passport">${T("s15")}</a><span>›</span><a href="#passport/${esc(x.id)}">${esc(pv(full||x,"1.1"))}</a></div>
+      <div class="card p-empty">${esc(msg)}</div>`;
+  }
+  const f = arch ? archTr(Object.assign({}, arch, {tr:{ru:{},en:{}}, cat: arch.cat || x.cat}), full)
+                 : full ? Object.assign({}, full, {c: full.c, cat: full.cat || x.cat}) : x;
+  /* салыстыру: ағымдағы → мұрағаттың соңғы жылы; мұрағат жылы → одан бұрынғы жыл */
+  const base = (hist||[]).find(h=>arch ? h.year < arch.year : true) || null;
+  const yrs = hist && hist.length ? `<div class="yr-sw"><span>${esc(T("p.years"))}</span>
+      <a href="#passport/${esc(x.id)}" class="${arch?"":"on"}">${esc(T("p.cur"))}</a>
+      ${hist.map(h=>`<a href="#passport/${esc(x.id)}/${h.year}" class="${arch&&arch.year===h.year?"on":""}">${h.year}</a>`).join("")}</div>` : "";
+  const archNote = arch ? `<div class="q-info arch">${svg(PI.info)}<span>${esc(T("p.arch",{y:arch.year, d:fmtDay(arch.at)}))}</span></div>` : "";
   PASS._cur = f;
   const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
   const tel = pv(f,"1.4"), mail = pv(f,"1.5"), site = safeUrl(pv(f,"1.6"));
@@ -5817,7 +5897,7 @@ function passDetail(x){
   const kp = [["4.1","book"],["6.1","users"],["6.2","doc"],["6.3","globe"]].filter(k=>pv(f,k[0]));
   const kpis = kp.map(k=>`<div class="card kpi"><div class="lbl"><span>${esc(pl(k[0]))}</span>
       <span class="ic"><svg viewBox="0 0 24 24">${ICONS[k[1]]}</svg></span></div>
-      <div class="num">${esc(pv(f,k[0]))}</div></div>`).join("");
+      <div class="num">${esc(pv(f,k[0]))}</div>${kpiDelta(f, base, k[0])}</div>`).join("");
   /* «60 ақ-қара» → үлкен «60» және кішкене «ақ-қара» */
   const eq = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11"].map(c=>{ const v = pv(f,c);
     const m = v.match(/^(\d[\d\s]*(?:[.,]\d+)?)\s*(.*)$/);
@@ -5846,17 +5926,26 @@ function passDetail(x){
     <div class="pd-side">${radial(f.c*100,T("p.ring"))}
       <button class="btn-ghost" data-print>${svg(PI.print)}${T("p.print")}</button></div>
   </div>
+  ${yrs}${archNote}
   ${!full && !isDemo() ? `<div class="card p-empty" style="margin-bottom:20px">${T("p.loadingOne")}</div>` : ""}
   ${kpis?`<div class="grid g4 pd-kpis" style="margin-bottom:20px">${kpis}</div>`:""}
   <div class="grid g2" style="margin-bottom:16px">${secTable(PF[0],["1.1","1.2"])}${secTable(PF[1])}</div>
   <div style="margin-bottom:16px">${panel(null,"3. "+tx(PF[2].t),"",`<div class="eq">${eq}</div>
     <table class="tbl pass-tbl" style="margin-top:14px"><tbody>${eqRows}</tbody></table>`)}</div>
   <div class="grid g2" style="margin-bottom:16px">${secTable(PF[3])}${secTable(PF[4])}</div>
-  ${qInfo(full || x)}
+  ${arch ? "" : qInfo(full || x)}
   <div class="grid ${cmp?"g2":""}">${secTable(PF[5])}
     ${cmp?panel(null,T("p.cmp.t"),T("p.cmp.d",{a:tx(ty).toLowerCase()}),cmp):""}</div>
   <div class="src">${T("source")}: ${esc(T("s15.src"))}</div>
-  ${passPrint(f, x)}`;
+  ${passPrint(f, x, arch ? T("p.archT",{y:arch.year}) : "")}`;
+}
+/* KPI астындағы салыстыру: «2025: 14 977 · ▲ 3,2%» (мән өзгерсе ғана) */
+function kpiDelta(f, base, c){
+  if(!base) return "";
+  const me = num(pv(f,c)), was = num(pv(base,c));
+  if(me===null || was===null || me===was) return "";
+  const d = was ? (me-was)/was*100 : 0, up = me > was;
+  return `<div class="kpi-d ${up?"up":"down"}">${base.year}: ${nf(was)}${was?` · ${up?"▲":"▼"} ${df(Math.abs(d))}%`:""}</div>`;
 }
 
 P.passport = sub => {
@@ -5870,8 +5959,8 @@ P.passport = sub => {
       return passRegion(r);
     }
   } else if(sub){
-    const x = passData().find(z=>z.id===sub);
-    if(x) return passDetail(x);
+    const x = passData().find(z=>z.id===parts[0]);
+    if(x) return passDetail(x, parts[1] || "");
     return `<div class="crumbs"><a href="#passport">${T("s15")}</a></div><div class="card p-empty">${T("s15.notfound")}</div>`;
   }
   return passHome();
@@ -5914,7 +6003,7 @@ function loadPassports(){
     const list = rows ? rows.map(normPass).filter(x=>pv(x,"1.1")) : [];
     if(!list.length) return false;
     if(src==="live" && PASS.src==="static") mergeTr(list, PASS.list);       // аудармалар тек сайттың файлдарында
-    PASS.list = list; PASS.src = src; PASS.full = {}; PASS.pending = {}; PASS.status = "ok";
+    PASS.list = list; PASS.src = src; PASS.full = {}; PASS.pending = {}; PASS.hist = {}; PASS.histPending = {}; PASS.status = "ok";
     done();
     return true;
   };
@@ -5996,7 +6085,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=2"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=3"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;

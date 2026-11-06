@@ -16,7 +16,14 @@ const CTX = {
     loginDesc:"Логин мен парольді Ұлттық кітапхананың бас әдістемелік орталығы береді.",
     loginF:"Логин", passF:"Пароль", enter:"Кіру", wait:"Күте тұрыңыз…", showPass:"Парольді көрсету",
     noAccount:"Аккаунт жоқ па? Бас әкімшіге хабарласыңыз: ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет.",
-    tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал",
+    tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал", tArch:"Мұрағат",
+    annual:"жыл қорытындысы", archRow:"Мұрағат", periodArch:"{y} жыл, жылдық қорытынды (мұрағат)",
+    repPer:"Кезең", repPerQ:"Тоқсан (жоғарыда таңдалған)", repPerA:"{y} жыл — жылдық қорытынды (мұрағат)",
+    archDesc:"Жыл аяқталғанда «Тізілім» парағындағы барлық паспорт сол жылдың толық көшірмесі ретінде мұрағатқа сақталады. 6.1–6.3 көрсеткіштері үшін сол жылдың соңғы тоқсанының мәні алынады. Мұрағатталған деректер өзгермейді: сайтта жыл бойынша қарауға, есепке шығаруға және салыстыруға болады.",
+    archYears:"Мұрағаттағы жылдар", archNone:"Мұрағат әлі бос", archCount:"Кітапхана саны", archAt:"Сақталған уақыты",
+    archDo:"Жылды мұрағатқа жабу", archYear:"Қай жыл", archOver:"Бұрынғы мұрағатты ауыстыру (тек түзету қажет болса)",
+    archQ:"{y} жылдың барлық паспорты мұрағатқа сақталады. Жалғастырасыз ба?", archQOver:"{y} жылдың бұрынғы мұрағаты жаңа деректермен АУЫСТЫРЫЛАДЫ. Бұл журналға жазылады. Жалғастырасыз ба?",
+    archOk:"{y} жыл мұрағатқа сақталды: {n} кітапхана", archBusy:"Мұрағатқа сақталуда… (1–2 минут)",
     year:"Жыл", quarter:"Тоқсан", qN:"{a} тоқсан", period:"{y} жыл, {q} тоқсан",
     scope:"Жауапты аймағыңыз", libsN:"{a} кітапхана", filled:"Толтырылды", notFilled:"Толтырылмаған",
     progress:"{a} / {b} толтырылды", search:"Кітапхана атауы немесе аудан…", allUnits:"Барлық аймақтар",
@@ -59,7 +66,14 @@ const CTX = {
     loginDesc:"Логин и пароль выдаёт главный методический центр Национальной библиотеки.",
     loginF:"Логин", passF:"Пароль", enter:"Войти", wait:"Подождите…", showPass:"Показать пароль",
     noAccount:"Нет аккаунта? Обратитесь к главному администратору: НБ РК, научно-методическая служба.",
-    tLibs:"Библиотеки", tHistory:"История изменений", tReports:"Отчёты", tUsers:"Аккаунты", tLog:"Журнал",
+    tLibs:"Библиотеки", tHistory:"История изменений", tReports:"Отчёты", tUsers:"Аккаунты", tLog:"Журнал", tArch:"Архив",
+    annual:"итоги года", archRow:"Архив", periodArch:"{y} год, годовые итоги (архив)",
+    repPer:"Период", repPerQ:"Квартал (выбран выше)", repPerA:"{y} год — годовые итоги (архив)",
+    archDesc:"По окончании года все паспорта из листа «Тізілім» сохраняются в архив как полная копия этого года. Для показателей 6.1–6.3 берётся значение последнего квартала года. Архивные данные не меняются: их можно смотреть на сайте по годам, выгружать в отчёты и сравнивать.",
+    archYears:"Годы в архиве", archNone:"Архив пока пуст", archCount:"Библиотек", archAt:"Время сохранения",
+    archDo:"Закрыть год в архив", archYear:"Год", archOver:"Заменить прежний архив (только если нужна корректировка)",
+    archQ:"Все паспорта за {y} год будут сохранены в архив. Продолжить?", archQOver:"Прежний архив за {y} год будет ЗАМЕНЁН новыми данными. Это запишется в журнал. Продолжить?",
+    archOk:"{y} год сохранён в архив: {n} библиотек", archBusy:"Сохранение в архив… (1–2 минуты)",
     year:"Год", quarter:"Квартал", qN:"{a} квартал", period:"{y} год, {q} квартал",
     scope:"Ваша зона ответственности", libsN:"Библиотек: {a}", filled:"Заполнено", notFilled:"Не заполнено",
     progress:"Заполнено {a} из {b}", search:"Название библиотеки или район…", allUnits:"Все регионы",
@@ -191,7 +205,10 @@ function modal(title, bodyHtml, buttons){
       <div class="cab-dlg-bd">${bodyHtml}</div>
       <div class="cab-dlg-ft">${(buttons || [[ct("close"), "", "ghost"]]).map(b => `<button class="cbtn ${b[2] || ""}" data-v="${esc(b[1])}">${esc(b[0])}</button>`).join("")}</div></div>`;
     document.body.appendChild(wrap);
-    const close = v => { wrap.remove(); document.removeEventListener("keydown", key); resolve(v); };
+    const close = v => {
+      modal.vals = {};                                   // терезе жабылғанша енгізілген мәндерді сақтаймыз
+      wrap.querySelectorAll(".cab-dlg-bd input[id], .cab-dlg-bd select[id]").forEach(i => { modal.vals[i.id] = i.type === "checkbox" ? i.checked : i.value; });
+      wrap.remove(); document.removeEventListener("keydown", key); resolve(v); };
     const key = e => { if(e.key === "Escape") close(""); };
     document.addEventListener("keydown", key);
     wrap.addEventListener("click", e => {
@@ -291,7 +308,7 @@ function shell(active, inner){
   const tabs = [["cabinet", "tLibs"]];
   if(["admin","oblast","city"].indexOf(me.role) > -1) tabs.push(["cabinet/history", "tHistory"]);
   tabs.push(["cabinet/reports", "tReports"]);
-  if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"]);
+  if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"], ["admin/archive", "tArch"]);
   return `<div class="cab">
     <div class="cab-top card">
       <div class="cab-who"><span class="ps-av">${esc(me.full_name.split(/\s+/).slice(0, 2).map(w => w[0] || "").join("").toUpperCase())}</span>
@@ -438,7 +455,9 @@ function drawEdit(d){
   <div class="card"><h3 class="cab-h3">${esc(ct("qHistory"))}</h3>
     <div class="scroll-x"><table class="tbl"><thead><tr><th>${esc(ct("quarter"))}</th>${S.qfields.map(f => `<th style="text-align:right">${esc(f)}</th>`).join("")}<th>${esc(ct("when"))}</th><th>${esc(ct("who"))}</th></tr></thead>
     <tbody>${d.history.map(h => `<tr><td>${esc(h.year + " · " + ROMAN[h.quarter])}</td>${S.qfields.map(f => `<td class="v">${esc(h.v[f] === "" || h.v[f] == null ? "—" : nf(+String(h.v[f]).replace(/\s/g, "")))}</td>`).join("")}
-      <td>${esc(fmtTs(h.updated_at))}</td><td>${esc(h.user_name)}${h.user_institution ? `<br><small class="cab-k">${esc(h.user_institution)}</small>` : ""}</td></tr>`).join("")}</tbody></table></div></div>`;
+      <td>${esc(fmtTs(h.updated_at))}</td><td>${esc(h.user_name)}${h.user_institution ? `<br><small class="cab-k">${esc(h.user_institution)}</small>` : ""}</td></tr>`).join("")}
+      ${(d.archive || []).map(a => `<tr class="cab-arch"><td>${esc(a.year + " · " + ct("annual"))}</td>${S.qfields.map(f => `<td class="v">${esc(a.v[f] === "" || a.v[f] == null ? "—" : nf(+String(a.v[f]).replace(/\s/g, "")))}</td>`).join("")}
+      <td>${esc(fmtTs(a.archived_at))}</td><td><span class="pill gray">${esc(ct("archRow"))}</span></td></tr>`).join("")}</tbody></table></div></div>`;
   const form = document.getElementById("qForm");
   form.querySelectorAll(".num").forEach(i => i.addEventListener("input", () => {
     const pos = i.value.length - i.selectionStart, raw = i.value.replace(/\D/g, "");
@@ -569,6 +588,7 @@ VIEWS.reports = () => {
   <form class="card cab-form cab-rep" id="rForm">
     ${periodPicker()}
     <div class="cab-grid">
+      <label class="fld"><span>${esc(ct("repPer"))}</span><select class="pick" name="arch" id="rArch"><option value="">${esc(ct("repPerQ"))}</option></select></label>
       ${units.length > 1 ? `<label class="fld"><span>${esc(ct("region"))}</span><select class="pick" name="unit"><option value="">${esc(ct("allUnits"))}</option>${units.map(u => `<option value="${esc(u.id)}">${esc(u.full)}</option>`).join("")}</select></label>` : ""}
       <label class="fld"><span>${esc(ct("type"))}</span><select class="pick" name="st"><option value="">${esc(ct("allTypes"))}</option>${Object.keys(st).map(k => `<option value="${k}">${esc(st[k])}</option>`).join("")}</select></label>
       <label class="fld"><span>${esc(ct("lib"))}</span><select class="pick" name="lib" id="rLib"><option value="">${esc(ct("allLibs"))}</option></select></label>
@@ -586,9 +606,14 @@ VIEWS.reports.after = () => {
   };
   if(!S.libs) api("libs", {year: S.year, quarter: S.quarter}).then(r => { S.libs = r.libs; S.libsFor = S.year + "-" + S.quarter; fill(); }); else fill();
   if(f.unit) f.unit.addEventListener("change", fill);
+  api("archiveYears").then(r => {
+    const sel2 = document.getElementById("rArch"); if(!sel2) return;
+    sel2.innerHTML += (r.years || []).map(y => `<option value="${y.year}">${esc(ct("repPerA", {y: y.year}))}</option>`).join("");
+  }, () => {});
   f.st.addEventListener("change", fill);
   f.querySelectorAll("[data-fmt]").forEach(b => b.addEventListener("click", () => {
     const p = {year: S.year, quarter: S.quarter, unit: f.unit ? f.unit.value : "", st: f.st.value, lib: f.lib.value, from: f.from.value, to: f.to.value};
+    if(f.arch.value){ p.archive = +f.arch.value; delete p.from; delete p.to; }
     const lbl = {unit: f.unit && f.unit.value ? f.unit.selectedOptions[0].textContent : "", st: f.st.value ? f.st.selectedOptions[0].textContent : "",
                  lib: f.lib.value ? f.lib.selectedOptions[0].textContent : ""};
     busy(b, true);
@@ -608,7 +633,7 @@ function repMeta(rep, p, lbl){
     if(r.updated_at > last) last = r.updated_at;
   });
   return {scope: scope, filt: filt, people: Object.keys(people).map(k => people[k]).sort((a, b) => b.c - a.c), last: last,
-          period: ct("period", {y: rep.year, q: ROMAN[rep.quarter]})};
+          period: rep.archive ? ct("periodArch", {y: rep.archive}) : ct("period", {y: rep.year, q: ROMAN[rep.quarter]})};
 }
 const num0 = v => (v === "" || v == null) ? "" : nf(+String(v).replace(/\s/g, ""));
 function buildDocx(rep, p, lbl){
@@ -659,7 +684,7 @@ function buildDocx(rep, p, lbl){
       ]
     }]
   });
-  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-esep-" + rep.year + "-" + ROMAN[rep.quarter] + "-" + stamp().slice(0, 10) + ".docx"));
+  return D.Packer.toBlob(doc).then(blob => saveBlob(blob, "laba-esep-" + rep.year + "-" + (rep.archive ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".docx"));
 }
 function buildXlsx(rep, p, lbl){
   const m = repMeta(rep, p, lbl);
@@ -672,7 +697,7 @@ function buildXlsx(rep, p, lbl){
     .concat([[], [ct("lastDate", {d: m.last ? fmtTs(m.last) : "—"})], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
   const cols = [5, 50, 24, 24, 14].concat(rep.fields.map(() => 14)).concat([18, 28, 28, 16]);
   return excelBook("Есеп", aoa, {title: 0, head: 4, cols: cols})
-    .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + ROMAN[rep.quarter] + "-" + stamp().slice(0, 10) + ".xlsx"));
+    .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + (rep.archive ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".xlsx"));
 }
 
 /* Аккаунттар (бас әкімші) */
@@ -707,7 +732,7 @@ VIEWS.users.after = () => {
       modal(ct("setPass") + ": " + u.login, `<p class="cab-p">${esc(ct("newPassQ"))}</p><input class="inp" id="npw" type="text" autocomplete="new-password">`,
         [[ct("cancel"), "", "ghost"], [ct("save"), "ok", "primary"]]).then(v => {
         if(v !== "ok") return;
-        const pw = (document.getElementById("npw") || {}).value || "";
+        const pw = (modal.vals || {}).npw || "";
         api("userPassword", {user_id: u.user_id, password: pw}).then(r => { if(r.password) passModal(u.login, r.password); else toast(ct("saved")); load(); }, err => toast(err.msg || err.error, "bad"));
       });
       setTimeout(() => {}, 0);
@@ -819,6 +844,41 @@ function bulkImport(file){
   }).catch(err => toast(String(err && (err.msg || err.message) || err), "bad"));
 }
 
+/* Мұрағат (бас әкімші) */
+VIEWS.archive = () => {
+  const cy = new Date().getFullYear(), ys = [];
+  for(let y = cy; y >= 2025; y--) ys.push(y);
+  return shell("admin/archive", `
+  <div class="ph"><h2>${esc(ct("tArch"))}</h2><p>${esc(ct("archDesc"))}</p></div>
+  <div class="card"><h3 class="cab-h3">${esc(ct("archYears"))}</h3><div id="aBox"><p class="cab-p">${esc(ct("wait"))}</p></div></div>
+  <form class="card cab-form" id="aForm">
+    <h3>${esc(ct("archDo"))}</h3>
+    <label class="fld"><span>${esc(ct("archYear"))}</span><select class="pick" name="year">${ys.map(y => `<option value="${y}" ${y === cy - 1 ? "selected" : ""}>${y}</option>`).join("")}</select></label>
+    <label class="chk"><input type="checkbox" name="over"> ${esc(ct("archOver"))}</label>
+    <div class="cab-actions"><button class="cbtn primary" type="submit">${esc(ct("archDo"))}</button></div>
+  </form>`);
+};
+VIEWS.archive.after = () => {
+  const load = () => api("archiveYears").then(r => {
+    const box = document.getElementById("aBox"); if(!box) return;
+    box.innerHTML = (r.years || []).length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>${esc(ct("year"))}</th><th style="text-align:right">${esc(ct("archCount"))}</th><th>${esc(ct("archAt"))}</th></tr></thead>
+      <tbody>${r.years.map(y => `<tr><td><b>${y.year}</b></td><td class="v">${nf(y.count)}</td><td>${esc(fmtTs(y.archived_at))}</td></tr>`).join("")}</tbody></table></div>`
+      : `<p class="cab-p">${esc(ct("archNone"))}</p>`;
+  }, err => toast(err.msg || err.error, "bad"));
+  load();
+  const f = document.getElementById("aForm");
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    const y = +f.year.value, over = f.over.checked;
+    modal(ct("archDo"), `<p class="cab-p">${esc(ct(over ? "archQOver" : "archQ", {y: y}))}</p>`, [[ct("no"), "", "ghost"], [ct("yes"), "ok", "primary"]]).then(v => {
+      if(v !== "ok") return;
+      const btn = f.querySelector("button[type=submit]"); busy(btn, true); toast(ct("archBusy"), "warn");
+      api("archive", {year: y, overwrite: over}).then(r => { busy(btn, false); toast(ct("archOk", {y: r.year, n: nf(r.count)})); f.over.checked = false; load(); },
+        err => { busy(btn, false); toast(err.msg || err.error, "bad"); });
+    });
+  });
+};
+
 /* ─────────── Маршрутизатор ─────────── */
 function route(hash){
   const p = String(hash || "").split("/");
@@ -830,13 +890,13 @@ function route(hash){
     if(p[1] === "reports") return ["reports", p];
     return ["cabinet", p];
   }
-  if(p[0] === "admin") return [p[1] === "log" ? "log" : "users", p];
+  if(p[0] === "admin") return [p[1] === "log" ? "log" : p[1] === "archive" ? "archive" : "users", p];
   return ["cabinet", p];
 }
 function draw(hash){
   const r = route(hash), name = r[0], p = r[1];
   const go2 = () => {
-    if(name !== "login" && (!S.me || (["users", "log"].indexOf(name) > -1 && S.me.role !== "admin"))){
+    if(name !== "login" && (!S.me || (["users", "log", "archive"].indexOf(name) > -1 && S.me.role !== "admin"))){
       if(S.me && S.me.role !== "admin"){ location.hash = "cabinet"; return; }
     }
     document.getElementById("content").innerHTML = `<div class="page on">${VIEWS[name](p)}</div>`;
