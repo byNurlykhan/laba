@@ -264,4 +264,22 @@ ok(g.post({ action: 'booksSave', token: tO, owner: turkLib.id, kind: 'rec', cat:
 ok(g.post({ action: 'log', token: admin, q: 'Кітаптар:' }).rows.length === 2, 'Кітап тізімінің өзгерістері журналда');
 ok(g.verifyLog().indexOf('бүтін') > -1, 'Журналдың тізбегі бүтін');
 
+step('10. Бас орталық маманы');
+const sf = mk({ login: 'nlrk.maman', full_name: 'Орталық Маманы', role: 'staff', unit_id: '', institution: 'ҚР ҰК ҒӘҚ', phone: '87010000009', password: 'Maman2026x' });
+ok(sf.ok && sf.user.unit_id === 'KZ', 'Бас әкімші «Бас орталық маманы» аккаунтын ашты');
+const tS = login('nlrk.maman', 'Maman2026x');
+ok(libs(tS).length === 3875, 'Маман: барлық 3 875 кітапхана');
+ok(g.post({ action: 'me', token: tS }).units.length === g.post({ action: 'allUnits', token: admin }).units.length, 'Маман: барлық аймақ сүзгілерде');
+x = g.post({ action: 'lib', token: tS, id: cl.id, year: 2026, quarter: 1 });
+ok(x.canApprove && x.canStatic, 'Маман: кез келген есепті бекітеді, тұрақты өрістерді түзетеді');
+ok(g.post({ action: 'save', token: tS, id: cl.id, year: 2026, quarter: 2, values: FULL() }).status === 'approved', 'Маман енгізген есеп бірден бекітіледі');
+ok(g.post({ action: 'saveStatic', token: tS, id: cl.id, fields: { '1.4': '8 7172 000000' } }).ok, 'Маман тұрақты өрісті сақтады');
+ok(g.post({ action: 'books', token: tS }).owners.length === 23, 'Маман: барлық 23 кітапхананың кітап тізімі');
+ok(g.post({ action: 'summary', token: tS, year: 2026, quarter: 1 }).total.libs === 3875 && g.post({ action: 'queue', token: tS }).ok, 'Маман: жиынтық және бекіту кезегі');
+['users', 'log', 'history', 'allUnits', 'userBulk'].forEach(a => ok(g.post({ action: a, token: tS, rows: [] }).error === 'forbidden', 'Маманға жабық: ' + a));
+ok(g.post({ action: 'archive', token: tS, year: 2025 }).error === 'forbidden', 'Маманға жабық: мұрағат');
+ok(g.post({ action: 'userSave', token: tS, user: { login: 'xx1', full_name: 'X', role: 'admin', password: 'Abcdefg123' } }).error === 'forbidden', 'Маман аккаунт аша алмайды');
+x = g.post({ action: 'userBulk', token: admin, rows: [{ login: 'maman2', full_name: 'Маман Екі', role: 'staff', unit_name: '' }] });
+ok(x.results[0].ok, 'Файлдан жүктеу: «бас орталық маманы» деңгейі');
+
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');
