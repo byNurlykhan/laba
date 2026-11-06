@@ -31,6 +31,12 @@ ok(g.ss.getSheetByName('Мұрағат').getLastRow() === 3876, 'Қайта ор
   const m2 = g2.setupCabinet();
   ok(qs.getLastRow() === 1 && /импорт жолдары \(3875\)/.test(m2), 'Көшу: импорт жолдары алынды');
   ok(g2.ss.getSheetByName('Мұрағат').getLastRow() === 3876, 'Көшу: деректер 2025 жылдың мұрағатында');
+  // әдіскер бұрынғы нұсқада (13 баған, күйі жоқ) енгізген жазба сақталып, бекітілген болып саналады
+  g2.writeRows_(qs, 2, [['5|2026|4', '5', 2026, 4, '111', '222', '333', '2026-11-01 10:00', 'u1', 'Ескі Әдіскер', 'X', '', 'Аудандық әдіскер']]);
+  g2.cacheBigPut_(g2.CacheService.getScriptCache(), 'cab_q', null, 1); g2.CacheService.getScriptCache().removeAll(['cab_q_n']);
+  const q5 = g2.cabQAll_()['5|2026|4'];
+  ok(q5 && q5.status === 'approved' && q5.v['6.1'] === '111' && qs.getRange(1, 1, 1, qs.getLastColumn()).getValues()[0].indexOf('6.8') > -1,
+     'Көшу: бұрынғы 13 бағанды жазба сақталды, жаңа бағандар қосылды');
 }
 
 step('1. Кіру жүйесі');
@@ -86,33 +92,71 @@ ok(!g.post({ action: 'users', token: tO }).ok, 'Әдіскер аккаунтт�
 ok(!g.post({ action: 'log', token: tO }).ok, 'Әдіскер толық журналды көре алмайды');
 ok(!g.post({ action: 'saveStatic', token: tO, id: L_o[0].id, fields: { '1.1': 'X' } }).ok, 'Тұрақты өрістерді тек бас әкімші өзгертеді');
 
-step('4. Тоқсандық жаңарту');
+step('4. Тоқсандық есеп және бекіту');
 const lib = L_d.find(l => l.st === 'rural') || L_d[0];
-x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 4 });
-ok(x.ok && !x.current && !x.previous && x.archive.length === 1 && x.archive[0].year === 2025, 'IV тоқсан бос, 2025 жылдың мұрағаты көрсетіледі');
+const FORM = g.post({ action: 'me', token: tD }).form;
+const FIELDS = [].concat(...FORM.map(sec => sec.f));
+ok(FIELDS.length >= 35 && FIELDS.some(f => f.c === '6.4' && f.of === '6.1'), 'Есеп формасы: паспорт + аналитика өрістері (' + FIELDS.length + ')');
+const FULL = over => {
+  const v = {};
+  FIELDS.forEach(f => { v[f.c] = f.t === 'text' ? 'мәтін' : f.t === 'sel' ? f.opt[0] : f.t === 'num' ? '2,5' : '10'; });
+  return Object.assign(v, over || {});
+};
+x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 1 });
+ok(x.ok && !x.current && !x.annual && x.archive.length === 1 && x.archive[0].year === 2025 && !x.canApprove,
+   'I тоқсан бос, 2025 мұрағаты көрінеді, аудандық әдіскер бекіте алмайды');
 const arch61 = x.archive[0].v['6.1'];
-x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 4, values: { '6.1': 'abc', '6.2': -5, '6.3': '' } });
-ok(!x.ok && Object.keys(x.fields).length === 3, 'Қате мәндер (мәтін, теріс сан, бос) қабылданбайды');
-x = g.post({ action: 'save', token: tD, id: lib.id, year: 2027, quarter: 4, values: { '6.1': 1, '6.2': 1, '6.3': 1 } });
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, values: { '6.1': 'abc', '6.2': -5, '6.3': '' } });
+ok(!x.ok && x.fields['6.1'] && x.fields['6.2'] && x.fields['6.3'], 'Қате мәндер (мәтін, теріс сан, бос) қабылданбайды');
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, values: FULL({ '6.1': 100, '6.4': 150 }) });
+ok(!x.ok && x.fields['6.4'] && Object.keys(x.fields).length === 1, '«Соның ішінде» мәні жалпыдан аспайды');
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, mode: 'draft', values: { '6.1': 500 } });
+ok(x.ok && x.status === 'draft', 'Толық емес есеп жоба ретінде сақталады');
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2027, quarter: 4, values: FULL() });
 ok(!x.ok, 'Әлі басталмаған тоқсанға енгізуге болмайды');
-x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 4, values: { '6.1': '1 250', '6.2': 18000, '6.3': 9000 }, op: 'op-1' });
-ok(x.ok && x.changed === 3, 'IV тоқсан сақталды (3 өріс)');
-ok(g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 4, values: { '6.1': 1250, '6.2': 18000, '6.3': 9000 }, op: 'op-1' }).duplicate,
-   'Кезектен қайта жіберілген сұрау екі рет жазылмайды');
-x = g.post({ action: 'save', token: tO, id: lib.id, year: 2026, quarter: 4, values: { '6.1': 1300, '6.2': 18000, '6.3': 9000 } });
-ok(x.ok && x.changed === 1, 'Облыстық әдіскер аудандағы кітапхананы түзете алады (1 өріс)');
-x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 4 });
+const Q1 = FULL({ '6.1': '1 250', '6.4': 300, '6.5': 200, '6.2': 18000, '6.6': 12000, '6.3': 9000, '4.1': 20000, '4.5': 15000, '4.6': 400, '4.7': 300 });
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, values: Q1, op: 'op-1' });
+ok(x.ok && x.status === 'submitted', 'Аудандық әдіскер жіберді → «Бекітуде»');
+ok(g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, values: Q1, op: 'op-1' }).duplicate, 'Кезектен қайта жіберілген сұрау екі рет жазылмайды');
+ok(g.post({ action: 'libs', token: tD, year: 2026, quarter: 1 }).libs.find(l => String(l.id) === String(lib.id)).status === 'submitted', 'Тізімде есептің күйі көрінеді');
+ok(g.post({ action: 'queue', token: tD }).rows.length === 0, 'Аудандық әдіскердің бекіту кезегі бос');
+let qu = g.post({ action: 'queue', token: tO });
+ok(qu.rows.length === 1 && String(qu.rows[0].id) === String(lib.id), 'Облыстық әдіскердің кезегінде аудан кітапханасының есебі');
+ok(g.post({ action: 'queue', token: tC }).rows.length === 0, 'Басқа аймақтың әдіскері бұл есепті көрмейді');
+ok(g.post({ action: 'approve', token: tD, id: lib.id, year: 2026, quarter: 1, decision: 'approve' }).error === 'forbidden', 'Аудандық әдіскер өз есебін бекіте алмайды');
+ok(!g.post({ action: 'approve', token: tO, id: lib.id, year: 2026, quarter: 1, decision: 'return' }).ok, 'Қайтарғанда себебі міндетті');
+x = g.post({ action: 'approve', token: tO, id: lib.id, year: 2026, quarter: 1, decision: 'return', comment: '6.3 тексеріңіз' });
+ok(x.ok && x.status === 'returned', 'Облыстық әдіскер түзетуге қайтарды');
+x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 1 });
+ok(x.current.status === 'returned' && x.current.comment === '6.3 тексеріңіз', 'Әдіскер қайтару себебін көреді');
+x = g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 1, values: Q1 });
+ok(x.ok && x.status === 'submitted', 'Түзетіп, қайта жіберді');
+x = g.post({ action: 'approve', token: tO, id: lib.id, year: 2026, quarter: 1, decision: 'approve' });
+ok(x.ok && x.status === 'approved', 'Облыстық әдіскер бекітті');
+const Q2 = FULL({ '6.1': 1300, '6.4': 300, '6.5': 250, '6.2': 18000, '6.6': 12000, '6.3': 9000, '4.1': 20300, '4.5': 15200, '4.6': 300, '4.7': 200 });
+x = g.post({ action: 'save', token: tO, id: lib.id, year: 2026, quarter: 2, values: Q2 });
+ok(x.ok && x.status === 'approved', 'Бекітуші өзі енгізсе — бірден бекітіледі');
+x = g.post({ action: 'lib', token: tD, id: lib.id, year: 2026, quarter: 2 });
+ok(x.annual && x.annual.qs === '12' && x.annual.v['6.1'] === '2550' && x.annual.v['4.1'] === '20300' && x.annual.v['6.4'] === '600',
+   'Жылдық есеп: тоқсан ішіндегілер қосылады (6.1 = 2550), жағдай — соңғы тоқсаннан (4.1 = 20300)');
 ok(x.archive[0].v['6.1'] === arch61, '2025 жылдың мәні мұрағатта өзгерген жоқ');
-ok(x.current.user_name === 'Облыс Әдіскері' && x.history.length === 1, 'Соңғы жаңартқан адам және тоқсандар тарихы көрінеді');
+ok(x.current.user_name === 'Облыс Әдіскері' && x.history.length === 2, 'Соңғы жаңартқан адам және тоқсандар тарихы көрінеді');
+// қала кітапханасы: бекітуші — бас әкімші
+const cl = libs(tC)[0];
+x = g.post({ action: 'save', token: tC, id: cl.id, year: 2026, quarter: 1, values: FULL() });
+ok(x.ok && x.status === 'submitted' && g.post({ action: 'queue', token: tO }).rows.length === 0 &&
+   g.post({ action: 'queue', token: admin }).rows.some(r => String(r.id) === String(cl.id)), 'Қала кітапханасының есебін бас әкімші бекітеді');
+ok(g.post({ action: 'approve', token: admin, id: cl.id, year: 2026, quarter: 1, decision: 'approve' }).status === 'approved', 'Бас әкімші бекітті');
 
 step('5. Журнал');
 let lg = g.post({ action: 'log', token: admin, limit: 50 });
-const changes = lg.rows.filter(r => r.lib_id === String(lib.id));
-ok(changes.length === 4 && changes[0].old === '1250' && changes[0].val === '1300', 'Журнал: кім, қашан, қай өріс, ескі және жаңа мән');
+const changes = g.post({ action: 'log', token: admin, limit: 500 }).rows.filter(r => r.lib_id === String(lib.id));
+ok(changes.some(r => r.field.indexOf('6.1 ') === 0 && r.old === '500' && r.val === '1250') && changes.some(r => r.action === 'Бекітілді') &&
+   changes.some(r => r.action === 'Түзетуге қайтарылды'), 'Журнал: кім, қашан, қай өріс, ескі және жаңа мән, бекіту/қайтару');
 ok(changes.every(r => r.region && r.inst && r.role), 'Журналда деңгейі, аймағы, мекемесі бар');
 let h = g.post({ action: 'history', token: tO });
 ok(h.ok && h.rows.length >= 4 && h.rows.every(r => !('old' in r)), 'Облыстық әдіскер өз облысының тарихын көреді (мәндерсіз)');
-ok(g.post({ action: 'history', token: tC }).rows.length === 0, 'Басқа аймақтың әдіскері бұл өзгерістерді көрмейді');
+ok(!g.post({ action: 'history', token: tC }).rows.some(r => r.lib_id === String(lib.id)), 'Басқа аймақтың әдіскері бұл өзгерістерді көрмейді');
 ok(!g.post({ action: 'history', token: tD }).ok, 'Аудандық әдіскерге тарих беті жоқ');
 ok(g.verifyLog().indexOf('бүтін') > -1, 'Журналдың хэш тізбегі бүтін');
 const logSh = g.ss.getSheetByName('Журнал');
@@ -138,7 +182,7 @@ g.post({ action: 'logout', token: tR });
 ok(!g.post({ action: 'me', token: tR }).ok, 'Шыққаннан кейін токен жарамсыз');
 
 step('7. Есептер');
-let rp = g.post({ action: 'report', token: tD, year: 2026, quarter: 4 });
+let rp = g.post({ action: 'report', token: tD, year: 2026, quarter: 2 });
 ok(rp.ok && rp.rows.length === L_d.length && rp.rows.every(r => r.district === 'Келес ауданы'), 'Аудандық есеп: тек өз ауданы');
 const rr = rp.rows.find(r => String(r.id) === String(lib.id));
 ok(rr.user_name === 'Облыс Әдіскері' && rr.user_phone === '87010000001', 'Есепте әр кітапхананың жауаптысы мен телефоны');
@@ -146,6 +190,21 @@ rp = g.post({ action: 'report', token: tO, year: 2026, quarter: 3, unit: U('Тү
 ok(rp.rows.length === L_d.length, 'Облыстық есеп: аудан бойынша сүзгі');
 rp = g.post({ action: 'report', token: tO, year: 2026, quarter: 3, unit: U('Абай облысы') });
 ok(rp.rows.length === 0, 'Басқа облыстың сүзгісін қойса да — дерек берілмейді');
+
+rp = g.post({ action: 'report', token: tD, year: 2026, quarter: 0 });
+ok(rp.ok && rp.annual && rp.rows.find(r => String(r.id) === String(lib.id)).v['6.1'] === '2550', 'Жылдық (жыл басынан) есеп: бекітілген тоқсандардың қосындысы');
+let sm = g.post({ action: 'summary', token: admin, year: 2026, quarter: 1 });
+ok(sm.ok && sm.by === 'oblast' && sm.total.libs === 3875 && sm.total.approved === 2 && sm.total.draft === 0, 'Жиынтық (бас әкімші): облыстар бойынша, бекітілгені 2');
+const tr = sm.rows.find(r => r.name === 'Түркістан облысы');
+ok(tr && tr.approved === 1 && tr.sums['6.1'] === 1250, 'Жиынтықта облыстың қосындысы (6.1 = 1250)');
+sm = g.post({ action: 'summary', token: tO, year: 2026, quarter: 0 });
+ok(sm.by === 'unit' && sm.total.libs === 373 && sm.rows.find(r => r.name === 'Келес ауданы').sums['6.1'] === 2550, 'Облыс жиынтығы: аудандар бойынша, жылдық');
+let ex = g.post({ action: 'export', token: tO, year: 2026, quarter: 1, unit: U('Түркістан облысы, Келес ауданы') });
+const er = ex.rows.find(r => String(r.id) === String(lib.id));
+ok(ex.fields.length === FIELDS.length && er.status === 'Бекітілді' && er.v['6.4'] === '300' && ex.rows.length === L_d.length, 'Толық экспорт: барлық өріс, күйі');
+ex = g.post({ action: 'export', token: admin, year: 2026, quarter: 0 });
+ok(ex.rows.length === 3875 && ex.rows.find(r => String(r.id) === String(lib.id)).v['6.1'] === '2550', 'Толық экспорт: жылдық, барлық кітапхана');
+ok(!g.post({ action: 'summary', token: tD, year: 2026, quarter: 1, unit: U('Абай облысы') }).total.libs, 'Жиынтық: басқа аймақ берілмейді');
 
 step('7а. Жылдық мұрағат');
 rp = g.post({ action: 'report', token: tD, archive: 2025 });
@@ -158,15 +217,26 @@ ok(g.post({ action: 'archive', token: admin, year: 2026 }).error === 'exists', '
 ok(g.post({ action: 'archive', token: admin, year: 2026, overwrite: true }).replaced, 'Растаумен ауыстыруға болады');
 ok(g.ss.getSheetByName('Мұрағат').getLastRow() === 1 + 3875 * 2, 'Ауыстырғанда жолдар екі еселенбеді');
 const hist = JSON.parse(g.get({ action: 'passHistory', id: lib.id })).years;
-ok(hist.length === 2 && hist[0].year === 2026 && hist[0].f['6.1'] === '1300' && hist[1].f['6.1'] === arch61,
-   'Паспорт тарихы: 2026 (соңғы тоқсанның мәні) және 2025');
+ok(hist.length === 2 && hist[0].year === 2026 && hist[0].f['6.1'] === '2550' && hist[0].f['6.4'] === '600' && hist[1].f['6.1'] === arch61,
+   'Паспорт тарихы: 2026 (бекітілген тоқсандардың жиынтығы, жаңа өрістерімен) және 2025');
 ok(JSON.stringify(hist).indexOf('Бас әкімші') < 0, 'Ашық тарихта кім мұрағаттағаны көрсетілмейді');
 ok(g.post({ action: 'log', token: admin, q: 'мұрағатқа жабылды' }).rows.length >= 1, 'Мұрағатқа жабу журналға жазылды');
 
 step('8. Ашық сайт');
 const pub = JSON.parse(g.get({ action: 'passports' }));
 const pr = pub.rows.find(r => String(r[0]) === String(lib.id));
-ok(pr[pub.cols.indexOf('6.1')] === '1300' && pr[pub.cols.indexOf('q')] === '2026-4', 'Ашық сайтта соңғы тоқсанның мәні мен кезеңі');
+ok(pr[pub.cols.indexOf('6.1')] === '2550' && pr[pub.cols.indexOf('q')] === '2026-2' && pr[pub.cols.indexOf('qs')] === '12', 'Ашық сайтта жыл басынан бергі бекітілген жиынтық және кезеңі');
+const pp = JSON.parse(g.get({ action: 'passport', id: lib.id })).passport;
+ok(pp.f['6.4'] === '600' && pp.f['4.1'] === '20300', 'Ашық паспортта есептің жаңа өрістері де бар');
+g.post({ action: 'save', token: tD, id: lib.id, year: 2026, quarter: 3, values: FULL({ '6.1': 99999 }) });
+ok(JSON.parse(g.get({ action: 'passport', id: lib.id })).passport.f['6.1'] === '2550', 'Бекітілмеген есеп ашық сайтқа шықпайды');
 ok(JSON.stringify(pub).indexOf('Облыс Әдіскері') < 0, 'Ашық сайтта жаңартқан адамның аты көрсетілмейді');
+const yd = JSON.parse(g.get({ action: 'yearData' }));
+ok(yd.year === 2026 && yd.years[0] === 2026 && yd.total.rep === 2 && yd.total.libs === 3875 && yd.total.s['6.1'] === 2550 + 10,
+   '«Сандар тілінде» 2026: бекітілген есептердің жиынтығы (2 кітапхана)');
+const tr2 = yd.regions.find(r => r.name === 'Түркістан облысы');
+ok(tr2 && tr2.rep === 1 && tr2.s['6.4'] === 600 && yd.qs[1] === 2 && yd.qs[2] === 1, 'Өңірлер бойынша және тоқсандар бойынша жиынтық');
+ok(JSON.stringify(yd).indexOf('Әдіскер') < 0, 'Жиынтықта аты-жөн жоқ');
+ok(JSON.stringify(JSON.parse(g.get({ action: 'yearData', year: 2019 })).years) === '[2026]', 'Есебі жоқ жыл — тек жылдар тізімі');
 
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');
