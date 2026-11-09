@@ -17,6 +17,7 @@ class Range {
   cell(i, j) { const row = this.sh.data[this.r - 1 + i] || []; const v = row[this.c - 1 + j]; return v == null ? '' : v; }
   getValues() { const o = []; for (let i = 0; i < this.nr; i++) { const row = []; for (let j = 0; j < this.nc; j++) row.push(this.cell(i, j)); o.push(row); } return o; }
   getDisplayValues() { return this.getValues().map(r => r.map(v => String(v))); }
+  getDisplayValue() { return this.getDisplayValues()[0][0]; }
   setValues(vals) {
     if (vals.length !== this.nr || vals.some(r => r.length !== this.nc)) throw new Error('setValues: size mismatch');
     vals.forEach((row, i) => {
@@ -67,6 +68,7 @@ class Sheet {
   getDataRange() { return new Range(this, 1, 1, Math.max(1, this.getLastRow()), Math.max(1, this.getLastColumn())); }
   appendRow(row) { const r = this.getLastRow() + 1; if (r > this.maxRows) this.maxRows = r; if (row.length > this.maxCols) this.maxCols = row.length; this.getRange(r, 1, 1, row.length).setValues([row]); }
   clear() { this.data = []; }
+  deleteRow(r) { return this.deleteRows(r, 1); }
   deleteRows(r, n) {
     // Google Sheets: қатырылмаған жолдардың бәрін өшіруге болмайды
     if (this.maxRows - n < 2) throw new Error('Sorry, it is not possible to delete all non-frozen rows.');

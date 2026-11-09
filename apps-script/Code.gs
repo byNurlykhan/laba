@@ -917,6 +917,7 @@ function cabDispatch_(b) {
     case 'userSave': cabNeed_(u, 'admin'); return cabUserSave_(u, b.user || {});
     case 'userPassword': cabNeed_(u, 'admin'); return cabUserPassword_(u, b.user_id, b.password);
     case 'userStatus': cabNeed_(u, 'admin'); return cabUserStatus_(u, b.user_id, b.status);
+    case 'userDelete': cabNeed_(u, 'admin'); return cabUserDelete_(u, b.user_id);
     case 'userBulk': cabNeed_(u, 'admin'); return cabUserBulk_(u, b.rows || []);
     case 'allUnits': cabNeed_(u, 'admin'); return { ok: true, units: cabAllUnits_(), libs: cabRepLibs_() };
     case 'archiveYears': return { ok: true, years: archiveYears_() };
@@ -1142,6 +1143,24 @@ function cabUserStatus_(admin, userId, status) {
   cabLogAppend_(admin, [{ lib: null, field: 'Күйі', old: u.status === 'active' ? 'blocked' : 'active', val: status,
                           action: (status === 'blocked' ? 'Аккаунт бұғатталды (' : 'Аккаунт ашылды (') + u.login + ')' }]);
   return { ok: true, user: cabPublicUser_(u) };
+}
+/** Аккаунтты жою (тек бас әкімші, өз аккаунтын емес). Журналдағы жазбалары сақталады, ашық сессиясы жабылады */
+function cabUserDelete_(admin, userId) {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    CacheService.getScriptCache().remove('cab_users');
+    const u = cabUsers_().find(o => o.user_id === String(userId || ''));
+    if (!u) throw cabErr_('invalid', 'Пайдаланушы табылмады');
+    if (u.user_id === admin.user_id) throw cabErr_('invalid', 'Өз аккаунтыңызды жоя алмайсыз');
+    const sh = cabSheet_(CAB.SH.USERS, USER_COLS);
+    if (String(sh.getRange(u._row, 1).getDisplayValue()) !== u.user_id) throw cabErr_('server', 'Кесте өзгерген, бетті жаңартыңыз');
+    if (sh.getMaxRows() <= sh.getLastRow()) sh.insertRowsAfter(sh.getMaxRows(), 1);   // Sheets барлық жолды өшіртпейді
+    sh.deleteRow(u._row);
+    CacheService.getScriptCache().remove('cab_users');
+    cabLogAppend_(admin, [{ lib: null, field: 'Аккаунт', old: u.login + ' · ' + (ROLES[u.role] || u.role) + ' · ' + cabUnitName_(u.unit_id), val: '',
+                            action: 'Аккаунт жойылды (' + u.login + ')' }]);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
 }
 /** Excel/CSV-тен бірнеше аккаунт: rows = [{login, full_name, position, role, unit_id|unit_name, library_id, institution, phone, password}] */
 function cabUserBulk_(admin, rows) {

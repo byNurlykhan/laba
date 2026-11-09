@@ -99,6 +99,10 @@ const CTX = {
     users:"Аккаунттар", newUser:"+ Жаңа аккаунт", bulk:"Файлдан жүктеу (Excel/CSV)", template:"Үлгі файл",
     fio:"Аты-жөні", position:"Лауазымы", role:"Деңгейі", unit:"Аймағы", library:"Мекеме (республикалық кітапхана)",
     institution:"Мекемесі", phone:"Телефон", loginName:"Логин", status:"Күйі", lastLogin:"Соңғы кіру",
+    ugHq:"Бас орталық (бас әкімші, мамандар)", ugRep:"Республикалық кітапханалар", ugN:"{a} аккаунт", ugNone:"аккаунт жоқ",
+    ugNoneLong:"Бұл өңірде әлі аккаунт жоқ.", ugSum:"Барлығы: {a} аккаунт, белсенді: {b}", ugEmpty:"аккаунты жоқ өңір: {a}",
+    never:"кірмеген", created:"Ашылған күні", delete:"Жою", delQ:"{n} аккаунтын біржола жою керек пе? Ол жүйеге кіре алмайды, қайтару мүмкін емес. Журналдағы жазбалары сақталады. Уақытша тоқтату үшін «Бұғаттау» батырмасын қолданыңыз.",
+    delType:"Растау үшін логинді жазыңыз: {l}", delMismatch:"Логин сәйкес келмеді – аккаунт жойылмады", deleted:"Аккаунт жойылды: {l}",
     active:"Белсенді", blocked:"Бұғатталған", edit:"Өзгерту", setPass:"Пароль", block:"Бұғаттау", unblock:"Ашу",
     passMode:"Пароль", passAuto:"Жүйе жасасын (бір реттік)", passManual:"Өзім енгіземін",
     passOnce:"Парольді қазір көшіріп алып, әдіскерге беріңіз – ол қайта көрсетілмейді.", copy:"Көшіру", copied:"Көшірілді",
@@ -176,6 +180,10 @@ const CTX = {
     users:"Аккаунты", newUser:"+ Новый аккаунт", bulk:"Загрузить из файла (Excel/CSV)", template:"Шаблон",
     fio:"ФИО", position:"Должность", role:"Уровень", unit:"Регион", library:"Учреждение (республиканская библиотека)",
     institution:"Учреждение", phone:"Телефон", loginName:"Логин", status:"Статус", lastLogin:"Последний вход",
+    ugHq:"Головной центр (администратор, специалисты)", ugRep:"Республиканские библиотеки", ugN:"{a} акк.", ugNone:"нет аккаунтов",
+    ugNoneLong:"В этом регионе пока нет аккаунтов.", ugSum:"Всего: {a} аккаунтов, активных: {b}", ugEmpty:"регионов без аккаунтов: {a}",
+    never:"не входил", created:"Создан", delete:"Удалить", delQ:"Удалить аккаунт {n} навсегда? Вход будет невозможен, восстановить нельзя. Записи журнала сохранятся. Для временной приостановки используйте «Заблокировать».",
+    delType:"Для подтверждения введите логин: {l}", delMismatch:"Логин не совпал – аккаунт не удалён", deleted:"Аккаунт удалён: {l}",
     active:"Активен", blocked:"Заблокирован", edit:"Изменить", setPass:"Пароль", block:"Заблокировать", unblock:"Разблокировать",
     passMode:"Пароль", passAuto:"Сгенерировать (одноразовый)", passManual:"Ввести вручную",
     passOnce:"Скопируйте пароль сейчас и передайте методисту – повторно он не показывается.", copy:"Копировать", copied:"Скопировано",
@@ -989,6 +997,15 @@ VIEWS.users.after = () => {
       });
       setTimeout(() => {}, 0);
     }
+    if(b.dataset.act === "del"){
+      modal(ct("delete"), `<p class="cab-p">${esc(ct("delQ", {n: u.full_name + " (" + u.login + ")"}))}</p>
+        <label class="fld"><span>${esc(ct("delType", {l: u.login}))}</span><input class="inp" id="delLogin" autocomplete="off" autocapitalize="none"></label>`,
+        [[ct("cancel"), "", "ghost"], [ct("delete"), "ok", "primary danger"]]).then(v => {
+        if(v !== "ok") return;
+        if(String((modal.vals || {}).delLogin || "").trim().toLowerCase() !== String(u.login).toLowerCase()) return toast(ct("delMismatch"), "bad");
+        api("userDelete", {user_id: u.user_id}).then(() => { toast(ct("deleted", {l: u.login})); load(); }, err => toast(err.msg || err.error, "bad"));
+      });
+    }
     if(b.dataset.act === "status"){
       const to = u.status === "active" ? "blocked" : "active";
       const ask = to === "blocked" ? modal(ct("block"), `<p class="cab-p">${esc(ct("blockQ", {n: u.full_name + " (" + u.login + ")"}))}</p>`, [[ct("no"), "", "ghost"], [ct("yes"), "ok", "primary"]]) : Promise.resolve("ok");
@@ -997,17 +1014,50 @@ VIEWS.users.after = () => {
   });
   load();
 };
+/* Аккаунттар: аймақтар бойынша жиналатын топтар (аккаунты жоқ облыстар да көрсетіледі); жолды басқанда толығы мен батырмалар */
+function userRegion(u){
+  if(u.role === "admin" || u.role === "staff") return "@hq";
+  if(u.role === "republic") return "@rep";
+  const id = String(u.unit_id || "");
+  return /^[OCD]:/.test(id) ? id.slice(2).split("|")[0] : "@hq";
+}
 function drawUsers(){
   const box = document.getElementById("uBox"); if(!box || !S.users) return;
-  const q = (document.getElementById("uQ").value || "").toLowerCase();
-  const rows = S.users.filter(u => !q || (u.full_name + " " + u.login + " " + u.unit_name + " " + u.institution).toLowerCase().indexOf(q) > -1);
-  box.innerHTML = `<div class="card scroll-x" style="padding:8px"><table class="tbl cab-users"><thead><tr><th>${esc(ct("fio"))}</th><th>${esc(ct("role"))}</th><th>${esc(ct("unit"))}</th><th>${esc(ct("phone"))}</th><th>${esc(ct("status"))}</th><th>${esc(ct("lastLogin"))}</th><th></th></tr></thead>
-  <tbody>${rows.map(u => `<tr class="${u.status === "blocked" ? "off" : ""}"><td><b>${esc(u.full_name)}</b><br><small class="cab-k">${esc(u.login)}${u.position ? " · " + esc(u.position) : ""}</small></td>
-    <td>${esc(roleName(u.role))}</td><td>${esc(u.unit_name)}${u.institution ? `<br><small class="cab-k">${esc(u.institution)}</small>` : ""}</td><td class="nw">${esc(u.phone || "")}</td>
-    <td><span class="pill ${u.status === "active" ? "ok" : "bad"}">${esc(ct(u.status === "active" ? "active" : "blocked"))}</span></td><td class="nw">${esc(fmtTs(u.last_login) || "–")}</td>
-    <td class="nw"><button class="cbtn ghost sm" data-act="edit" data-id="${esc(u.user_id)}">${esc(ct("edit"))}</button>
-      <button class="cbtn ghost sm" data-act="pass" data-id="${esc(u.user_id)}">${esc(ct("setPass"))}</button>
-      ${u.role !== "admin" || u.user_id !== S.me.user_id ? `<button class="cbtn ghost sm" data-act="status" data-id="${esc(u.user_id)}">${esc(ct(u.status === "active" ? "block" : "unblock"))}</button>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
+  const q = (document.getElementById("uQ").value || "").toLowerCase().trim();
+  const st = S.uOpen = S.uOpen || {};
+  const rows = S.users.filter(u => !q || (u.full_name + " " + u.login + " " + u.unit_name + " " + u.institution + " " + u.phone + " " + roleName(u.role)).toLowerCase().indexOf(q) > -1);
+  const regs = (S.allUnits || []).filter(n => n.type === "oblast" || n.type === "rcity").map(n => n.name).sort((x, y) => x.localeCompare(y, "kk"));
+  const groups = [{k: "@hq", t: ct("ugHq")}, {k: "@rep", t: ct("ugRep")}].concat(regs.map(r => ({k: r, t: r})));
+  S.users.forEach(u => { const k = userRegion(u); if(!groups.some(g => g.k === k)) groups.push({k: k, t: k}); });
+  groups.forEach(g => { g.all = S.users.filter(u => userRegion(u) === g.k); g.us = rows.filter(u => userRegion(u) === g.k); });
+  const roleOrd = {admin: 0, staff: 1, oblast: 2, city: 3, republic: 4, district: 5};
+  const roleCnt = us => Object.keys(roleOrd).map(r => { const n = us.filter(u => u.role === r).length; return n ? roleName(r).replace(/ әдіскер[і]?$/, "") + ": " + n : ""; }).filter(Boolean).join(" · ");
+  const shown = q ? groups.filter(g => g.us.length) : groups;
+  const isOpen = g => q ? true : !!st[g.k];
+  const uRow = u => `<details class="hg-ev u-ev${u.status === "blocked" ? " off" : ""}"><summary>
+      <span class="u-who"><b>${esc(u.full_name)}</b><small>${esc(u.login)}${u.position ? " · " + esc(u.position) : ""}</small></span>
+      <span class="u-role">${esc(roleName(u.role))}</span>
+      <span class="u-unit">${esc(u.unit_name || "")}${u.institution ? `<small>${esc(u.institution)}</small>` : ""}</span>
+      <span class="u-st"><span class="pill ${u.status === "active" ? "ok" : "bad"}">${esc(ct(u.status === "active" ? "active" : "blocked"))}</span></span>
+      <span class="hg-n">${esc(u.last_login ? fmtTs(u.last_login) : ct("never"))}</span></summary>
+    <div class="hg-body u-body">
+      <dl class="u-dl"><dt>${esc(ct("unit"))}</dt><dd>${esc(u.unit_name || "–")}</dd><dt>${esc(ct("institution"))}</dt><dd>${esc(u.institution || "–")}</dd>
+        <dt>${esc(ct("phone"))}</dt><dd>${esc(u.phone || "–")}</dd><dt>${esc(ct("lastLogin"))}</dt><dd>${esc(fmtTs(u.last_login) || "–")}</dd>
+        <dt>${esc(ct("created"))}</dt><dd>${esc(fmtTs(u.created_at) || "–")}</dd></dl>
+      <div class="cab-actions"><button class="cbtn ghost sm" data-act="edit" data-id="${esc(u.user_id)}">${esc(ct("edit"))}</button>
+        <button class="cbtn ghost sm" data-act="pass" data-id="${esc(u.user_id)}">${esc(ct("setPass"))}</button>
+        ${u.user_id !== S.me.user_id ? `<button class="cbtn ghost sm" data-act="status" data-id="${esc(u.user_id)}">${esc(ct(u.status === "active" ? "block" : "unblock"))}</button>
+        <button class="cbtn ghost sm u-del" data-act="del" data-id="${esc(u.user_id)}">${esc(ct("delete"))}</button>` : ""}</div></div></details>`;
+  const total = S.users.length, act = S.users.filter(u => u.status === "active").length, empty = groups.filter(g => g.k[0] !== "@" && !g.all.length).length;
+  box.innerHTML = `<div class="hg-bar"><span class="cab-k">${esc(ct("ugSum", {a: nf(total), b: nf(act)}))}${empty ? " · " + esc(ct("ugEmpty", {a: empty})) : ""}</span>
+      <button class="cbtn ghost sm" type="button" id="uOpenAll">${esc(ct("hgOpen"))}</button><button class="cbtn ghost sm" type="button" id="uCloseAll">${esc(ct("hgClose"))}</button></div>
+    ${shown.length ? shown.map(g => `<details class="card hg-day u-day" data-k="${esc(g.k)}" ${isOpen(g) ? "open" : ""}><summary><b>${esc(g.t)}</b>
+      <span class="pill ${g.all.length ? "" : "warn"}">${esc(g.all.length ? ct("ugN", {a: g.all.length}) : ct("ugNone"))}</span><small class="cab-k">${esc(roleCnt(g.all))}</small></summary>
+      ${g.us.length ? `<div class="hg-list">${g.us.sort((x, y) => roleOrd[x.role] - roleOrd[y.role] || String(x.unit_name).localeCompare(String(y.unit_name), "kk") || x.full_name.localeCompare(y.full_name, "kk")).map(uRow).join("")}</div>`
+        : `<p class="cab-p u-none">${esc(ct("ugNoneLong"))}</p>`}</details>`).join("") : `<div class="card p-empty">${esc(ct("nothing"))}</div>`}`;
+  box.querySelectorAll(".u-day").forEach(d => d.addEventListener("toggle", () => { if(q) return; if(d.open) st[d.dataset.k] = 1; else delete st[d.dataset.k]; }));
+  document.getElementById("uOpenAll").addEventListener("click", () => { groups.forEach(g => { st[g.k] = 1; }); box.querySelectorAll(".u-day").forEach(d => { d.open = true; }); });
+  document.getElementById("uCloseAll").addEventListener("click", () => { S.uOpen = {}; box.querySelectorAll(".u-day").forEach(d => { d.open = false; }); });
 }
 function userForm(u){
   const isNew = !u; u = u || {role: "district"};

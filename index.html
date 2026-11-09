@@ -637,12 +637,19 @@ select.pick:hover{border-color:var(--faint)}
 .hg-who b{font-weight:600}.hg-who small{display:block;color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis}
 .hg-act .pill{font-size:10.5px;padding:2px 7px;margin-left:4px}
 .hg-n{color:var(--muted);font-size:12px;text-align:right}
-.hg-body{padding:4px 18px 14px 86px}.hg-body .cab-k{margin-bottom:6px;font-size:12px}
+.hg-body{padding:4px 18px 14px 86px}
+.u-ev > summary{grid-template-columns:12px minmax(0,1.3fr) 150px minmax(0,1.5fr) 110px 120px}
+.u-ev > summary small{display:block;color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;font-weight:400}
+.u-ev.off > summary{opacity:.6}
+.u-body{padding-left:40px}.u-none{padding:4px 18px 16px 40px;margin:0}
+.u-dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;font-size:13px;margin:4px 0 4px}.u-dl dt{color:var(--muted)}
+.u-body .cab-actions{justify-content:flex-start;margin-top:10px}
+.cbtn.u-del{color:var(--red)}.cbtn.primary.danger{background:var(--red);border-color:var(--red)}.hg-body .cab-k{margin-bottom:6px;font-size:12px}
 .hg-f{font-size:12.5px}.hg-f td,.hg-f th{padding:6px 10px}
 @media (max-width:720px){
   .hg-ev > summary{grid-template-columns:12px 40px 1fr;row-gap:2px;padding:10px 12px}
   .hg-ev > summary > .hg-lib,.hg-ev > summary > .hg-act,.hg-ev > summary > .hg-n{grid-column:3;text-align:left;white-space:normal}
-  .hg-body{padding:4px 12px 12px}.hg-day > summary{padding:12px 14px}.hg-day > summary small{max-width:100%;margin-left:0}}
+  .hg-body{padding:4px 12px 12px}.u-ev > summary{grid-template-columns:12px 1fr auto}.u-ev > summary > .u-role,.u-ev > summary > .u-unit,.u-ev > summary > .u-st,.u-ev > summary > .hg-n{grid-column:2/4;text-align:left;white-space:normal}.u-ev > summary > .u-st{display:flex;gap:8px;align-items:center}.u-body,.u-none{padding-left:12px}.hg-day > summary{padding:12px 14px}.hg-day > summary small{max-width:100%;margin-left:0}}
 .nw{white-space:nowrap}
 .cab-users tr.off td{opacity:.6}
 .cab-outbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;
@@ -6693,7 +6700,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=10"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=11"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
