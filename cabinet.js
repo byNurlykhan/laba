@@ -87,6 +87,7 @@ const CTX = {
     histDesc:"Өз аймағыңыздағы кітапханалардың деректерін кім, қашан, қай өрісін өзгерткені.",
     logDesc:"Барлық өзгерістің толық журналы: ескі және жаңа мәндерімен. Журналды өшіруге де, өзгертуге де болмайды.",
     from:"Күннен", to:"Күнге дейін", find:"Іздеу", when:"Уақыты", who:"Кім", inst:"Мекемесі", lib:"Кітапхана",
+    hgF:"{a} өріс", hgN:"{a} әрекет", hgShown:"Көрсетілген жазба: {a}", hgOpen:"Барлығын ашу", hgClose:"Барлығын жию",
     field:"Өріс", action:"Әрекет", level:"Деңгейі", region:"Аймақ", excel:"Excel", word:"Word (.docx)",
     repDesc:"Есеп тек сіздің аймағыңыздағы кітапханалар бойынша жасалады. Соңында жауапты мамандар, соңғы жаңарту күні және жүктелген уақыт көрсетіледі.",
     type:"Мекеме түрі", allTypes:"Барлық түрлері", allLibs:"Барлық кітапханалар", dateRange:"Жаңарту күні аралығы (міндетті емес)",
@@ -163,6 +164,7 @@ const CTX = {
     logDesc:"Полный журнал всех изменений со старыми и новыми значениями. Журнал нельзя удалить или изменить.",
     tReg:"Реестр", required:"Обязательное поле",
     from:"С", to:"По", find:"Поиск", when:"Время", who:"Кто", inst:"Учреждение", lib:"Библиотека",
+    hgF:"{a} поля", hgN:"{a} действий", hgShown:"Показано записей: {a}", hgOpen:"Развернуть все", hgClose:"Свернуть все",
     field:"Поле", action:"Действие", level:"Уровень", region:"Регион", excel:"Excel", word:"Word (.docx)",
     repDesc:"Отчёт формируется только по библиотекам вашего региона. В конце указываются ответственные, дата обновления и время выгрузки.",
     type:"Тип учреждения", allTypes:"Все типы", allLibs:"Все библиотеки", dateRange:"Период обновления (необязательно)",
@@ -771,25 +773,47 @@ VIEWS.log.after = () => bindHist(true);
 function bindHist(full){
   const f = document.getElementById("hForm"), st = {rows: [], offset: 0, more: false, params: {}};
   const load = (reset) => {
-    if(reset){ st.rows = []; st.offset = 0; st.params = {from: f.from.value, to: f.to.value, q: f.q.value.trim()}; }
+    if(reset){ st.rows = []; st.offset = 0; st.open = {}; st.params = {from: f.from.value, to: f.to.value, q: f.q.value.trim()}; }
     const box = document.getElementById("hBox");
     if(reset) box.innerHTML = `<div class="card p-empty">${esc(ct("wait"))}</div>`;
     api(full ? "log" : "history", Object.assign({limit: 100, offset: st.offset}, st.params)).then(res => {
       st.rows = st.rows.concat(res.rows); st.offset += res.rows.length; st.more = res.more; draw();
     }, err => { box.innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
   };
+  /* Ықшам көрініс: күн бойынша жиналатын топтар; бір минутта бір адамның бір кітапханадағы бір әрекеті — бір жол */
+  st.open = st.open || {};
   const draw = () => {
     const box = document.getElementById("hBox");
     if(!st.rows.length){ box.innerHTML = `<div class="card p-empty">${esc(ct("nothing"))}</div>`; return; }
-    box.innerHTML = `<div class="card scroll-x" style="padding:8px"><table class="tbl cab-log"><thead><tr>
-      <th>${esc(ct("when"))}</th><th>${esc(ct("who"))}</th><th>${esc(ct("lib"))}</th><th>${esc(ct("quarter"))}</th><th>${esc(ct("field"))}</th>
-      ${full ? `<th style="text-align:right">${esc(ct("oldV"))}</th><th style="text-align:right">${esc(ct("newV"))}</th>` : ""}<th>${esc(ct("action"))}</th></tr></thead>
-      <tbody>${st.rows.map(r => `<tr><td class="nw">${esc(fmtTs(r.ts))}</td>
-        <td><b>${esc(r.user)}</b><br><small class="cab-k">${esc(r.role)} · ${esc(r.inst)}</small></td>
-        <td>${r.lib_id ? `${esc(r.lib)}<br><small class="cab-k">${esc(r.region)}</small>` : `<small class="cab-k">${esc(r.region)}</small>`}</td>
-        <td class="nw">${esc(r.year ? r.year + " · " + r.quarter : "–")}</td><td>${esc(r.field)}</td>
-        ${full ? `<td class="v">${esc(r.old || "–")}</td><td class="v"><b>${esc(r.val || "–")}</b></td>` : ""}<td>${esc(r.action)}</td></tr>`).join("")}</tbody></table></div>
+    const evs = [];
+    st.rows.forEach(r => {
+      const k = [String(r.ts).slice(0, 16), r.user, r.lib_id, r.region, r.action, r.year, r.quarter].join("|"), e = evs[evs.length - 1];
+      if(e && e.k === k) e.items.push(r); else evs.push({k: k, r: r, items: [r]});
+    });
+    const days = [];
+    evs.forEach(e => { const d = String(e.r.ts).slice(0, 10), g = days[days.length - 1]; if(g && g.d === d) g.evs.push(e); else days.push({d: d, evs: [e]}); });
+    if(!Object.keys(st.open).length && days.length) st.open[days[0].d] = 1;
+    const fv = v => esc(v === "" || v == null ? "–" : v);
+    const evHtml = e => { const r = e.items[0], n = e.items.length;
+      return `<details class="hg-ev"><summary>
+        <span class="hg-t">${esc(String(r.ts).slice(11, 16))}</span>
+        <span class="hg-who"><b>${esc(r.user)}</b><small>${esc(r.role)}</small></span>
+        <span class="hg-lib">${r.lib_id ? esc(r.lib) : `<small>${esc(r.region)}</small>`}</span>
+        <span class="hg-act">${esc(r.action)}${r.year ? ` <span class="pill gray">${esc(r.year + " · " + r.quarter)}</span>` : ""}</span>
+        <span class="hg-n">${n > 1 ? esc(ct("hgF", {a: n})) : esc(String(r.field || "").slice(0, 40))}</span></summary>
+        <div class="hg-body">
+          <p class="cab-k">${esc([r.inst, r.lib_id ? r.region : ""].filter(Boolean).join(" · "))}</p>
+          <table class="tbl hg-f"><thead><tr><th>${esc(ct("field"))}</th>${full ? `<th style="text-align:right">${esc(ct("oldV"))}</th><th style="text-align:right">${esc(ct("newV"))}</th>` : ""}</tr></thead>
+          <tbody>${e.items.map(x => `<tr><td>${esc(x.field)}</td>${full ? `<td class="v">${fv(x.old)}</td><td class="v"><b>${fv(x.val)}</b></td>` : ""}</tr>`).join("")}</tbody></table></div></details>`; };
+    box.innerHTML = `<div class="hg-bar"><span class="cab-k">${esc(ct("hgShown", {a: nf(st.rows.length)}))}</span>
+        <button class="cbtn ghost sm" type="button" id="hOpen">${esc(ct("hgOpen"))}</button><button class="cbtn ghost sm" type="button" id="hClose">${esc(ct("hgClose"))}</button></div>
+      ${days.map(g => `<details class="card hg-day" data-d="${esc(g.d)}" ${st.open[g.d] ? "open" : ""}><summary><b>${esc(fmtTs(g.d).slice(0, 10))}</b>
+        <span class="pill">${esc(ct("hgN", {a: g.evs.length}))}</span><small class="cab-k">${esc([...new Set(g.evs.map(e => e.r.user))].slice(0, 3).join(", "))}</small></summary>
+        <div class="hg-list">${g.evs.map(evHtml).join("")}</div></details>`).join("")}
       ${st.more ? `<button class="more-btn" id="hMore">${esc(ct("more"))}</button>` : ""}`;
+    box.querySelectorAll(".hg-day").forEach(d => d.addEventListener("toggle", () => { if(d.open) st.open[d.dataset.d] = 1; else delete st.open[d.dataset.d]; }));
+    document.getElementById("hOpen").addEventListener("click", () => { days.forEach(g => { st.open[g.d] = 1; }); draw(); });
+    document.getElementById("hClose").addEventListener("click", () => { st.open = {}; box.querySelectorAll(".hg-day").forEach(d => { d.open = false; }); });
     const m = document.getElementById("hMore"); if(m) m.addEventListener("click", () => load(false));
   };
   f.addEventListener("submit", e => { e.preventDefault(); load(true); });

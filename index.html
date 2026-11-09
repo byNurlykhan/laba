@@ -621,6 +621,28 @@ select.pick:hover{border-color:var(--faint)}
 .cab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .cab-dates{display:flex;gap:8px;flex-wrap:wrap}
 .cab-log td,.cab-users td{vertical-align:top;font-size:13px}
+.hg-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 10px}.hg-bar .cab-k{margin-right:auto}
+.hg-day{padding:0;margin-bottom:10px;overflow:hidden}
+.hg-day > summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px;cursor:pointer;list-style:none}
+.hg-day > summary::-webkit-details-marker,.hg-ev > summary::-webkit-details-marker{display:none}
+.hg-day > summary::before,.hg-ev > summary::before{content:"›";display:inline-block;width:12px;color:var(--muted);transition:transform .15s;font-weight:700}
+.hg-day[open] > summary::before,.hg-ev[open] > summary::before{transform:rotate(90deg)}
+.hg-day > summary small{margin-left:auto;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hg-list{border-top:1px solid var(--line)}
+.hg-ev{border-bottom:1px solid var(--line)}.hg-ev:last-child{border-bottom:0}
+.hg-ev > summary{display:grid;grid-template-columns:12px 46px 170px minmax(0,1.4fr) minmax(0,1.2fr) 150px;gap:10px;align-items:center;padding:9px 18px;cursor:pointer;list-style:none;font-size:13px}
+.hg-ev > summary:hover{background:var(--surface)}
+.hg-ev > summary > span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hg-t{font-variant-numeric:tabular-nums;color:var(--muted)}
+.hg-who b{font-weight:600}.hg-who small{display:block;color:var(--muted);font-size:11.5px;overflow:hidden;text-overflow:ellipsis}
+.hg-act .pill{font-size:10.5px;padding:2px 7px;margin-left:4px}
+.hg-n{color:var(--muted);font-size:12px;text-align:right}
+.hg-body{padding:4px 18px 14px 86px}.hg-body .cab-k{margin-bottom:6px;font-size:12px}
+.hg-f{font-size:12.5px}.hg-f td,.hg-f th{padding:6px 10px}
+@media (max-width:720px){
+  .hg-ev > summary{grid-template-columns:12px 40px 1fr;row-gap:2px;padding:10px 12px}
+  .hg-ev > summary > .hg-lib,.hg-ev > summary > .hg-act,.hg-ev > summary > .hg-n{grid-column:3;text-align:left;white-space:normal}
+  .hg-body{padding:4px 12px 12px}.hg-day > summary{padding:12px 14px}.hg-day > summary small{max-width:100%;margin-left:0}}
 .nw{white-space:nowrap}
 .cab-users tr.off td{opacity:.6}
 .cab-outbox{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;
@@ -6671,7 +6693,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=9"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=10"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
