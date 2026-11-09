@@ -578,6 +578,9 @@ select.pick:hover{border-color:var(--faint)}
 .cab-form h3,.cab-h3{font-size:16px;margin-bottom:4px}
 .cab-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
 .cab-ed-hd h1{font-size:clamp(19px,2.4vw,26px);margin:10px 0 6px}
+.rg-close{margin-top:12px}
+.rg-tbl td{vertical-align:top}.rg-tbl td small{line-height:1.45}
+.rg-ul{margin:4px 0 12px 18px;max-height:220px;overflow:auto;font-size:13px;line-height:1.5}
 .cab-upd{font-size:13px;color:var(--ink);margin-top:8px;padding:9px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
 .cab-upd.warn{color:#B45309;background:#FFFBEB;border-color:#FDE68A}
 :root[data-theme="dark"] .cab-upd.warn{color:#FCD34D;background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
@@ -6668,7 +6671,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=7"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=8"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
