@@ -1,4 +1,4 @@
-// Google Apps Script сервистерінің жеңіл эмуляторы — Code.gs-ті Node.js-те тексеру үшін.
+// Google Apps Script сервистерінің жеңіл эмуляторы – Code.gs-ті Node.js-те тексеру үшін.
 // Тек Code.gs қолданатын әдістер іске асырылған.
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto');
@@ -56,6 +56,7 @@ class Range {
 class Sheet {
   constructor(ss, name) { Object.assign(this, { ss, name, data: [], maxRows: 1000, maxCols: 26 }); }
   getName() { return this.name; }
+  setName(n) { this.name = n; return this; }
   getLastRow() { for (let i = this.data.length - 1; i >= 0; i--) { if ((this.data[i] || []).some(v => v !== '' && v != null)) return i + 1; } return 0; }
   getLastColumn() { let m = 0; this.data.forEach(r => (r || []).forEach((v, j) => { if (v !== '' && v != null) m = Math.max(m, j + 1); })); return m; }
   getMaxRows() { return this.maxRows; }

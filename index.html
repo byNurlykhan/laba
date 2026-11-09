@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LABA — Library and Book Analytics</title>
-<meta name="description" content="LABA — Қазақстан кітапханаларының статистикасын визуалды түрде ұсынатын аналитикалық медиа-платформа.">
+<title>LABA – Library and Book Analytics</title>
+<meta name="description" content="LABA – Қазақстан кітапханаларының статистикасын визуалды түрде ұсынатын аналитикалық медиа-платформа.">
 <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAMAEBAAAAEAIABoBAAANgAAACAgAAABACAAqBAAAJ4EAAAwMAAAAQAgAKglAABGFQAAKAAAABAAAAAgAAAAAQAgAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEd/3BRpv9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFGm/3BRHQAAAAD/cFEd/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFEd/3BRpv9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRpv9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//83C///Y0P//qZb//3BR//9wUf//inH//9rS///Wzf//vK7//3JT//9wUf//cFH//3BR//9wUf//cFH//3BR///Pxf//uar//4Rp//+Ibv//c1X//5eB///q5v//1s3//+Da//+Pd///clP//35i//9wUf//cFH//3BR//9wUf//tqb//8K1//+Mc///2tL//8W5///e1///6OP//93W///j3f//3tf//8K1///f2P//cFH//3BR//9wUf//cFH//4Bl//+Ib///dVf//8m9///o4///vK3//452//+TfP//g2j//72v///l3///18///3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+kkP//5uH//4xz//9wUf//cFH//3BR//+Vfv//6eT//6WS//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFGm/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFGm/3BRHf9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRHQAAAAD/cFEd/3BRpv9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFGm/3BRHQAAAACAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAAKAAAACAAAABAAAAAAQAgAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEk/3BRhP9wUdz/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFHd/3BRhP9wUSQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEJ/3BRnP9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUZz/cFEJAAAAAAAAAAAAAAAA/3BRCf9wUdT/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUdT/cFEJAAAAAAAAAAD/cFGc/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUZwAAAAA/3BRJP9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUST/cFGE/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRhP9wUd3/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFHc/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//oIz//8Cz///Mwf//18///+Lc//+olf//cFH//3BR//9wUf//cFH//3BR//93Wv//rJr//72v///Jvf//08n//8vA//+fiv//c1X//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+4qf//+/r///j2///k3v//3db//6uZ//9wUf//cFH//3BR//9wUf//cFH//3te///k3v////////Lv///n4v//+Pf///Hu//+bhf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//6SR///39f//5eD//4hv//92WP//clT//3BR//9wUf//cFH//3BR//9wUf//c1X//9TL////////u63//4dt///b0////////7en//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//k3v//+7r///v7P//i3L//3BR//+Eaf//j3f//3te//9wUf//cFH//3JT//9xU///wbP////////t6f//5N7///n4///w7f//pZH//4Vr//92Wf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+Fav//4tz///j3//+bhf//cFH//6GN///08v//v7H//3ZZ//9yVP//q5n//9LI///f2P////////Dt///As///5d////n4///v7P//8O3//6iV//9xU///dVf//7Cf///Jvv//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3te///Uy////v7//62b//9wUf//gmf//+jj///39f//39j//9bN///v7P///fz//9fO///6+f//7uv//7ip///k3v///////+fi///29P//7en//9XM///Rx///8/H///z7//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//dFb//7+x///08v//tqb//3BR//9xU///xLf////////Y0P//4dr////////q5f//nIb//+vn///29P//8u///+rm///Rx///ln///9nR///8+///2tL//+3p////////4tz//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//gGX//4lw//98YP//cFH//3BR//+bhf//+Pf//7ip///IvP///////8Cz//91V///i3L//4xz//+Fa///fmL//3RW//9wUf//sqH///j2//+smv//18////v6//+4qf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3xg///h2///7Oj///Lv///29P//knv//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+Mc///8O3//+bg///29P//5+L//451//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//7qr/////////////9bN//92WP//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3VX///Rx//////////////Ctf//dlj//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//jnX//9DG///e1///pJD//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//52I///e1///4tz//5yG//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR3P9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUd3/cFGE/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRhP9wUST/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFEkAAAAAP9wUZz/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRnAAAAAAAAAAA/3BRCf9wUdT/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUdT/cFEJAAAAAAAAAAAAAAAA/3BRCf9wUZz/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFGc/3BRCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP9wUST/cFGE/3BR3f9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUdz/cFGE/3BRJAAAAAAAAAAAAAAAAAAAAADwAAAPwAAAA4AAAAGAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAYAAAAHAAAAD8AAADygAAAAwAAAAYAAAAAEAIAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEN/3BRT/9wUaT/cFHn/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUeL/cFGh/3BRTv9wUQ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/3BRCf9wUX7/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFF7/3BRCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEi/3BR+f9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR+v9wUSEAAAAAAAAAAAAAAAAAAAAAAAAAAP9wUSH/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFEiAAAAAAAAAAAAAAAA/3BRCP9wUfr/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH5/3BRCQAAAAAAAAAA/3BRe/9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRfgAAAAD/cFEO/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUQ3/cFFO/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUU//cFGh/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUaT/cFHi/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUef/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+Jb///nIf//6aT//+vnv//uKn//8K1///Mwf//zsT//451//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3FS//+Ibv//loD//5+K//+olf//saD//7qr//+6q///qZb//4Zs//9xU///cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+kkP//6eT///n4///7+v///f3//////////////fz//66c//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3JT///IvP//9vT///f1///5+P///fz////////9/f//+Pf//+DZ//+ch///cVP//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+WgP//5uH////////7+v//4tz//9HH///Jvv//wbP//5uF//9xUv//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+/sf/////////////49///4Nn//9fP///p5f///v7////////g2f//g2j//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+Jb///2tL////////5+P//saD//3VX//9yU///cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+pl////v7////////o4///g2j//3FT//+gi///+fj////////08v//k3v//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9/Y///y8D///39///9/P//v7H//3RW//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+Wf///+fj////////08v//tKT//6+e///Tyf///fz////////f2P//gGT//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//93Wv//vK7///v6////////0cf//3pd//9wUf//c1X//52I//+vnv//o4///4Bk//9wUf//cFH//3BR//9xUv//dln//3NV//+GbP//7+z////////+/v////////////////////////b0//+0pP//o4///52I//+NdP//c1X//3BR//9wUf//cFH//3FS//9yU///cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9zVf//rZv///b0////////39j//4Rp//9wUf//cFH//66c///8+////v7//7ip//9wUf//cFH//3BR//+Fav//1Mv//9fP///Pxf//9PL/////////////5d///8S4///Qxv//+vn///38///08v//+/r///z8///h2v//hWr//3BR//9wUf//c1X//6aT///OxP//yLz//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//nYj//+/s////////6+f//5B4//9wUf//cFH//4hv///p5f///////+nl//+6q///rZz//6KO///As////f3////////y7///6OP/////////////xbn//3xg//+bhv//9PL////////9/P//8/D///39///49v//w7b//6WR//+bhv//oY3//+Hb/////////f3//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//kHj//+bg////////9PL//5+L//9wUf//cFH//3RW///Hu/////////////////////////7+///9/P///v7////////IvP//v7H////////+/v//9fP//+nl///z8P///v7////////y7///vK7///Lv///////////////////9/P//+/r///38///+/v//7+z//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//hWr//9rS////////9/b//66c//9xUv//cFH//3BR//+eif//9/X////////k3v//xrr//+Hb///+/v///v7///j3//+WgP//ppP//////////////f3///z8///49///8e7//97X//+mk///f2P//9jQ////////9vT//9jP///b1P//9/X///7+///7+v//08n//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//d1n//5mD//+kkf//m4X//4No//9wUf//cFH//3BR//9/ZP//39j////////VzP//eVz//8a6/////////////9fP//92WP//gmf//6qY//+qmP//o4///5qE//+Sev//iG7//3hb//9wUf//cFH//7Gg///9/P//9PL//5yH//+Wf///7Oj////////w7f//rZv//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9xU///uKn///7+///v6///o4///+vn/////////Pv//6WS//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//4ty///t6f///v7//8Gz//+7rf//+vn///7+///Xzv//inH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//kXn///Dt///8+///5eD///z7////////5d///35i//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3VX///LwP///////+3p///q5v///v7///f1//+zov//dln//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//eFv//9LJ//////////////7+////////t6j//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+ijv//+Pf////////+/v///////+Lc//+Ref//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//6mX///5+P///v7////////w7f//inH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//+BZv//4tz/////////////+/r//8Gz//96Xf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//4Jn//+zov//wbT//87E//+3qP//c1X//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9xU///oIv//8q////Wzf//18///52I//9xU///cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFHn/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUeL/cFGk/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUaH/cFFP/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUU7/cFEN/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUQ4AAAAA/3BRfv9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BRewAAAAAAAAAA/3BRCf9wUfn/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH6/3BRCAAAAAAAAAAAAAAAAP9wUSL/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFEhAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEh/3BR+v9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR+f9wUSIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/3BRCP9wUXv/cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFF+/3BRCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/cFEO/3BRTv9wUaH/cFHi/3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUf//cFH//3BR//9wUef/cFGk/3BRT/9wUQ0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8AAAAAD8AAPAAAAAADwAA4AAAAAAHAADAAAAAAAMAAIAAAAAAAQAAgAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAEAAIAAAAAAAQAAwAAAAAADAADgAAAAAAcAAPAAAAAADwAA/AAAAAA/AAA=">
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABWVBMVEUAAABRcP9RcP9RcP9RcP9RcP9RcP9RcP9RcP91jv/G0P/X3v+QpP+Inf/c4v+GnP+ruv/////N1v9Ydv9Xdf/H0f+1wv9gfP/b4f/o7P/v8v/09v97kv9zjP/t8P/g5v/i5/9lgP9wif+Fm//3+P+puP+8yP+zwP9yi/9rhf9ifv9WdP+hsv/2+P+arP/P1//6+/+xv//y9P+mtv9Tcf+3xP/Q2P/a4f/l6v/n6//m6v9/lv/R2f/7/P/S2v/p7f9ee//L1P/+/v+brf9ngv/j6P/19//Y3//s7//8/f/O1//5+v/r7v/e5P/M1f/x8/9qhf+Nof9Zdv9Ucv+Zq//I0v/f5f/4+f+VqP+fsP++yf97k/9phP93j/9Tcv+zwf+Rpf+RpP/g5f9viP9Vc/+tu/9th//T2/+nt//W3f/u8f+MoP/BzP9ad/+vvf+9yf/J0//Ay/+Kn/+mDwSxAAAACHRSTlMAJITd3Amc1EdITH0AAAFCSURBVDjLY2AAAkYmZg4MwMLEyAABrGwcOAAbK1ienQMnYAepYOPAA9iA9nPgBYwMTPgVMDGw4FfAzMBBAFBVAScXNw+cw8vNx4+uQEBQUEgYyhYRFRQUE0ZVIC4hKSUtA+XIyslLK3DCFSgqiXNwKKuoqgmqi2jIamppc+jo6ukbqMIUaBsaGXOYmAqamQta8FtKS1mJWtvY2tkL8sEUODg6OXO4uLq5C3l4enn7qPoKKkjb+4n628IUBPCpKHMEGhkGBYeEugvKqYeFe8hFmIhERsEURPt4aHDExDpwcMSZxAva+4bLJWgGIYdDoltSsnAwmJviKJiali6YgRpQqga6vpkhYK6Dr6CUgkqWMqqCbPUcfb4IMDdXLy+/oLAohUaRRa4CZvzyLIQTLcFkTzDjEM56BDMvOPtjyT7MkOwPAML0PitguTjNAAAAAElFTkSuQmCC">
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
@@ -844,9 +844,9 @@ select.pick:hover{border-color:var(--faint)}
 <aside class="sidebar" id="sidebar">
   <div class="sb-head">
     <a href="#home" class="sb-logo" aria-label="LABA">
-      <img src="img/laba-logo.png" alt="LABA — Library and Book Analytics" width="480" height="315">
+      <img src="img/laba-logo.png" alt="LABA – Library and Book Analytics" width="480" height="315">
     </a>
-    <span class="sb-sub" data-i18n="tagline">Кітапхана — сандар тілінде</span>
+    <span class="sb-sub" data-i18n="tagline">Кітапхана – сандар тілінде</span>
   </div>
 
   <nav class="sb-nav" id="nav"></nav>
@@ -894,7 +894,7 @@ select.pick:hover{border-color:var(--faint)}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   LABA — Library and Book Analytics
+   LABA – Library and Book Analytics
    Дереккөз: «Қазақстан кітапханалары – 2025 жыл» шолуы (ҚР ҰК)
 
    ⚙️ БАПТАУ: Google Apps Script веб-қосымшасының URL мекенжайын
@@ -2337,12 +2337,12 @@ const DATA = {
    "m": "ТАМ",
    "type": "Халықаралық конгресс",
    "title": "IFLA Дүниежүзілік кітапхана және ақпарат конгресі, Астана",
-   "desc": "114 елден 1600 маман қатысты, Қазақстаннан — 454 кітапханашы; 190-нан астам сессия өтті.",
+   "desc": "114 елден 1600 маман қатысты, Қазақстаннан – 454 кітапханашы; 190-нан астам сессия өтті.",
    "title_kk": "IFLA Дүниежүзілік кітапхана және ақпарат конгресі, Астана",
    "title_ru": "Всемирный библиотечный и информационный конгресс IFLA, Астана",
    "title_en": "IFLA World Library and Information Congress, Astana",
-   "desc_kk": "114 елден 1600 маман қатысты, Қазақстаннан — 454 кітапханашы; 190-нан астам сессия өтті.",
-   "desc_ru": "Участвовали 1600 специалистов из 114 стран, из Казахстана — 454 библиотекаря; прошло более 190 сессий.",
+   "desc_kk": "114 елден 1600 маман қатысты, Қазақстаннан – 454 кітапханашы; 190-нан астам сессия өтті.",
+   "desc_ru": "Участвовали 1600 специалистов из 114 стран, из Казахстана – 454 библиотекаря; прошло более 190 сессий.",
    "desc_en": "1,600 specialists from 114 countries took part, including 454 from Kazakhstan; over 190 sessions were held."
   },
   {
@@ -2376,12 +2376,12 @@ const DATA = {
    "m": "ҚАЗ",
    "type": "Байқау",
    "title": "«Үздік жас кітапханашы – 2025» республикалық байқауы",
-   "desc": "18 өңірден 18 үміткер үш кезеңде бақ сынады; бас жүлде — Жетісу облысына.",
+   "desc": "18 өңірден 18 үміткер үш кезеңде бақ сынады; бас жүлде – Жетісу облысына.",
    "title_kk": "«Үздік жас кітапханашы – 2025» республикалық байқауы",
    "title_ru": "Республиканский конкурс «Лучший молодой библиотекарь – 2025»",
    "title_en": "«Best Young Librarian 2025» national competition",
-   "desc_kk": "18 өңірден 18 үміткер үш кезеңде бақ сынады; бас жүлде — Жетісу облысына.",
-   "desc_ru": "18 кандидатов из 18 регионов соревновались в трёх турах; гран-при — Жетысуской области.",
+   "desc_kk": "18 өңірден 18 үміткер үш кезеңде бақ сынады; бас жүлде – Жетісу облысына.",
+   "desc_ru": "18 кандидатов из 18 регионов соревновались в трёх турах; гран-при – Жетысуской области.",
    "desc_en": "18 candidates from 18 regions competed in three rounds; the grand prize went to Zhetysu region."
   },
   {
@@ -2391,7 +2391,7 @@ const DATA = {
    "title": "«Қазіргі кітапхана – жаңа буынның тұлғалық даму аймағы», Арқалық",
    "desc": "Заманауи кітапхананың рөлі мен жас буынмен жұмыс тәжірибесі талқыланды.",
    "title_kk": "«Қазіргі кітапхана – жаңа буынның тұлғалық даму аймағы», Арқалық",
-   "title_ru": "«Современная библиотека — пространство развития нового поколения», Аркалык",
+   "title_ru": "«Современная библиотека – пространство развития нового поколения», Аркалык",
    "title_en": "«The modern library as a space for a new generation», Arkalyk",
    "desc_kk": "Заманауи кітапхананың рөлі мен жас буынмен жұмыс тәжірибесі талқыланды.",
    "desc_ru": "Обсуждались роль современной библиотеки и опыт работы с молодым поколением.",
@@ -2926,8 +2926,8 @@ const NAMES = {
 /* ─────────────── ИНТЕРФЕЙС МӘТІНДЕРІ ─────────────── */
 const TXT = {
 "tagline":{
-"kk":"Кітапхана — сандар тілінде",
-"ru":"Библиотека — на языке цифр",
+"kk":"Кітапхана – сандар тілінде",
+"ru":"Библиотека – на языке цифр",
 "en":"The library in numbers"
 },
 "owner":{
@@ -3126,8 +3126,8 @@ const TXT = {
 "en":"Library staff"
 },
 "h.desc":{
-"kk":"Қазақстанда түрлі жүйелер мен ведомстволарға тиесілі {a} кітапхана бар. Солардың {b}-ы — көпшілік кітапханалар. LABA осы желінің 2025 жылғы қорытындысын диаграмма, рейтинг және салыстыру тілінде ұсынады.",
-"ru":"В Казахстане действует {a} библиотек различных систем и ведомств. Из них {b} — публичные библиотеки. LABA представляет итоги 2025 года на языке диаграмм, рейтингов и сравнений.",
+"kk":"Қазақстанда түрлі жүйелер мен ведомстволарға тиесілі {a} кітапхана бар. Солардың {b}-ы – көпшілік кітапханалар. LABA осы желінің 2025 жылғы қорытындысын диаграмма, рейтинг және салыстыру тілінде ұсынады.",
+"ru":"В Казахстане действует {a} библиотек различных систем и ведомств. Из них {b} – публичные библиотеки. LABA представляет итоги 2025 года на языке диаграмм, рейтингов и сравнений.",
 "en":"Kazakhstan has {a} libraries across various systems and agencies, {b} of which are public libraries. LABA presents the 2025 results through charts, rankings and comparisons."
 },
 "h.st1":{
@@ -3192,7 +3192,7 @@ const TXT = {
 },
 "s2.note":{
 "kk":"Бақылау көрсеткіштерінің басым бөлігі бойынша 0,15%-дан 4,1%-ға дейін өсім байқалады. Дегенмен кітапхана саны 0,02%-ға, құжат берілімі 1,0%-ға азайған.",
-"ru":"По большинству контрольных показателей отмечается рост от 0,15% до 4,1%. При этом количество библиотек снизилось на 0,02%, книговыдача — на 1,0%.",
+"ru":"По большинству контрольных показателей отмечается рост от 0,15% до 4,1%. При этом количество библиотек снизилось на 0,02%, книговыдача – на 1,0%.",
 "en":"Most indicators grew between 0.15% and 4.1%. However, the number of libraries fell by 0.02% and loans by 1.0%."
 },
 "s3.desc":{
@@ -3221,9 +3221,9 @@ const TXT = {
 "en":"Model libraries"
 },
 "s3.k3s":{
-"kk":"коворкинг орталығы — {a}",
-"ru":"коворкинг-центров — {a}",
-"en":"coworking centres — {a}"
+"kk":"коворкинг орталығы – {a}",
+"ru":"коворкинг-центров – {a}",
+"en":"coworking centres – {a}"
 },
 "s3.k4":{
 "kk":"Кітапхана пункті",
@@ -3231,9 +3231,9 @@ const TXT = {
 "en":"Library points"
 },
 "s3.k4s":{
-"kk":"жылжымалы кітапхана — {a}",
-"ru":"передвижных библиотек — {a}",
-"en":"mobile libraries — {a}"
+"kk":"жылжымалы кітапхана – {a}",
+"ru":"передвижных библиотек – {a}",
+"en":"mobile libraries – {a}"
 },
 "s3.p1.t":{
 "kk":"Ведомстволар бойынша",
@@ -3276,8 +3276,8 @@ const TXT = {
 "en":"Breakdown of 36 regional libraries"
 },
 "s3.note":{
-"kk":"2025 жылы {a} көпшілік кітапхана ашылды, {b} кітапхана жабылды (Түркістан облысында 11, Атырау облысында 1). Таза өзгеріс — «−1».",
-"ru":"В 2025 году открыто {a} публичных библиотек, закрыто {b} (11 в Туркестанской и 1 в Атырауской области). Чистое изменение — «−1».",
+"kk":"2025 жылы {a} көпшілік кітапхана ашылды, {b} кітапхана жабылды (Түркістан облысында 11, Атырау облысында 1). Таза өзгеріс – «−1».",
+"ru":"В 2025 году открыто {a} публичных библиотек, закрыто {b} (11 в Туркестанской и 1 в Атырауской области). Чистое изменение – «−1».",
 "en":"In 2025, {a} public libraries opened and {b} closed (11 in Turkistan and 1 in Atyrau region). Net change: −1."
 },
 "s4.desc":{
@@ -3346,14 +3346,14 @@ const TXT = {
 "en":"Adults"
 },
 "s4.note":{
-"kk":"15 жасқа дейінгі балалар — {a} ({b}), жастар — {c} ({d}), ересектер — {e} ({f}). Балалар оқырмандардың үлесі ең жоғары өңір — Түркістан облысы (41,1%).",
-"ru":"Дети до 15 лет — {a} ({b}), молодёжь — {c} ({d}), взрослые — {e} ({f}). Наибольшая доля детей — в Туркестанской области (41,1%).",
+"kk":"15 жасқа дейінгі балалар – {a} ({b}), жастар – {c} ({d}), ересектер – {e} ({f}). Балалар оқырмандардың үлесі ең жоғары өңір – Түркістан облысы (41,1%).",
+"ru":"Дети до 15 лет – {a} ({b}), молодёжь – {c} ({d}), взрослые – {e} ({f}). Наибольшая доля детей – в Туркестанской области (41,1%).",
 "en":"Children under 15: {a} ({b}); youth: {c} ({d}); adults: {e} ({f}). The highest share of children is in Turkistan region (41.1%)."
 },
 "s5.desc":{
-"kk":"Пайдаланушылар санының халық санына қатынасы — саланың қоғамдағы қамту деңгейін көрсететін негізгі көрсеткіш.",
-"ru":"Отношение числа пользователей к численности населения — ключевой показатель охвата населения библиотечным обслуживанием.",
-"en":"The ratio of users to population — the key measure of library coverage in society."
+"kk":"Пайдаланушылар санының халық санына қатынасы – саланың қоғамдағы қамту деңгейін көрсететін негізгі көрсеткіш.",
+"ru":"Отношение числа пользователей к численности населения – ключевой показатель охвата населения библиотечным обслуживанием.",
+"en":"The ratio of users to population – the key measure of library coverage in society."
 },
 "s5.k1":{
 "kk":"Республика бойынша",
@@ -3407,7 +3407,7 @@ const TXT = {
 },
 "s5.note":{
 "kk":"2024 жылмен салыстырғанда көрсеткіш Павлодар облысында 15,3%-ға, Ақтөбе облысында 4,5%-ға артқан. Астана мен Алматыдағы төмен көрсеткіш оқу орындары кітапханаларының көптігімен түсіндіріледі.",
-"ru":"По сравнению с 2024 годом показатель вырос в Павлодарской области на 15,3%, в Актюбинской — на 4,5%. Низкие значения в Астане и Алматы объясняются обилием библиотек учебных заведений.",
+"ru":"По сравнению с 2024 годом показатель вырос в Павлодарской области на 15,3%, в Актюбинской – на 4,5%. Низкие значения в Астане и Алматы объясняются обилием библиотек учебных заведений.",
 "en":"Compared with 2024, the rate rose by 15.3% in Pavlodar and 4.5% in Aktobe. Low figures in Astana and Almaty reflect the abundance of educational institution libraries."
 },
 "s6.desc":{
@@ -3496,7 +3496,7 @@ const TXT = {
 "en":"Number of items"
 },
 "s6.note1":{
-"kk":"Қазақ тіліндегі құжаттардың басымдылығы Атырау (60,8%), Ұлытау (60,2%), Түркістан (59%), Жамбыл (55,9%) облыстарында байқалады. Қордың {a}-ы — кітаптар.",
+"kk":"Қазақ тіліндегі құжаттардың басымдылығы Атырау (60,8%), Ұлытау (60,2%), Түркістан (59%), Жамбыл (55,9%) облыстарында байқалады. Қордың {a}-ы – кітаптар.",
 "ru":"Преобладание документов на казахском языке отмечается в Атырауской (60,8%), Улытауской (60,2%), Туркестанской (59%) и Жамбылской (55,9%) областях. {a} фонда составляют книги.",
 "en":"Kazakh-language documents predominate in Atyrau (60.8%), Ulytau (60.2%), Turkistan (59%) and Zhambyl (55.9%). Books make up {a} of the collection."
 },
@@ -3516,8 +3516,8 @@ const TXT = {
 "en":"Per library"
 },
 "s6.a3s":{
-"kk":"мемтілде — {a} құжат",
-"ru":"на госязыке — {a} документов",
+"kk":"мемтілде – {a} құжат",
+"ru":"на госязыке – {a} документов",
 "en":"{a} documents in the state language"
 },
 "s6.a4":{
@@ -3546,8 +3546,8 @@ const TXT = {
 "en":"Acquisition structure"
 },
 "s6.anote":{
-"kk":"Толықтырудың жалпы көлемі 2024 жылмен салыстырғанда {a} данаға азайды, соның ішінде қазақ тілінде — {b} дана. Ең көп түсім Қостанай (88 029), Жамбыл (73 319), Түркістан (66 942) облыстарында.",
-"ru":"Общий объём комплектования снизился на {a} экземпляров по сравнению с 2024 годом, в том числе на казахском языке — на {b}. Наибольшие поступления в Костанайской (88 029), Жамбылской (73 319) и Туркестанской (66 942) областях.",
+"kk":"Толықтырудың жалпы көлемі 2024 жылмен салыстырғанда {a} данаға азайды, соның ішінде қазақ тілінде – {b} дана. Ең көп түсім Қостанай (88 029), Жамбыл (73 319), Түркістан (66 942) облыстарында.",
+"ru":"Общий объём комплектования снизился на {a} экземпляров по сравнению с 2024 годом, в том числе на казахском языке – на {b}. Наибольшие поступления в Костанайской (88 029), Жамбылской (73 319) и Туркестанской (66 942) областях.",
 "en":"Total acquisitions fell by {a} items compared with 2024, including {b} in Kazakh. The largest intake was in Kostanay (88,029), Zhambyl (73,319) and Turkistan (66,942)."
 },
 "s6.r1":{
@@ -3586,8 +3586,8 @@ const TXT = {
 "en":"Renewal rate table"
 },
 "s6.rnote":{
-"kk":"Ешбір өңір ИФЛА нормасына жеткен жоқ. Ең төмен көрсеткіш — Қызылорда мен Жетісу облыстарында (0,8%), ең жоғары — Қостанай облысында (2,1%). Нормаға жету үшін жылдық түсімді шамамен {a} есе арттыру қажет.",
-"ru":"Ни один регион не достиг нормы ИФЛА. Наименьший показатель — в Кызылординской и Жетысуской областях (0,8%), наибольший — в Костанайской (2,1%). Для достижения нормы годовые поступления нужно увеличить примерно в {a} раза.",
+"kk":"Ешбір өңір ИФЛА нормасына жеткен жоқ. Ең төмен көрсеткіш – Қызылорда мен Жетісу облыстарында (0,8%), ең жоғары – Қостанай облысында (2,1%). Нормаға жету үшін жылдық түсімді шамамен {a} есе арттыру қажет.",
+"ru":"Ни один регион не достиг нормы ИФЛА. Наименьший показатель – в Кызылординской и Жетысуской областях (0,8%), наибольший – в Костанайской (2,1%). Для достижения нормы годовые поступления нужно увеличить примерно в {a} раза.",
 "en":"No region reached the IFLA norm. The lowest rate is in Kyzylorda and Zhetysu (0.8%), the highest in Kostanay (2.1%). Reaching the norm would require increasing annual intake about {a}-fold."
 },
 "s6.s1":{
@@ -3726,7 +3726,7 @@ const TXT = {
 "en":"Difference"
 },
 "s7.note":{
-"kk":"Қордағы құжат саны мен сұраныс арасындағы айырмашылық 1,2%-дан 2,3%-ға дейін — бұл қор құрылымының оқырман сұранысына жақсы сәйкес келетінін көрсетеді.",
+"kk":"Қордағы құжат саны мен сұраныс арасындағы айырмашылық 1,2%-дан 2,3%-ға дейін – бұл қор құрылымының оқырман сұранысына жақсы сәйкес келетінін көрсетеді.",
 "ru":"Расхождение между составом фонда и спросом составляет от 1,2% до 2,3%, что говорит о хорошем соответствии структуры фонда запросам читателей.",
 "en":"The gap between collection composition and demand ranges from 1.2% to 2.3%, indicating that the collection matches user demand well."
 },
@@ -3806,13 +3806,13 @@ const TXT = {
 "en":"Own databases"
 },
 "s8.p3.d":{
-"kk":"Барлығы — {a} жазба",
-"ru":"Всего — {a} записей",
+"kk":"Барлығы – {a} жазба",
+"ru":"Всего – {a} записей",
 "en":"Total: {a} records"
 },
 "s8.p3.n":{
-"kk":"Интернетте қолжетімді электрондық каталог көлемі — {a} жазба.",
-"ru":"Объём электронного каталога, доступного в интернете, — {a} записей.",
+"kk":"Интернетте қолжетімді электрондық каталог көлемі – {a} жазба.",
+"ru":"Объём электронного каталога, доступного в интернете, – {a} записей.",
 "en":"The online electronic catalogue contains {a} records."
 },
 "s8.p4.t":{
@@ -3906,8 +3906,8 @@ const TXT = {
 "en":"No professional education"
 },
 "s9.note":{
-"kk":"36–55 жас аралығындағы мамандар басым — {a} адам ({b}). 35 жасқа дейінгі жас мамандар {c}-ды ғана құрайды, бұл саладағы буын алмасу мәселесін көрсетеді.",
-"ru":"Преобладают специалисты 36–55 лет — {a} человек ({b}). Молодые специалисты до 35 лет составляют лишь {c}, что указывает на проблему смены поколений.",
+"kk":"36–55 жас аралығындағы мамандар басым – {a} адам ({b}). 35 жасқа дейінгі жас мамандар {c}-ды ғана құрайды, бұл саладағы буын алмасу мәселесін көрсетеді.",
+"ru":"Преобладают специалисты 36–55 лет – {a} человек ({b}). Молодые специалисты до 35 лет составляют лишь {c}, что указывает на проблему смены поколений.",
 "en":"Specialists aged 36–55 dominate: {a} people ({b}). Those under 35 make up only {c}, highlighting a generational renewal problem."
 },
 "s10.desc":{
@@ -3931,8 +3931,8 @@ const TXT = {
 "en":"Congress participants"
 },
 "s10.k2s":{
-"kk":"Қазақстаннан — {a}",
-"ru":"из Казахстана — {a}",
+"kk":"Қазақстаннан – {a}",
+"ru":"из Казахстана – {a}",
 "en":"{a} from Kazakhstan"
 },
 "s10.k3":{
@@ -4101,8 +4101,8 @@ const TXT = {
 "en":"Housed in purpose-built premises ({a} libraries)"
 },
 "s12.note":{
-"kk":"Жаңғырту бойынша көш бастаушы — Батыс Қазақстан облысы: 15 ауданда 23 аудандық және ауылдық кітапхана жаңартылды. Солтүстік Қазақстан облысында екі кітапханада заманауи IT-хаб ашылды, Ақтауда орталық қалалық кітапхана CREATIVE HUB форматында қайта жұмыс бастады.",
-"ru":"Лидер по модернизации — Западно-Казахстанская область: в 15 районах обновлены 23 районные и сельские библиотеки. В Северо-Казахстанской области в двух библиотеках открыты современные IT-хабы, в Актау центральная городская библиотека возобновила работу в формате CREATIVE HUB.",
+"kk":"Жаңғырту бойынша көш бастаушы – Батыс Қазақстан облысы: 15 ауданда 23 аудандық және ауылдық кітапхана жаңартылды. Солтүстік Қазақстан облысында екі кітапханада заманауи IT-хаб ашылды, Ақтауда орталық қалалық кітапхана CREATIVE HUB форматында қайта жұмыс бастады.",
+"ru":"Лидер по модернизации – Западно-Казахстанская область: в 15 районах обновлены 23 районные и сельские библиотеки. В Северо-Казахстанской области в двух библиотеках открыты современные IT-хабы, в Актау центральная городская библиотека возобновила работу в формате CREATIVE HUB.",
 "en":"West Kazakhstan leads modernisation: 23 district and rural libraries renovated across 15 districts. Two libraries in North Kazakhstan opened modern IT hubs, and Aktau's central city library reopened as a CREATIVE HUB."
 },
 "s13.desc":{
@@ -4201,8 +4201,8 @@ const TXT = {
 "en":"What are libraries reading and recommending?"
 },
 "s16.desc":{
-"kk":"Республикалық, облыстық және қалалық негізгі кітапханалардың оқырманға ұсынған кітаптары мен ең көп оқылған кітаптары — оқырман санаттары бойынша. Аудан, қала және ауыл кітапханаларының деректері облыстық кітапхананың тізіміне кіреді.",
-"ru":"Книги, которые рекомендуют читателям, и самые читаемые книги главных республиканских, областных и городских библиотек — по категориям читателей. Данные районных, городских и сельских библиотек входят в список областной библиотеки.",
+"kk":"Республикалық, облыстық және қалалық негізгі кітапханалардың оқырманға ұсынған кітаптары мен ең көп оқылған кітаптары – оқырман санаттары бойынша. Аудан, қала және ауыл кітапханаларының деректері облыстық кітапхананың тізіміне кіреді.",
+"ru":"Книги, которые рекомендуют читателям, и самые читаемые книги главных республиканских, областных и городских библиотек – по категориям читателей. Данные районных, городских и сельских библиотек входят в список областной библиотеки.",
 "en":"Books recommended to readers and the most-read books of the main national, regional and city libraries, by reader category. District, town and village libraries are included in their regional library's list."
 },
 "rd.eyebrow":{
@@ -4331,8 +4331,8 @@ const TXT = {
 "en":"No books match this filter."
 },
 "rd.note":{
-"kk":"Кітапты басыңыз — оны ұсынған (немесе оқырманы көп болған) кітапханалардың тізімі ашылады. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректері кіреді.",
-"ru":"Нажмите на книгу — откроется список библиотек, которые её рекомендовали (или где её больше всего читали). Список области включает данные районных, городских и сельских библиотек.",
+"kk":"Кітапты басыңыз – оны ұсынған (немесе оқырманы көп болған) кітапханалардың тізімі ашылады. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректері кіреді.",
+"ru":"Нажмите на книгу – откроется список библиотек, которые её рекомендовали (или где её больше всего читали). Список области включает данные районных, городских и сельских библиотек.",
 "en":"Click a book to see which libraries recommended it (or where it was most read). A region's list includes its district, town and village libraries."
 },
 "rd.reads":{
@@ -4431,8 +4431,8 @@ const TXT = {
 "en":"other"
 },
 "s15.desc":{
-"kk":"Елдің барлық көпшілік кітапханасының бірыңғай электрондық паспорты: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер — бір жерде.",
-"ru":"Единый электронный паспорт всех публичных библиотек страны: контакты, здание, оснащение, фонд, кадры и основные показатели — в одном месте.",
+"kk":"Елдің барлық көпшілік кітапханасының бірыңғай электрондық паспорты: байланыс, ғимарат, жабдықталуы, қор, кадрлар және негізгі көрсеткіштер – бір жерде.",
+"ru":"Единый электронный паспорт всех публичных библиотек страны: контакты, здание, оснащение, фонд, кадры и основные показатели – в одном месте.",
 "en":"A single electronic passport for every public library in the country: contacts, building, equipment, collection, staff and key indicators in one place."
 },
 "s15.search":{
@@ -4859,13 +4859,13 @@ const charts = {};
 const nf  = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ");
 const df  = n => Number(n).toFixed(1).replace(".", LANG==="en" ? "." : ",");
 const pf  = n => df(n)+"%";
-const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = s => String(s).replace(/\u2014/g,"–").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const chg = (v,p) => (p===null||p===undefined||!p) ? null : (v-p)/p*100;
 
 function deltaHtml(d,extra){
   if(d===null||d===undefined) return "";
   const cls = d>0?"up":(d<0?"down":"flat");
-  const ar  = d>0?"▲":(d<0?"▼":"—");
+  const ar  = d>0?"▲":(d<0?"▼":"–");
   return `<div class="delta ${cls}">${ar} ${df(Math.abs(d))}%
     <span style="color:var(--muted);font-weight:500">${extra||T("vsPrev")}</span></div>`;
 }
@@ -5237,7 +5237,7 @@ P.fund.charts = () => {
   mk("cFundCarrier",donut(f.carriers.map(x=>nm(x.name)),f.carriers.map(x=>x.v)));
   mk("cFundSubject",donut(DATA.subjects.map(x=>nm(x.name)),DATA.subjects.map(x=>x.fund)));
   const r = DATA.regions.slice().sort((a,b)=>b.fund-a.fund);
-  /* Өңірлер бойынша қор — жол саны көп болғандықтан бөлек баптау */
+  /* Өңірлер бойынша қор – жол саны көп болғандықтан бөлек баптау */
   (function(){
     const box = document.getElementById("cFundRegion");
     if(box && box.parentElement) box.parentElement.style.height = (r.length*27 + 44) + "px";
@@ -5542,7 +5542,7 @@ P.compare.charts = () => {
   mk("cCmpUsers",hbar(u.map(x=>nm(x.name).slice(0,30)),u.map(x=>x.users),"#1D4ED8"));
 };
 
-/* 14. Оқиғалар — Google Sheets арқылы толықтырылады */
+/* 14. Оқиғалар – Google Sheets арқылы толықтырылады */
 function ev(x, field){
   const k = field + "_" + LANG;
   return x[k] || x[field] || "";
@@ -5564,9 +5564,9 @@ P.events = () => `
   ${srcLine()}`;
 P.events.charts = () => {};
 
-/* 15. Кітапханалар паспорты — Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
+/* 15. Кітапханалар паспорты – Google Sheets («Паспорттар» парағы) арқылы толықтырылады.
    Кестеде дерек әлі болмаса, бет демо (үлгі) деректермен көрсетіледі. */
-/* Сайттағы бастапқы деректер — 2025 жылдың қорытындысы; кейінгі жылдар мұрағатта сақталады */
+/* Сайттағы бастапқы деректер – 2025 жылдың қорытындысы; кейінгі жылдар мұрағатта сақталады */
 const PASS_BASE_YEAR = 2025;
 const PASS = {list:[], status:"loading", src:"", full:{}, pending:{}, hist:{}, histPending:{},
   hq:"", q:"", type:"", cat:"", dist:"", sort:"lvl", view:"cards", shown:24, metric:"count", region:""};
@@ -5631,7 +5631,7 @@ PF.forEach(g=>g.f.forEach(x=>{ if(x[2]) PFX[x[0]] = 1; }));
 const PREQ = Object.keys(PFL).filter(c=>c!=="1.2" && c!=="1.6" && !PFX[c]);
 const tx  = o => (o && (o[LANG] || o.kk)) || "";
 const pl  = c => tx(PFL[c]) || c;
-/* Өріс мәні: орыс/ағылшын тілінде аудармасы болса — соны, болмаса түпнұсқаны береміз */
+/* Өріс мәні: орыс/ағылшын тілінде аудармасы болса – соны, болмаса түпнұсқаны береміз */
 const pv  = (x,c) => {
   const t = LANG!=="kk" && x && x.tr && x.tr[LANG] && x.tr[LANG][c];
   return String(t || (x && x.f && x.f[c]) || "").trim();
@@ -5642,7 +5642,7 @@ const safeUrl = u => { u = String(u||"").trim(); if(!u) return "";
   if(!/^https?:\/\//i.test(u)) u = "https://" + u;
   return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u : ""; };
 
-/* Облыстар мен республикалық маңызы бар қалалар. g — стильдендірілген картадағы орны [жол, баған] */
+/* Облыстар мен республикалық маңызы бар қалалар. g – стильдендірілген картадағы орны [жол, баған] */
 const REG = [
   {k:"wko",       g:[0,0], src:"Батыс Қазақстан",     n:{kk:"Батыс Қазақстан облысы",ru:"Западно-Казахстанская область",en:"West Kazakhstan Region"}, s:{kk:"БҚО",ru:"ЗКО",en:"WKO"}},
   {k:"kostanay",  g:[0,2], src:"Қостанай",            n:{kk:"Қостанай облысы",ru:"Костанайская область",en:"Kostanay Region"}, s:{kk:"Қостанай",ru:"Костанай",en:"Kostanay"}},
@@ -5689,7 +5689,7 @@ function regOf(s){
 }
 const TYPE_KK = {"республикалық":"rep","облыстық":"obl","республикалық маңызы бар қала":"rcity",
   "қалалық":"city","аудандық":"dist","ауылдық":"rural"};
-/* Тізілімдегі санаттардың аудармасы */
+/* Тізімдегі санаттардың аудармасы */
 const CAT = {
   "Ұлттық кітапхана":{ru:"Национальная библиотека",en:"National library"},
   "Республикалық кітапхана":{ru:"Республиканская библиотека",en:"Republican library"},
@@ -5761,7 +5761,7 @@ function distLabel(x){
   return (LANG!=="kk" && x.tr && x.tr[LANG] && x.tr[LANG].d) || x.d || "";
 }
 
-/* ── Демо деректер: облыстағы кітапхана саны — нақты статистика, қалғаны үлгі ── */
+/* ── Демо деректер: облыстағы кітапхана саны – нақты статистика, қалғаны үлгі ── */
 function rng(seed){ let s = seed >>> 0; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return ((s >>> 0) % 100000) / 100000; }; }
 function demoPassports(){
   const R = rng(20251), pick = a => a[Math.floor(R()*a.length)], int = (a,b) => Math.round(a + R()*(b-a));
@@ -5898,7 +5898,7 @@ function tileMap(){
     const dark = isDark();
     return `<a class="tile ${dark||q>0.42?"dk":"lt"}" href="#passport/r/${r.k}"
       style="grid-row:${r.g[0]+1};grid-column:${r.g[1]+1};background:${dark?mixColor("#1A2B4D","#3B82F6",q):mixColor("#DBEAFE","#1D4ED8",q)}"
-      title="${esc(tx(r.n))} — ${lbl}"><b>${esc(tx(r.s))}</b><span>${lbl}</span></a>`;
+      title="${esc(tx(r.n))} – ${lbl}"><b>${esc(tx(r.s))}</b><span>${lbl}</span></a>`;
   }).join("");
 }
 function typeBlock(rows){
@@ -6039,7 +6039,7 @@ function libTable(rows, withRegion){
       return `<tr><td class="nm"><a href="#passport/${encodeURIComponent(x.id)}">${esc(pv(x,"1.1"))}</a></td>
       <td><span class="tdot" style="background:${(LTM[x.t]||LTM.rural).c}"></span>${esc(tyName(x))}</td>
       <td>${esc(withRegion ? (r?tx(r.s):"") : distLabel(x))}</td>
-      <td class="v">${esc(pv(x,"4.1")||"—")}</td><td class="v">${esc(pv(x,"6.1")||"—")}</td>
+      <td class="v">${esc(pv(x,"4.1")||"–")}</td><td class="v">${esc(pv(x,"6.1")||"–")}</td>
       <td><div class="lib-c">${meter(x.c)}<span>${pct0(x.c)}%</span></div></td></tr>`; }).join("")}</tbody></table></div>`;
 }
 function drawList(){
@@ -6086,7 +6086,7 @@ function splitVal(v){
   return out;
 }
 const isPhone = x => (x.replace(/\D/g,"").length>=7) && /^[\d\s()+\-–,.]+$/.test(x.replace(/тел\.?|ұялы|байланыс телефоны|телефон|:/gi,"").trim());
-/* 5.2 — тек аты-жөні мен телефон: кадрлық мәліметтер (білімі, өтілі т.б.) көрсетілмейді */
+/* 5.2 – тек аты-жөні мен телефон: кадрлық мәліметтер (білімі, өтілі т.б.) көрсетілмейді */
 function personHtml(v){
   const phoneRe = /\+?\d[\d\s()\-–.]{4,}\d/g;
   const isYears = m => /^(19|20)\d{2}(\s*[-–.]\s*(19|20)?\d{2})?$/.test(m.trim());
@@ -6097,7 +6097,7 @@ function personHtml(v){
     if(d.length>=6 && d.length<=12 && !isYears(m) && phones.indexOf(m.trim())<0) phones.push(m.trim()); });
   const ini = name.split(/\s+/).filter(w=>/^[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүІіҺһ]/.test(w)).slice(0,2).map(w=>w[0].toUpperCase()).join("");
   const tels = phones.map(x=>`<a class="ps-tel" href="tel:${esc(x.replace(/[^\d+]/g,""))}">${svg(PI.phone)}${esc(x)}</a>`).join("");
-  return `<div class="person"><span class="ps-av">${esc(ini||"•")}</span><div><b>${esc(name||"—")}</b>${tels}</div></div>`;
+  return `<div class="person"><span class="ps-av">${esc(ini||"•")}</span><div><b>${esc(name||"–")}</b>${tels}</div></div>`;
 }
 function valBlock(c, v){
   if(c==="5.2") return personHtml(v);
@@ -6105,25 +6105,25 @@ function valBlock(c, v){
   if(parts.length>1) return `<div class="vchips">${parts.map(x=>`<span class="vchip">${linkify(x)}</span>`).join("")}</div>`;
   return `<div class="pv-block">${linkify(parts[0]||v)}</div>`;
 }
-/* Бір жол: қысқа мән — оң жақта, ұзын мән/тізім — атауының астында толық енде */
+/* Бір жол: қысқа мән – оң жақта, ұзын мән/тізім – атауының астында толық енде */
 function passRow(c, v){
-  /* сандық өрістер («73 / 39») бөлінбейді — бір жолда, оң жақта тұрады */
+  /* сандық өрістер («73 / 39») бөлінбейді – бір жолда, оң жақта тұрады */
   const wide = v && (c==="5.2" || v.length>36 || (NUMF.indexOf(c)<0 && splitVal(v).length>1));
   if(wide) return `<tr class="wide"><td class="c">${c}</td><td colspan="2"><div class="pl">${esc(pl(c))}</div>${valBlock(c,v)}</td></tr>`;
-  return `<tr><td class="c">${c}</td><td>${esc(pl(c))}</td><td class="pv${v?"":" none"}">${v?linkify(v):"—"}</td></tr>`;
+  return `<tr><td class="c">${c}</td><td>${esc(pl(c))}</td><td class="pv${v?"":" none"}">${v?linkify(v):"–"}</td></tr>`;
 }
 function secTable(g, skip){
   const rows = g.f.filter(f=>(skip||[]).indexOf(f[0])<0 && !(f[2] && !pv(PASS._cur,f[0]))).map(f=>passRow(f[0], pv(PASS._cur,f[0]))).join("");
   return panel(null, g.n+". "+tx(g.t), "", `<table class="tbl pass-tbl"><tbody>${rows}</tbody></table>`);
 }
-/* Сайттағы дерек файлдары (тізілім): Google Sheets-тен дерек келмесе, осылар көрсетіледі */
+/* Сайттағы дерек файлдары (тізім): Google Sheets-тен дерек келмесе, осылар көрсетіледі */
 const PASS_STATIC = "data/passports-index.json";
 const passChunk = id => "data/passports/" + Math.floor(Number(id)/200) + ".json";
 function rerenderIfOpen(id){
   const h = location.hash.slice(1), base = "passport/"+encodeURIComponent(id);
   if(h===base || h.indexOf(base+"/")===0) render(h);
 }
-/* Паспорттың мұрағаттағы жылдары (тек тірі деректе; сайттың файлдарында — тек 2025 жыл) */
+/* Паспорттың мұрағаттағы жылдары (тек тірі деректе; сайттың файлдарында – тек 2025 жыл) */
 function requestHist(id){
   if(PASS.histPending[id] || PASS.hist[id]) return;
   if(PASS.src!=="live"){ PASS.hist[id] = []; return; }
@@ -6134,7 +6134,7 @@ function requestHist(id){
     rerenderIfOpen(id);
   }, 20000, ()=>{ PASS.histPending[id] = 0; PASS.hist[id] = []; rerenderIfOpen(id); });
 }
-/* Мұрағаттағы мән ағымдағымен бірдей болса — ағымдағы паспорттың аудармасын қолданамыз */
+/* Мұрағаттағы мән ағымдағымен бірдей болса – ағымдағы паспорттың аудармасын қолданамыз */
 function archTr(a, cur){
   if(!cur || !cur.tr) return a;
   ["ru","en"].forEach(l=>{ const t = cur.tr[l]||{};
@@ -6160,7 +6160,7 @@ function requestFull(id){
       const x = normPass(res.passport);
       PASS.full[id] = x;
       rerenderIfOpen(id);
-      /* толық паспорттың аудармалары — сайттың файлынан */
+      /* толық паспорттың аудармалары – сайттың файлынан */
       if(window.fetch && location.protocol!=="file:") fetch(passChunk(id)).then(r=>r.ok ? r.json() : null).then(map=>{
         if(map && map[id]){ mergeTr([x], [normPass(map[id])]); rerenderIfOpen(id); }
       }).catch(()=>{});
@@ -6178,7 +6178,7 @@ function qInfo(x){
   const d = String(x.u || "").split("-");
   return `<div class="q-info">${svg(PI.info)}<span>${esc(per)}${d.length===3 ? " · " + esc(T("p.qupd",{d:d[2]+"."+d[1]+"."+d[0]})) : ""}</span></div>`;
 }
-/* Кезеңнің жазуы: бекітілген тоқсандар (qs) бойынша — «2026 жыл, I–II тоқсан (алдын ала)» немесе «2026 жылдың қорытындысы» */
+/* Кезеңнің жазуы: бекітілген тоқсандар (qs) бойынша – «2026 жыл, I–II тоқсан (алдын ала)» немесе «2026 жылдың қорытындысы» */
 function qLabel(x){
   const q = String(x.q || "").split("-"), R = ["","I","II","III","IV"];
   const qs = String(x.qs || "");
@@ -6197,14 +6197,14 @@ function ppPerson(v){
   const phones = [];
   (v.match(phoneRe)||[]).forEach(m=>{ const d = m.replace(/\D/g,"");
     if(d.length>=6 && d.length<=12 && !isYears(m) && phones.indexOf(m.trim())<0) phones.push(m.trim()); });
-  return `<b>${esc(name||"—")}</b>${phones.length ? " · " + esc(phones.join(", ")) : ""}`;
+  return `<b>${esc(name||"–")}</b>${phones.length ? " · " + esc(phones.join(", ")) : ""}`;
 }
 function ppRow(f, c){
   const v = pv(f, c);
   if(c === "5.2" && v) return `<tr class="w"><td class="c">${c}</td><td colspan="2"><span class="l">${esc(pl(c))}</span><div class="v">${ppPerson(v)}</div></td></tr>`;
   const wide = v && (v.length > 34 || (NUMF.indexOf(c) < 0 && splitVal(v).length > 2));
   if(wide) return `<tr class="w"><td class="c">${c}</td><td colspan="2"><span class="l">${esc(pl(c))}</span><div class="v">${esc(ppCut(splitVal(v).join(" · ")))}</div></td></tr>`;
-  return `<tr><td class="c">${c}</td><td class="l">${esc(pl(c))}</td><td class="v${v ? "" : " no"}">${v ? esc(v) : "—"}</td></tr>`;
+  return `<tr><td class="c">${c}</td><td class="l">${esc(pl(c))}</td><td class="v${v ? "" : " no"}">${v ? esc(v) : "–"}</td></tr>`;
 }
 function ppSec(f, g, skip){
   const rows = g.f.filter(x => (skip || []).indexOf(x[0]) < 0 && !(x[2] && !pv(f, x[0]))).map(x => ppRow(f, x[0])).join("");
@@ -6214,13 +6214,13 @@ function passPrint(f, x, label){
   const r = REG.find(z=>z.k===x.r), ty = LTM[x.t] || LTM.rural;
   const d = new Date(), p2 = n => String(n).padStart(2, "0");
   const tags = [tx(ty), x.cat ? catName(x.cat) : "", r ? tx(r.n) + (x.d ? ", " + x.d : "") : ""].filter(Boolean);
-  const kpi = ["4.1","6.1","6.2","6.3"].map(c => `<div><span>${esc(pl(c))}</span><b>${esc(pv(f,c) || "—")}</b></div>`).join("")
+  const kpi = ["4.1","6.1","6.2","6.3"].map(c => `<div><span>${esc(pl(c))}</span><b>${esc(pv(f,c) || "–")}</b></div>`).join("")
     + `<div class="fill"><span>${esc(T("pp.fill"))}</span><b>${pf(f.c*100)}</b></div>`;
   const eq = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11"].map(c => { const v = pv(f,c);
     const m = v.match(/^(\d[\d\s]*(?:[.,]\d+)?)\s*(.*)$/);
     const big = m ? m[1].trim() : "", note = (m ? m[2].replace(/^[-–,;:()\s]+/, "") : v).replace(/\)$/, "");
     const shortNote = note.length > 70 ? note.slice(0, 70).replace(/\s+\S*$/, "") + " …" : note;
-    return `<div><b${big || !v ? "" : ' class="t"'}>${esc(big || (v ? shortNote : "—"))}</b>${big && note ? `<em>${esc(shortNote)}</em>` : ""}<span>${esc(pl(c))}</span></div>`; }).join("");
+    return `<div><b${big || !v ? "" : ' class="t"'}>${esc(big || (v ? shortNote : "–"))}</b>${big && note ? `<em>${esc(shortNote)}</em>` : ""}<span>${esc(pl(c))}</span></div>`; }).join("");
   const q = String(f.q || "").split("-"), u = String(f.u || "").split("-");
   const per = q.length === 2 ? qLabel(f) + (u.length === 3 ? " · " + T("p.qupd",{d:u[2]+"."+u[1]+"."+u[0]}) : "")
     : label ? "" : T("p.qbase",{y: (PASS.hist[x.id]||[])[0] ? PASS.hist[x.id][0].year : PASS_BASE_YEAR});
@@ -6277,7 +6277,7 @@ function passDetail(x, yr){
   const eq = ["3.5","3.6","3.7","3.8","3.9","3.10","3.11"].map(c=>{ const v = pv(f,c);
     const m = v.match(/^(\d[\d\s]*(?:[.,]\d+)?)\s*(.*)$/);
     const big = m ? m[1].trim() : "", note = m ? m[2].replace(/^[-–,;:()\s]+/,"") : v;
-    return `<div class="${v?"":"none"}">${svg(PI[c])}${big||!v?`<b>${big||"—"}</b>`:`<b class="txt">${esc(note)}</b>`}
+    return `<div class="${v?"":"none"}">${svg(PI[c])}${big||!v?`<b>${big||"–"}</b>`:`<b class="txt">${esc(note)}</b>`}
       ${big&&note?`<em>${esc(note)}</em>`:""}<span>${esc(pl(c))}</span></div>`; }).join("");
   const eqRows = ["3.1","3.2","3.3","3.4"].concat(pv(f,"3.12") ? ["3.12"] : []).map(c=>passRow(c, pv(f,c))).join("");
   /* облыс орташасымен салыстыру */
@@ -6362,7 +6362,7 @@ document.addEventListener("click",e=>{
   else if(b.dataset.pmetric){ PASS.metric = b.dataset.pmetric; seg(); document.getElementById("pMap").innerHTML = tileMap(); }
 });
 /* Паспорттар тізімін жүктеу: сайттағы дерек файлы бірден көрсетіледі,
-   Google Sheets-тен дерек келсе — соған ауысады. Толық паспорт ашқанда бөлек жүктеледі. */
+   Google Sheets-тен дерек келсе – соған ауысады. Толық паспорт ашқанда бөлек жүктеледі. */
 function mergeTr(target, source){
   const by = {};
   source.forEach(x=>{ by[x.id] = x.tr; });
@@ -6387,7 +6387,7 @@ function loadPassports(){
   if(window.fetch && location.protocol!=="file:"){
     fetch(PASS_STATIC).then(r=>r.ok ? r.json() : null)
       .then(res=>{
-        if(PASS.src==="live"){                                               // тірі дерек бұрын келсе — тек аудармаларды аламыз
+        if(PASS.src==="live"){                                               // тірі дерек бұрын келсе – тек аудармаларды аламыз
           const rows = res ? unpackPass(res) : null;
           if(rows){ mergeTr(PASS.list, rows.map(normPass)); done(); }
           return;
@@ -6401,7 +6401,7 @@ function loadPassports(){
 }
 
 /* ─────────────── 3. КІТАПХАНАЛАР НЕ ОҚЫП, НЕ ҰСЫНЫП ЖАТЫР? ───────────────
-   Республикалық, облыстық және қалалық негізгі кітапханалардың тізімдері (аудан, қала, ауыл — облыстықтың ішінде).
+   Республикалық, облыстық және қалалық негізгі кітапханалардың тізімдері (аудан, қала, ауыл – облыстықтың ішінде).
    Бірдей кітаптар (атауы бірдей, авторының тегі сәйкес) бір картаға біріктіріледі. */
 const READS = {data:null, status:"", kind:"rec", cat:0, q:"", owner:"", open:{}};
 function loadReads(){
@@ -6422,7 +6422,7 @@ function shortLib(n){
   n = n.replace(/^.*(басқармасының|комитетінің|әкімдігінің)\s+/,"").replace(/\s*\/\s*/g," ").replace(/\s+/g," ").trim();
   return n.charAt(0).toUpperCase() + n.slice(1);
 }
-const rdNorm = s => String(s||"").toLowerCase().replace(/[«»"“”„'`.,:;!?()\[\]\-–—]/g," ").replace(/ё/g,"е").replace(/\s+/g," ").trim();
+const rdNorm = s => String(s||"").toLowerCase().replace(/[«»"“”„'`.,:;!?()\[\]\-–\u2014]/g," ").replace(/ё/g,"е").replace(/\s+/g," ").trim();
 const rdTok = a => rdNorm(a).split(" ").filter(w=>w.length>2);
 /* Тізімдерді кітаптар бойынша топтау */
 function rdGroups(){
@@ -6455,7 +6455,7 @@ function rdCard(g, i){
   const right = READS.kind==="top"
     ? `<b>${nf(g.count)}</b><span>${esc(T("rd.reads"))}</span>${READS.owner ? "" : `<small>${esc(T("rd.nlib",{a:g.nlib}))}</small>`}`
     : READS.owner ? `<b>№${g.best}</b><span>${esc(T("rd.inlist"))}</span>` : `<b>${g.nlib}</b><span>${esc(T("rd.libs"))}</span>`;
-  /* бір кітапхана — бір жол: қай санаттарда, ең жоғары орны, оқылу саны */
+  /* бір кітапхана – бір жол: қай санаттарда, ең жоғары орны, оқылу саны */
   const byLib = {};
   g.items.forEach(x=>{ const b = byLib[x.owner] = byLib[x.owner] || {o:x.o, owner:x.owner, cats:[], rank:99, count:0};
     if(b.cats.indexOf(x.cat)<0) b.cats.push(x.cat); b.rank = Math.min(b.rank, x.rank); b.count += +String(x.count||"").replace(/\s/g,"") || 0; });
@@ -6485,14 +6485,14 @@ P.reads = () => {
   const gs = rdGroups();
   const all = d.items.filter(i=>i.kind===READS.kind);
   const nl = {}; all.forEach(i=>{ nl[i.owner] = 1; });
-  const ownOpts = d.owners.filter(o=>d.items.some(i=>i.owner===o.id)).map(o=>`<option value="${esc(o.id)}" ${READS.owner===o.id?"selected":""}>${esc((o.st==="rep" ? "" : (tx((REG.find(r=>r.src && o.region.indexOf(r.src)===0)||{}).n) || o.region) + " — ") + shortLib(o.name).slice(0,80))}</option>`).join("");
+  const ownOpts = d.owners.filter(o=>d.items.some(i=>i.owner===o.id)).map(o=>`<option value="${esc(o.id)}" ${READS.owner===o.id?"selected":""}>${esc((o.st==="rep" ? "" : (tx((REG.find(r=>r.src && o.region.indexOf(r.src)===0)||{}).n) || o.region) + " – ") + shortLib(o.name).slice(0,80))}</option>`).join("");
   const catCnt = n => { const s = {}; all.filter(i=>(!n || i.cat===n) && (!READS.owner || i.owner===READS.owner)).forEach(i=>{ s[rdNorm(i.title)] = 1; }); return Object.keys(s).length; };
   return `${hd}${tabs}
   <div class="grid g3" style="margin:16px 0 18px">
     ${kpi(T("rd.k1"), catCnt(0), {icon:"book"})}
     ${kpi(T("rd.k2"), Object.keys(nl).length, {icon:"home", sub:T("rd.k2s",{a:d.owners.length})})}
     <div class="card kpi"><div class="lbl"><span>${esc(T(READS.kind==="top"?"rd.k3t":"rd.k3r"))}</span><span class="ic"><svg viewBox="0 0 24 24">${ICONS.chart}</svg></span></div>
-      <div class="rd-k3">${gs[0] ? `<b>${esc(gs[0].title)}</b><span>${esc(gs[0].author)}</span>` : "—"}</div></div>
+      <div class="rd-k3">${gs[0] ? `<b>${esc(gs[0].title)}</b><span>${esc(gs[0].author)}</span>` : "–"}</div></div>
   </div>
   <div class="chips">${[0,1,2,3,4,5].map(n=>`<button class="chip ${READS.cat===n?"on":""}" data-rcat="${n}">${esc(n ? T("rd.c"+n) : T("rd.all"))}<small>${catCnt(n)}</small></button>`).join("")}</div>
   <div class="p-tools">
@@ -6521,54 +6521,54 @@ document.addEventListener("input",e=>{
 document.addEventListener("change",e=>{ if(e.target.id==="rdOwner"){ READS.owner = e.target.value; READS.open = {}; render("reads"); } });
 
 /* ─────────────── ҚҰПИЯЛЫҚ САЯСАТЫ (#privacy) ───────────────
-   Мәтін сайттың шын жұмысына сай: не жиналады, қайда сақталады, кім көреді. Өзгерсе — UPD күнін жаңартыңыз. */
+   Мәтін сайттың шын жұмысына сай: не жиналады, қайда сақталады, кім көреді. Өзгерсе – UPD күнін жаңартыңыз. */
 const PRIVACY_UPD = "09.11.2026";
 const PRIVACY = {
 kk:{t:"Құпиялық саясаты", upd:"Соңғы жаңартылған күні: ",
- lead:"LABA (Library and Book Analytics) — Қазақстан Республикасының Ұлттық кітапханасы Ғылыми-әдістемелік қызметінің платформасы. Ол Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп, талдап, көрнекі түрде ұсыну үшін әзірленген. Бұл бетте платформа қандай деректерді, қандай мақсатпен жинайтыны және оларды қалай қорғайтыны жазылған.",
+ lead:"LABA (Library and Book Analytics) – Қазақстан Республикасының Ұлттық кітапханасы Ғылыми-әдістемелік қызметінің платформасы. Ол Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп, талдап, көрнекі түрде ұсыну үшін әзірленген. Бұл бетте платформа қандай деректерді, қандай мақсатпен жинайтыны және оларды қалай қорғайтыны жазылған.",
  s:[
  ["1. Деректер қалай жиналады",["Кітапханалар туралы мәліметтерді кітапханалардың өз келісімімен, ал жауапты тұлғалар өз еркімен ұсынады: облыстық, аудандық, қалалық және республикалық әдіскерлер оларды бас әдістемелік орталық берген аккаунт арқылы енгізеді.","Оқырмандардың дербес деректері жиналмайды. Кітапхана есептерінде тек жиынтық сандар болады (мысалы, пайдаланушылар саны, берілген құжат саны)."]],
  ["2. Қандай деректер жиналады",[
   "**Кітапхана туралы:** паспорт деректері (атауы, мекенжайы, байланыс телефоны, e-mail, сайты, ғимараты, жабдықталуы, қоры, кадрлары), тоқсандық және жылдық есептердің көрсеткіштері, ұсынылған және ең көп оқылған кітаптардың тізімдері.",
-  "**Жауапты тұлғалар туралы:** кітапхана басшысының аты-жөні мен қызметтік телефоны паспортта ашық көрсетіледі. Әдіскерлердің аккаунт деректері (аты-жөні, лауазымы, мекемесі, қызметтік телефоны, логині) ашық сайтта жарияланбайды — олар тек кабинетте және жүктелген есептерде жауапты мамандар ретінде көрінеді.",
+  "**Жауапты тұлғалар туралы:** кітапхана басшысының аты-жөні мен қызметтік телефоны паспортта ашық көрсетіледі. Әдіскерлердің аккаунт деректері (аты-жөні, лауазымы, мекемесі, қызметтік телефоны, логині) ашық сайтта жарияланбайды – олар тек кабинетте және жүктелген есептерде жауапты мамандар ретінде көрінеді.",
   "**Кабинеттегі әрекеттер:** кім, қашан, қай кітапхананың қай өрісін өзгерткені (ескі және жаңа мәні) өзгертілмейтін журналға жазылады. Журналды тек бас әкімші көреді.",
-  "**Сайтты пайдалану статистикасы:** қай бет ашылғаны, сайттың тілі, келушінің қай сайттан келгені, экранның ені, уақыт белдеуі және уақыты. IP мекенжайы, аты-жөн және cookie жазылмайды — бұл деректер бойынша нақты адамды анықтау мүмкін емес.",
-  "**Құрылғыңызда (браузерде):** тіл мен күн/түн режимінің таңдауы; кабинетке кіргенде — сессия белгісі (браузер қойындысы жабылғанда өшеді) және интернет үзілгенде әлі жіберілмеген өзгерістер."]],
+  "**Сайтты пайдалану статистикасы:** қай бет ашылғаны, сайттың тілі, келушінің қай сайттан келгені, экранның ені, уақыт белдеуі және уақыты. IP мекенжайы, аты-жөн және cookie жазылмайды – бұл деректер бойынша нақты адамды анықтау мүмкін емес.",
+  "**Құрылғыңызда (браузерде):** тіл мен күн/түн режимінің таңдауы; кабинетке кіргенде – сессия белгісі (браузер қойындысы жабылғанда өшеді) және интернет үзілгенде әлі жіберілмеген өзгерістер."]],
  ["3. Деректер не үшін пайдаланылады",["Деректер тек кітапхана саласының аналитикалық зерттеулері, статистикасы және әдістемелік жұмысы үшін пайдаланылады: сала туралы шолулар мен баяндамалар дайындау, өңірлерді салыстыру, кітапханаларға әдістемелік көмек көрсету.","Деректер коммерциялық мақсатқа, жарнамаға пайдаланылмайды, сатылмайды және бөгде тұлғаларға берілмейді."]],
  ["4. Деректер қалай қорғалады",[
-  "Кабинетке тек бас әдістемелік орталық ашқан аккаунтпен кіруге болады; әр пайдаланушы тек өз аймағының деректерін көреді — бұл серверде тексеріледі.",
+  "Кабинетке тек бас әдістемелік орталық ашқан аккаунтпен кіруге болады; әр пайдаланушы тек өз аймағының деректерін көреді – бұл серверде тексеріледі.",
   "Парольдер ашық сақталмайды (тек хэш түрінде); 5 рет қате кіргенде аккаунт уақытша бұғатталады; 2 сағат әрекетсіз тұрса, сессия жабылады.",
   "Барлық өзгеріс өшірілмейтін журналға жазылады, оның тұтастығы хэш тізбегімен тексеріледі.",
   "Деректер ҚР Ұлттық кітапханасының бақылауындағы қорғалған жүйеде сақталады; оларға тек рұқсаты бар қызметкерлер қол жеткізе алады."]],
- ["5. Сақтау мерзімі",["Кітапханалар туралы деректер мен жылдық мұрағат сала тарихы ретінде ұзақ мерзімге сақталады. Сайтты пайдалану статистикасының соңғы 50 000 жазбасы ғана сақталады. Әдіскер жұмыстан кетсе, аккаунты өшірілмей бұғатталады — журналдағы жазбалар сақталуы үшін."]],
+ ["5. Сақтау мерзімі",["Кітапханалар туралы деректер мен жылдық мұрағат сала тарихы ретінде ұзақ мерзімге сақталады. Сайтты пайдалану статистикасының соңғы 50 000 жазбасы ғана сақталады. Әдіскер жұмыстан кетсе, аккаунты өшірілмей бұғатталады – журналдағы жазбалар сақталуы үшін."]],
  ["6. Сіздің құқықтарыңыз",["Қазақстан Республикасының «Дербес деректер және оларды қорғау туралы» Заңына сәйкес деректеріңізбен танысуға, оларды түзетуге, ал заң рұқсат ететін жағдайда жоюды немесе келісімді кері қайтарып алуды сұрауға құқығыңыз бар. Ол үшін ҚР Ұлттық кітапханасының Ғылыми-әдістемелік қызметіне хабарласыңыз. Әдіскерлер өз деректерін бас әкімші арқылы түзете алады."]]],
  warnT:"Деректерді пайдаланушыларға маңызды ескерту",
  warn:"LABA-дағы мәліметтерді баспасөзде, баяндамада, ғылыми жұмыста немесе өзге де ресми құжатта пайдаланар алдында әрқашан жауапты мекемеге (тиісті кітапханаға немесе ҚР Ұлттық кітапханасының Ғылыми-әдістемелік қызметіне) хабарласып, ақпаратты растаңыз. Дереккөз ретінде «LABA, ҚР Ұлттық кітапханасы» деп көрсетіңіз.",
  devT:"Жоба даму үстінде",
- dev:"LABA Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп отыру үшін әзірленген және әлі де даму үстінде. Деректер толықтырылып, түзетіліп отырады, жаңа бөлімдер қосылады. Сондықтан кейбір мәліметтер толық емес немесе алдын ала болуы мүмкін. Бұл саясат та жаңартылуы мүмкін — соңғы жаңартылған күні беттің басында көрсетіледі.",
+ dev:"LABA Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп отыру үшін әзірленген және әлі де даму үстінде. Деректер толықтырылып, түзетіліп отырады, жаңа бөлімдер қосылады. Сондықтан кейбір мәліметтер толық емес немесе алдын ала болуы мүмкін. Бұл саясат та жаңартылуы мүмкін – соңғы жаңартылған күні беттің басында көрсетіледі.",
  back:"← Басты бетке"},
 ru:{t:"Политика конфиденциальности", upd:"Дата последнего обновления: ",
- lead:"LABA (Library and Book Analytics) — платформа Научно-методической службы Национальной библиотеки Республики Казахстан. Она создана для систематизации, анализа и наглядного представления информации о библиотечной отрасли Казахстана. На этой странице описано, какие данные собирает платформа, с какой целью и как они защищены.",
+ lead:"LABA (Library and Book Analytics) – платформа Научно-методической службы Национальной библиотеки Республики Казахстан. Она создана для систематизации, анализа и наглядного представления информации о библиотечной отрасли Казахстана. На этой странице описано, какие данные собирает платформа, с какой целью и как они защищены.",
  s:[
  ["1. Как собираются данные",["Сведения о библиотеках предоставляются с согласия самих библиотек и по доброй воле ответственных лиц: областные, районные, городские и республиканские методисты вносят их через аккаунт, выданный головным методическим центром.","Персональные данные читателей не собираются. В отчётах библиотек есть только сводные числа (например, число пользователей, количество выданных документов)."]],
  ["2. Какие данные собираются",[
   "**О библиотеке:** данные паспорта (название, адрес, телефон, e-mail, сайт, здание, оснащение, фонд, кадры), показатели квартальных и годовых отчётов, списки рекомендуемых и самых читаемых книг.",
-  "**Об ответственных лицах:** ФИО и служебный телефон руководителя библиотеки открыто указываются в паспорте. Данные аккаунтов методистов (ФИО, должность, учреждение, служебный телефон, логин) на открытом сайте не публикуются — они видны только в кабинете и в выгружаемых отчётах как ответственные специалисты.",
+  "**Об ответственных лицах:** ФИО и служебный телефон руководителя библиотеки открыто указываются в паспорте. Данные аккаунтов методистов (ФИО, должность, учреждение, служебный телефон, логин) на открытом сайте не публикуются – они видны только в кабинете и в выгружаемых отчётах как ответственные специалисты.",
   "**Действия в кабинете:** кто, когда и какое поле какой библиотеки изменил (старое и новое значение) записывается в неизменяемый журнал. Журнал видит только главный администратор.",
-  "**Статистика посещений сайта:** открытая страница, язык сайта, сайт, с которого пришёл посетитель, ширина экрана, часовой пояс и время. IP-адрес, ФИО и cookie не записываются — по этим данным невозможно установить конкретного человека.",
-  "**На вашем устройстве (в браузере):** выбор языка и дневного/ночного режима; при входе в кабинет — метка сессии (удаляется при закрытии вкладки) и изменения, ещё не отправленные при обрыве связи."]],
+  "**Статистика посещений сайта:** открытая страница, язык сайта, сайт, с которого пришёл посетитель, ширина экрана, часовой пояс и время. IP-адрес, ФИО и cookie не записываются – по этим данным невозможно установить конкретного человека.",
+  "**На вашем устройстве (в браузере):** выбор языка и дневного/ночного режима; при входе в кабинет – метка сессии (удаляется при закрытии вкладки) и изменения, ещё не отправленные при обрыве связи."]],
  ["3. Для чего используются данные",["Данные используются только для аналитических исследований, статистики и методической работы в библиотечной отрасли: подготовки обзоров и докладов, сравнения регионов, методической помощи библиотекам.","Данные не используются в коммерческих и рекламных целях, не продаются и не передаются третьим лицам."]],
  ["4. Как защищаются данные",[
-  "Вход в кабинет — только по аккаунту, выданному головным методическим центром; каждый пользователь видит только данные своего региона — это проверяется на сервере.",
+  "Вход в кабинет – только по аккаунту, выданному головным методическим центром; каждый пользователь видит только данные своего региона – это проверяется на сервере.",
   "Пароли не хранятся в открытом виде (только хэш); после 5 неверных попыток аккаунт временно блокируется; после 2 часов бездействия сессия закрывается.",
   "Все изменения записываются в неудаляемый журнал, его целостность проверяется цепочкой хэшей.",
   "Данные хранятся в защищённой системе под контролем Национальной библиотеки РК; доступ к ним имеют только уполномоченные сотрудники."]],
- ["5. Срок хранения",["Данные о библиотеках и годовой архив хранятся долгосрочно как история отрасли. Из статистики посещений хранятся только последние 50 000 записей. Если методист увольняется, его аккаунт не удаляется, а блокируется — чтобы сохранились записи журнала."]],
- ["6. Ваши права",["В соответствии с Законом Республики Казахстан «О персональных данных и их защите» вы вправе ознакомиться со своими данными, исправить их, а в случаях, допускаемых законом, — потребовать удаления или отозвать согласие. Для этого обратитесь в Научно-методическую службу Национальной библиотеки РК. Методисты могут исправить свои данные через главного администратора."]]],
+ ["5. Срок хранения",["Данные о библиотеках и годовой архив хранятся долгосрочно как история отрасли. Из статистики посещений хранятся только последние 50 000 записей. Если методист увольняется, его аккаунт не удаляется, а блокируется – чтобы сохранились записи журнала."]],
+ ["6. Ваши права",["В соответствии с Законом Республики Казахстан «О персональных данных и их защите» вы вправе ознакомиться со своими данными, исправить их, а в случаях, допускаемых законом, – потребовать удаления или отозвать согласие. Для этого обратитесь в Научно-методическую службу Национальной библиотеки РК. Методисты могут исправить свои данные через главного администратора."]]],
  warnT:"Важное предупреждение для пользователей данных",
  warn:"Перед использованием сведений LABA в прессе, докладах, научных работах или иных официальных документах всегда связывайтесь с ответственным учреждением (соответствующей библиотекой или Научно-методической службой Национальной библиотеки РК) и подтверждайте информацию. В качестве источника указывайте «LABA, Национальная библиотека РК».",
  devT:"Проект в стадии развития",
- dev:"LABA создана для систематизации информации о библиотечной отрасли Казахстана и продолжает развиваться. Данные пополняются и уточняются, добавляются новые разделы, поэтому часть сведений может быть неполной или предварительной. Политика также может обновляться — дата последнего обновления указана в начале страницы.",
+ dev:"LABA создана для систематизации информации о библиотечной отрасли Казахстана и продолжает развиваться. Данные пополняются и уточняются, добавляются новые разделы, поэтому часть сведений может быть неполной или предварительной. Политика также может обновляться – дата последнего обновления указана в начале страницы.",
  back:"← На главную"},
 en:{t:"Privacy policy", upd:"Last updated: ",
  lead:"LABA (Library and Book Analytics) is a platform of the Research and Methodology Service of the National Library of the Republic of Kazakhstan. It was built to organize, analyse and present information about Kazakhstan's library sector. This page explains what data the platform collects, why, and how it is protected.",
@@ -6576,7 +6576,7 @@ en:{t:"Privacy policy", upd:"Last updated: ",
  ["1. How data is collected",["Information about libraries is provided with the consent of the libraries themselves and voluntarily by the responsible persons: regional, district, city and national methodologists enter it through accounts issued by the central methodology centre.","No personal data of readers is collected. Library reports contain only aggregate figures (for example, the number of users or documents issued)."]],
  ["2. What data is collected",[
   "**About libraries:** passport data (name, address, phone, e-mail, website, building, equipment, collection, staff), quarterly and annual report figures, and lists of recommended and most-read books.",
-  "**About responsible persons:** the name and work phone of the library director are shown in the public passport. Methodologists' account data (name, position, institution, work phone, login) is not published on the public site — it is visible only in the workspace and in downloaded reports as the responsible specialist.",
+  "**About responsible persons:** the name and work phone of the library director are shown in the public passport. Methodologists' account data (name, position, institution, work phone, login) is not published on the public site – it is visible only in the workspace and in downloaded reports as the responsible specialist.",
   "**Workspace actions:** who changed which field of which library and when (old and new value) is recorded in a tamper-evident log, visible only to the chief administrator.",
   "**Site usage statistics:** the page opened, site language, referring website, screen width, time zone and time. No IP address, names or cookies are recorded, so no individual can be identified from this data.",
   "**On your device (browser):** your language and light/dark theme choice; when signed in, a session token (removed when the tab is closed) and changes not yet sent if the connection drops."]],
@@ -6633,7 +6633,7 @@ function loadRemote(){
     if(res.txt)   Object.keys(res.txt).forEach(k=>{ TXT[k] = Object.assign(TXT[k]||{}, res.txt[k]); });
     if(res.names) Object.keys(res.names).forEach(k=>{ NAMES[k] = Object.assign(NAMES[k]||{}, res.names[k]); });
     if(res.data){
-      const tgt = YEAR.base || DATA;                                       // басқа жыл таңдалса — бастапқы деректерді жаңартамыз
+      const tgt = YEAR.base || DATA;                                       // басқа жыл таңдалса – бастапқы деректерді жаңартамыз
       Object.keys(res.data).forEach(k=>{ tgt[k] = res.data[k]; });
       if(YEAR.base && YEAR.cur!==YEAR.baseYear){ const yd = YEAR.cache[YEAR.cur]; if(yd) applyData(buildYearData(YEAR.base, yd)); }
     }
@@ -6664,14 +6664,14 @@ function buildNav(){
   nav.innerHTML = html;
   document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent = T(el.dataset.i18n));
 }
-/* Әдіскерлер кабинеті (#login, #cabinet…, #admin…) — cabinet.js тек қажет кезде жүктеледі */
+/* Әдіскерлер кабинеті (#login, #cabinet…, #admin…) – cabinet.js тек қажет кезде жүктеледі */
 const CAB_ROUTE = /^(login|cabinet|admin)(\/|$)/;
 let cabLoading = null;
 function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=8"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=9"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
@@ -6772,11 +6772,11 @@ function fillPeriods(){
 ySel.value = DATA.meta.current.year;
 ySel.addEventListener("change",()=>{ setYear(+ySel.value); });
 
-/* ─────────────── ЖЫЛДАР: 2025 — бастапқы деректер, 2026-дан бастап — тоқсандық есептердің жиынтығы ─────────────── */
+/* ─────────────── ЖЫЛДАР: 2025 – бастапқы деректер, 2026-дан бастап – тоқсандық есептердің жиынтығы ─────────────── */
 const YEAR = {base:null, baseYear:DATA.meta.current.year, cur:DATA.meta.current.year, cache:{}, txt:null};
 const R4 = ["","I","II","III","IV"];
 function applyData(obj){ Object.keys(DATA).forEach(k=>{ delete DATA[k]; }); Object.assign(DATA, JSON.parse(JSON.stringify(obj))); }
-/* Кезең белгілері: «Жыл қорытындысы», «2024 / 2025» бағандары — таңдалған жылға сай */
+/* Кезең белгілері: «Жыл қорытындысы», «2024 / 2025» бағандары – таңдалған жылға сай */
 const YEAR_SHIFT = ["vsPrev","h.desc","h.p1.t","s2.p.d","s6.anote","s8.k1s","s8.p4.d","s8.p4.n","s5.note"];
 function yearLabels(y, ytd){
   if(!YEAR.txt){ YEAR.txt = {period:TXT.period, y2024:TXT.y2024, y2025:TXT.y2025}; YEAR_SHIFT.forEach(k=>{ YEAR.txt[k] = TXT[k]; }); }
@@ -6787,8 +6787,8 @@ function yearLabels(y, ytd){
   YEAR_SHIFT.forEach(k=>{ const o = YEAR.txt[k]; if(!o) return; const n = {};
     Object.keys(o).forEach(l=>{ n[l] = String(o[l]).replace(/2025/g,"\u0001").replace(/2024/g,String(y-1)).replace(/\u0001/g,String(y)); });
     TXT[k] = n; });
-  TXT["s5.note"] = {kk:"Көрсеткіш — өңірдегі пайдаланушылар санының халық санына қатынасы (халық саны — "+YEAR.baseYear+" жылғы).",
-    ru:"Показатель — отношение числа пользователей к численности населения региона (население — на "+YEAR.baseYear+" год).",
+  TXT["s5.note"] = {kk:"Көрсеткіш – өңірдегі пайдаланушылар санының халық санына қатынасы (халық саны – "+YEAR.baseYear+" жылғы).",
+    ru:"Показатель – отношение числа пользователей к численности населения региона (население – на "+YEAR.baseYear+" год).",
     en:"Indicator: users as a share of the regional population (population as of "+YEAR.baseYear+")."};
   TXT.period = ytd ? {kk:"Жыл басынан (алдын ала)", ru:"С начала года (предв.)", en:"Year to date (preliminary)"} : YEAR.txt.period;
 }
@@ -6815,7 +6815,7 @@ function loadYears(){
     });
   }, 25000);
 }
-/* Өңір атауы (тізілім) → аналитикадағы атауы */
+/* Өңір атауы (тізім) → аналитикадағы атауы */
 function yearRegKey(n){
   if(n.indexOf("lib:")===0){
     if(/академиялық/i.test(n)) return "ҚР ҰАК";
@@ -6834,7 +6834,7 @@ const pctOf = (a,b) => b ? r1(a/b*100) : 0;
 function buildYearData(B, yd){
   const D = JSON.parse(JSON.stringify(B)), t = yd.total, s = t.s, y = yd.year;
   const full = t.libs && t.full/t.libs >= 0.9;                      // жылдың есебі толық (90%-дан көп кітапхана 4 тоқсан)
-  const P = v => full ? v : null;                                    // алдыңғы жылмен салыстыру — тек толық жылда
+  const P = v => full ? v : null;                                    // алдыңғы жылмен салыстыру – тек толық жылда
   const qn = [1,2,3,4].filter(q=>yd.qs[q]).map(q=>R4[q]);
   D.meta = Object.assign({}, B.meta, {current:{year:y, period:"period"}, ytd:!full, yd:{rep:t.rep, libs:t.libs, full:t.full, q:qn.join(", ")},
     asOf: y + (qn.length ? " · " + qn.join(", ") + " " + (LANG==="ru"?"кв.":LANG==="en"?"Q":"тоқсан") : "")});
@@ -6878,16 +6878,16 @@ function yearBanner(id){
   if(!m.yd || id==="passport") return "";
   const yd = m.yd;
   const kk = YEAR_NOCALC.indexOf(id)>-1
-    ? "Бұл бөлімнің деректері тоқсандық есептерден жиналмайды — " + YEAR.baseYear + " жылдың деректері көрсетілген."
-    : (m.ytd ? m.current.year + " жыл: " + (yd.q || "—") + " тоқсандардың бекітілген есептері бойынша алдын ала деректер" : m.current.year + " жылдың қорытындысы")
+    ? "Бұл бөлімнің деректері тоқсандық есептерден жиналмайды – " + YEAR.baseYear + " жылдың деректері көрсетілген."
+    : (m.ytd ? m.current.year + " жыл: " + (yd.q || "–") + " тоқсандардың бекітілген есептері бойынша алдын ала деректер" : m.current.year + " жылдың қорытындысы")
       + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " кітапхана). Тоқсандық есепте жиналмайтын көрсеткіштер (ведомстволар, қор құрамы, жас топтары, АКАЖ түрлері т.б.) " + YEAR.baseYear + " жылғы күйінде.";
   const ru = YEAR_NOCALC.indexOf(id)>-1
-    ? "Данные этого раздела не собираются из квартальных отчётов — показаны данные за " + YEAR.baseYear + " год."
-    : (m.ytd ? m.current.year + " год: предварительные данные по утверждённым отчётам за " + (yd.q || "—") + " кв." : "Итоги " + m.current.year + " года")
-      + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " библиотек). Показатели, не входящие в квартальный отчёт (ведомства, состав фонда, возраст, виды АБИС и др.), — за " + YEAR.baseYear + " год.";
+    ? "Данные этого раздела не собираются из квартальных отчётов – показаны данные за " + YEAR.baseYear + " год."
+    : (m.ytd ? m.current.year + " год: предварительные данные по утверждённым отчётам за " + (yd.q || "–") + " кв." : "Итоги " + m.current.year + " года")
+      + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " библиотек). Показатели, не входящие в квартальный отчёт (ведомства, состав фонда, возраст, виды АБИС и др.), – за " + YEAR.baseYear + " год.";
   const en = YEAR_NOCALC.indexOf(id)>-1
-    ? "This section is not compiled from quarterly reports — " + YEAR.baseYear + " data are shown."
-    : (m.ytd ? m.current.year + ": preliminary data from approved reports for Q " + (yd.q || "—") : m.current.year + " annual results")
+    ? "This section is not compiled from quarterly reports – " + YEAR.baseYear + " data are shown."
+    : (m.ytd ? m.current.year + ": preliminary data from approved reports for Q " + (yd.q || "–") : m.current.year + " annual results")
       + " (" + nf(yd.rep) + " / " + nf(yd.libs) + " libraries). Indicators not in the quarterly report are shown as of " + YEAR.baseYear + ".";
   return `<div class="year-note">${svg(PI.info)}<span>${esc(LANG==="ru"?ru:LANG==="en"?en:kk)}</span></div>`;
 }
@@ -6911,7 +6911,7 @@ function setTheme(t, save){
   window.scrollTo(0, y);
 }
 document.getElementById("themeBtn").addEventListener("click",()=>setTheme(isDark() ? "light" : "dark", true));
-/* Пайдаланушы өзі таңдамаса — құрылғының баптауына ілесеміз */
+/* Пайдаланушы өзі таңдамаса – құрылғының баптауына ілесеміз */
 if(window.matchMedia){
   const mq = matchMedia("(prefers-color-scheme: dark)");
   const follow = e => { if(!localStorage_get("laba_theme")) setTheme(e.matches ? "dark" : "light", false); };

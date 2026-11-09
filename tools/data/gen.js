@@ -1,12 +1,12 @@
-// Тізілімді (sheet.json) Code.gs логикасымен оқып, сайтқа арналған статикалық JSON файлдарын жазады.
+// Тізімді (sheet.json) Code.gs логикасымен оқып, сайтқа арналған статикалық JSON файлдарын жазады.
 // Қолданылуы: node tools/data/gen.js <sheet.json> data
 const fs=require('fs'), path=require('path');
 const [,, sheetJson, out] = process.argv;
 const code=fs.readFileSync(path.join(__dirname,'..','..','apps-script','Code.gs'),'utf8');
 const V=JSON.parse(fs.readFileSync(sheetJson,'utf8'));
 const range=(r,c,nr,nc)=>({getDisplayValues:()=>V.slice(r-1,r-1+nr).map(row=>row.slice(c-1,c-1+nc))});
-const sheet={getName:()=>'Тізілім',getLastRow:()=>V.length,getLastColumn:()=>V[0].length,getRange:range};
-global.SpreadsheetApp={getActive:()=>({getSheetByName:n=>n==='Тізілім'?sheet:null})};
+const sheet={getName:()=>'Тізім',getLastRow:()=>V.length,getLastColumn:()=>V[0].length,getRange:range};
+global.SpreadsheetApp={getActive:()=>({getSheetByName:n=>n==='Тізім'?sheet:null})};
 global.CacheService={getScriptCache:()=>({get:()=>null,getAll:()=>({}),put(){},putAll(){},remove(){},removeAll(){}})};
 eval(code);
 const all = getPassports_();
