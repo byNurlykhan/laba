@@ -1,14 +1,14 @@
 # Дерек құралдары
 
-`data/` қалтасындағы кітапхана паспорттарын тізілімнен (xlsx) қайта жасау:
+`data/` қалтасындағы кітапхана паспорттарын тізімнен (xlsx) қайта жасау:
 
 ```bash
-python3 tools/data/dump.py "Тізілім.xlsx" /tmp/sheet.json   # xlsx → JSON
+python3 tools/data/dump.py "Тізім.xlsx" /tmp/sheet.json   # xlsx → JSON
 node tools/data/gen.js /tmp/sheet.json data                  # Code.gs ережелерімен паспорттар
 python3 tools/i18n/translate.py data                         # орысша / ағылшынша аудармалар
 ```
 
-Аударма: `tools/i18n/translate.py` — сөздіктер, ресми терминдер глоссарийі,
+Аударма: `tools/i18n/translate.py` – сөздіктер, ресми терминдер глоссарийі,
 елді мекен/көше үлгілері және транслитерация. Қолмен түзету керек болса,
 `tools/i18n/manual.tsv` файлына `қазақша<TAB>орысша<TAB>ағылшынша` жолын қосыңыз
 (мәтін толық сәйкес келсе, сол аударма қолданылады), сосын үшінші команданы қайта іске қосыңыз.
@@ -19,5 +19,5 @@ python3 tools/i18n/translate.py data                         # орысша / а
 node tools/test/api-test.js   # әдіскерлер кабинетінің серверлік тесті (55 тексеру)
 ```
 
-`tools/test/gas-emulator.js` — Google Apps Script сервистерінің жеңіл эмуляторы: `apps-script/Code.gs`
-нақты тізіліммен Node.js-те іске қосылады (орнату, кіру, рөлдер, журнал, есептер).
+`tools/test/gas-emulator.js` – Google Apps Script сервистерінің жеңіл эмуляторы: `apps-script/Code.gs`
+нақты тізіммен Node.js-те іске қосылады (орнату, кіру, рөлдер, журнал, есептер).

@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
-   LABA — Әдіскерлер кабинеті
+   LABA – Әдіскерлер кабинеті
    Кіру, тоқсандық жаңарту, өзгерістер тарихы, есептер (Word/Excel),
    аккаунттар мен журнал (бас әкімші).
    index.html-дегі ортақ көмекшілерді қолданады: API_URL, LANG, esc, nf, pl,
    PF, PASS, render, closeSidebar.
-   Барлық рұқсат серверде (Apps Script) тексеріледі — бұл файл тек интерфейс.
+   Барлық рұқсат серверде (Apps Script) тексеріледі – бұл файл тек интерфейс.
    ═══════════════════════════════════════════════════════════════ */
 (function(){
 "use strict";
@@ -18,54 +18,54 @@ const CTX = {
     noAccount:"Аккаунт жоқ па? Бас әкімшіге хабарласыңыз: ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет.",
     tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал", tArch:"Мұрағат",
     privNote:"Кабинетке кіру арқылы деректердің тек кітапхана саласының аналитикасы мен статистикасы үшін өңделетінімен келісесіз:", privLink:"құпиялық саясаты",
-    tReg:"Тізілім", required:"Міндетті өріс",
-    rgDesc:"Тізілімге жаңа кітапхана қосу немесе жабылған (біріктірілген, қайталанған) кітапхананы тізілімнен шығару. Облыстық және қалалық әдіскер ұсынады, бас әкімші немесе бас орталық маманы бекіткенде тізілім өзгереді. Жабылған кітапхананың жазбасы өшірілмейді: сайттан және есептерден шығады, бұрынғы жылдардың мұрағатында сақталады.",
-    rgCmp:"Кітапханалар саны: ресми статистика ({y}) және LABA тізілімі", rgCmpNote:"Минус — тізілімде кітапхана жетіспейді (қосу керек), плюс — тізілімде артық жазба бар (жабылғанын немесе қайталанғанын тексеру керек).",
-    rgRegion:"Өңір", rgOff:"Ресми саны", rgReg:"Тізілімде", rgDiff:"Айырма",
+    tReg:"Тізім", required:"Міндетті өріс",
+    rgDesc:"Тізімге жаңа кітапхана қосу немесе жабылған (біріктірілген, қайталанған) кітапхананы тізімнен шығару. Облыстық және қалалық әдіскер ұсынады, бас әкімші немесе бас орталық маманы бекіткенде тізім өзгереді. Жабылған кітапхананың жазбасы өшірілмейді: сайттан және есептерден шығады, бұрынғы жылдардың мұрағатында сақталады.",
+    rgCmp:"Кітапханалар саны: ресми статистика ({y}) және LABA тізімі", rgCmpNote:"Минус – тізімде кітапхана жетіспейді (қосу керек), плюс – тізімде артық жазба бар (жабылғанын немесе қайталанғанын тексеру керек).",
+    rgRegion:"Өңір", rgOff:"Ресми саны", rgReg:"Тізімде", rgDiff:"Айырма",
     rgPending:"Қаралуда", rgAll:"Барлық ұсыныс", rgNew:"Жаңа кітапхана ұсыну", rgImport:"Excel-ден жүктеу",
-    rgKind:"Ұсыныс", rgLib:"Кітапхана", rgNote:"Негіздеме", rgAdd:"Қосу", rgClose:"Тізілімнен шығару",
+    rgKind:"Ұсыныс", rgLib:"Кітапхана", rgNote:"Негіздеме", rgAdd:"Қосу", rgClose:"Тізімнен шығару",
     rgApprove:"Бекіту", rgReject:"Қабылдамау", rgNone:"Ұсыныс әлі жоқ", rgNonePending:"Қаралуды күтіп тұрған ұсыныс жоқ",
-    rgFormNote:"Ұсыныс бас орталыққа жіберіледі. Бекітілгенде кітапхана тізілімге №-мен қосылады, оның паспортын кабинеттен толтыра аласыз.",
-    rgFormNoteAdm:"Сіз бекітуші болғандықтан, кітапхана тізілімге бірден қосылады.",
+    rgFormNote:"Ұсыныс бас орталыққа жіберіледі. Бекітілгенде кітапхана тізімге №-мен қосылады, оның паспортын кабинеттен толтыра аласыз.",
+    rgFormNoteAdm:"Сіз бекітуші болғандықтан, кітапхана тізімге бірден қосылады.",
     rgDistrict:"Аудан / қала", rgDistrictPh:"мысалы, Сайрам ауданы", rgCat:"Санаты", rgName:"Кітапхананың толық атауы", rgAddr:"Мекенжайы",
-    rgPhone:"Телефон", rgEmail:"E-mail", rgDir:"Басшысының аты-жөні, байланыс телефоны", rgBasis:"Негіздеме / ескерту", rgBasisPh:"мысалы, 2025 жылдың статистикасында бар, тізілімге енбей қалған",
-    rgSend:"Ұсыныс жіберу", rgAddNow:"Тізілімге қосу", rgSent:"Ұсыныс жіберілді: бас орталық қарайды", rgAdded:"Кітапхана тізілімге қосылды: №{n}",
-    rgClosed:"Кітапхана тізілімнен шығарылды", rgRejected:"Ұсыныс қабылданбады",
-    rgQAdd:"Кітапхана тізілімге жаңа №-мен қосылады және сайтта көрсетіледі.", rgQClose:"Кітапхана тізілімнен шығады: сайтта, кабинетте және жаңа есептерде көрсетілмейді. Жазбасы өшірілмейді.",
+    rgPhone:"Телефон", rgEmail:"E-mail", rgDir:"Басшысының аты-жөні, байланыс телефоны", rgBasis:"Негіздеме / ескерту", rgBasisPh:"мысалы, 2025 жылдың статистикасында бар, тізімге енбей қалған",
+    rgSend:"Ұсыныс жіберу", rgAddNow:"Тізімге қосу", rgSent:"Ұсыныс жіберілді: бас орталық қарайды", rgAdded:"Кітапхана тізімге қосылды: №{n}",
+    rgClosed:"Кітапхана тізімнен шығарылды", rgRejected:"Ұсыныс қабылданбады",
+    rgQAdd:"Кітапхана тізімге жаңа №-мен қосылады және сайтта көрсетіледі.", rgQClose:"Кітапхана тізімнен шығады: сайтта, кабинетте және жаңа есептерде көрсетілмейді. Жазбасы өшірілмейді.",
     rgQReject:"Ұсыныс берген әдіскер себебін көреді.", rgComment:"Түсініктеме (міндетті емес)", rgReason:"Себебі", rgReasonReq:"Себебін жазыңыз",
-    rgCloseBtn:"Тізілімнен шығаруды ұсыну", rgCloseNote:"Кітапхана жабылған, басқа кітапханамен біріктірілген немесе тізілімде қайталанған болса, ұсыныс жіберіңіз. Бас орталық бекіткенде тізілімнен шығады.",
-    rgCloseNoteAdm:"Кітапхана тізілімнен бірден шығады (жазбасы өшірілмейді, журналға жазылады).", rgCloseNow:"Тізілімнен шығару",
+    rgCloseBtn:"Тізімнен шығаруды ұсыну", rgCloseNote:"Кітапхана жабылған, басқа кітапханамен біріктірілген немесе тізімде қайталанған болса, ұсыныс жіберіңіз. Бас орталық бекіткенде тізімнен шығады.",
+    rgCloseNoteAdm:"Кітапхана тізімнен бірден шығады (жазбасы өшірілмейді, журналға жазылады).", rgCloseNow:"Тізімнен шығару",
     rgWhyPh:"мысалы, 2025 жылы жабылды; №1754 кітапханамен қайталанған",
-    rgNoRegion:"өңірі анықталмады", rgNoCat:"санаты тізілімдегі санаттарға сай емес", rgFromFile:"Салыстыру файлынан", rgSkipped:"Қабылданбағандар",
+    rgNoRegion:"өңірі анықталмады", rgNoCat:"санаты тізімдегі санаттарға сай емес", rgFromFile:"Салыстыру файлынан", rgSkipped:"Қабылданбағандар",
     rgFileNone:"Файлдан ұсыныс табылмады: жаңа кітапханаларды «жаңа» деп белгіленген жолдарға, жабылғандарын «Ескерту» бағанына жазыңыз",
     rgFileDone:"Жіберілді: {a}, қабылданбады: {b}", rgFileBad:"Файлды оқу мүмкін болмады (.xlsx болуы керек)",
-    tBooks:"Кітаптар", bkDesc:"«Кітапханалар не оқып, не ұсынып жатыр?» рубрикасына: оқырманға ұсынатын кітаптар және ең көп оқылған кітаптар — әр оқырман санатына 10 кітапқа дейін. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректерін қосып енгізіңіз. Тізімді кез келген уақытта жаңартуға болады.",
+    tBooks:"Кітаптар", bkDesc:"«Кітапханалар не оқып, не ұсынып жатыр?» рубрикасына: оқырманға ұсынатын кітаптар және ең көп оқылған кітаптар – әр оқырман санатына 10 кітапқа дейін. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректерін қосып енгізіңіз. Тізімді кез келген уақытта жаңартуға болады.",
     bkNone:"Сізге кітап тізімі бекітілмеген: оны облыстық, қалалық және республикалық кітапхананың әдіскері енгізеді.", bkRec:"Оқырманға ұсынады", bkTop:"Ең көп оқылған",
     bkAuthor:"Автор", bkTitle:"Кітаптың атауы", bkLang:"Тілі", bkGenre:"Жанры", bkCount:"Оқылу саны", bkClear:"Тазарту",
     bkSaved:"Тізім сақталды: {a} кітап", bkUpd:"Соңғы жаңарту: {d} · {n}",
-    bkHintRec:"Ұсыну реті бойынша жазыңыз: 1-орында — ең басты ұсыныс.", bkHintTop:"Оқылу санын (берілім) жазыңыз — тізім сақталғанда сан бойынша өзі реттеледі.",
+    bkHintRec:"Ұсыну реті бойынша жазыңыз: 1-орында – ең басты ұсыныс.", bkHintTop:"Оқылу санын (берілім) жазыңыз – тізім сақталғанда сан бойынша өзі реттеледі.",
     stDraft:"Жоба", stSub:"Бекітуде", stOk:"Бекітілді", stRet:"Түзетуге қайтарылды", state:"Күйі",
     saveDraft:"Жоба ретінде сақтау", submit:"Бекітуге жіберу", saveApprove:"Сақтау және бекіту", returnBtn:"Түзетуге қайтару",
     returnQ:"Қайтару себебін жазыңыз (әдіскер көреді):", returned:"Есеп түзетуге қайтарылды", approvedOk:"Есеп бекітілді",
     submittedOk:"Есеп бекітуге жіберілді", draftOk:"Жоба сақталды", ruleSum:"тоқсан ішінде", ruleLast:"тоқсан соңында",
     subBy:"Жіберген: {n}, {d}", apBy:"Бекіткен: {n}, {d}", retBy:"Түзетуге қайтарылды: {c}", prevQ:"алдыңғы: {v} ({p})",
-    formNote:"«Тоқсан ішінде» — осы тоқсандағы мән (жылдық есепте 4 тоқсан қосылады). «Тоқсан соңында» — тоқсанның соңғы күніндегі жағдай (жылдық есепте IV тоқсанның мәні). Мән жоқ болса — 0 жазыңыз. Толық толтырылмаған есепті жоба ретінде сақтауға болады.",
-    fixErr:"Қате өрістерді түзетіңіз", reqSubmit:"Бекітуге жіберу үшін барлық сандық өрісті толтырыңыз (мән жоқ болса — 0)",
+    formNote:"«Тоқсан ішінде» – осы тоқсандағы мән (жылдық есепте 4 тоқсан қосылады). «Тоқсан соңында» – тоқсанның соңғы күніндегі жағдай (жылдық есепте IV тоқсанның мәні). Мән жоқ болса – 0 жазыңыз. Толық толтырылмаған есепті жоба ретінде сақтауға болады.",
+    fixErr:"Қате өрістерді түзетіңіз", reqSubmit:"Бекітуге жіберу үшін барлық сандық өрісті толтырыңыз (мән жоқ болса – 0)",
     ofErr:"«Соның ішінде» мәні {p} мәнінен аспауы керек", num:"Сан енгізіңіз (0 немесе одан көп)",
-    annualT:"{y} жылдық есеп", annualFull:"4 тоқсан бекітілген — жылдық есеп дайын", annualPart:"Бекітілген тоқсандар: {q} (жылдық есеп алдын ала)",
+    annualT:"{y} жылдық есеп", annualFull:"4 тоқсан бекітілген – жылдық есеп дайын", annualPart:"Бекітілген тоқсандар: {q} (жылдық есеп алдын ала)",
     annualNone:"Бұл жылы бекітілген тоқсан әлі жоқ", yearCol:"Жыл",
-    annualNote:"Жылдық есеп тек бекітілген тоқсандардан жиналады: «тоқсан ішінде» көрсеткіштері қосылады, «тоқсан соңында» көрсеткіштері — соңғы бекітілген тоқсаннан.",
-    tQueue:"Бекіту", queueDesc:"Бекітуді күтіп тұрған есептер. Есепті ашып тексеріңіз: дұрыс болса — «Сақтау және бекіту», қате болса — себебін жазып, түзетуге қайтарыңыз.",
+    annualNote:"Жылдық есеп тек бекітілген тоқсандардан жиналады: «тоқсан ішінде» көрсеткіштері қосылады, «тоқсан соңында» көрсеткіштері – соңғы бекітілген тоқсаннан.",
+    tQueue:"Бекіту", queueDesc:"Бекітуді күтіп тұрған есептер. Есепті ашып тексеріңіз: дұрыс болса – «Сақтау және бекіту», қате болса – себебін жазып, түзетуге қайтарыңыз.",
     queueNone:"Бекітуді күтіп тұрған есеп жоқ", sentAt:"Жіберілді", check:"Тексеру",
     tSum:"Жиынтық", sumDesc:"Аймақтар бойынша есептердің тапсырылуы және негізгі көрсеткіштердің қосындысы. Барлық кітапхананың толық деректерін Excel-ге жүктей аласыз.",
     perYear:"Жыл", cntLibs:"Кітапхана", cntOk:"Бекітілді", cntSub:"Бекітуде", cntOther:"Жоба / қайтарылған", cntNone:"Тапсырмаған",
     cntFull:"Толық жыл", xlsFull:"Excel: барлық деректер", wordSum:"Word: жиынтық", sumTitle:"Кітапханалардың тоқсандық есептерінің жиынтығы",
-    sumNote:"Қосындыларға тек бекітілген есептер кіреді. «Жыл» — жыл басынан бергі бекітілген тоқсандардың жиынтығы.", unitCol:"Аудан / қала",
-    apCol:"Бекіткен", onlyDraft:"Жоба / қайтарылған", onlySub:"Бекітуде", repPerY:"{y} жыл — жыл басынан (бекітілген тоқсандар)",
+    sumNote:"Қосындыларға тек бекітілген есептер кіреді. «Жыл» – жыл басынан бергі бекітілген тоқсандардың жиынтығы.", unitCol:"Аудан / қала",
+    apCol:"Бекіткен", onlyDraft:"Жоба / қайтарылған", onlySub:"Бекітуде", repPerY:"{y} жыл – жыл басынан (бекітілген тоқсандар)",
     periodYtd:"{y} жыл, жыл басынан (бекітілген тоқсандар)",
     annual:"жыл қорытындысы", archRow:"Мұрағат", periodArch:"{y} жыл, жылдық қорытынды (мұрағат)",
-    repPer:"Кезең", repPerQ:"Тоқсан (жоғарыда таңдалған)", repPerA:"{y} жыл — жылдық қорытынды (мұрағат)",
-    archDesc:"Жыл аяқталғанда «Тізілім» парағындағы барлық паспорт сол жылдың толық көшірмесі ретінде мұрағатқа сақталады. 6.1–6.3 көрсеткіштері үшін сол жылдың соңғы тоқсанының мәні алынады. Мұрағатталған деректер өзгермейді: сайтта жыл бойынша қарауға, есепке шығаруға және салыстыруға болады.",
+    repPer:"Кезең", repPerQ:"Тоқсан (жоғарыда таңдалған)", repPerA:"{y} жыл – жылдық қорытынды (мұрағат)",
+    archDesc:"Жыл аяқталғанда «Тізім» парағындағы барлық паспорт сол жылдың толық көшірмесі ретінде мұрағатқа сақталады. 6.1–6.3 көрсеткіштері үшін сол жылдың соңғы тоқсанының мәні алынады. Мұрағатталған деректер өзгермейді: сайтта жыл бойынша қарауға, есепке шығаруға және салыстыруға болады.",
     archYears:"Мұрағаттағы жылдар", archNone:"Мұрағат әлі бос", archCount:"Кітапхана саны", archAt:"Сақталған уақыты",
     archDo:"Жылды мұрағатқа жабу", archYear:"Қай жыл", archOver:"Бұрынғы мұрағатты ауыстыру (тек түзету қажет болса)",
     archQ:"{y} жылдың барлық паспорты мұрағатқа сақталады. Жалғастырасыз ба?", archQOver:"{y} жылдың бұрынғы мұрағаты жаңа деректермен АУЫСТЫРЫЛАДЫ. Бұл журналға жазылады. Жалғастырасыз ба?",
@@ -80,8 +80,8 @@ const CTX = {
     save:"Сақтау", cancel:"Болдырмау", confirm:"Растау", confirmTitle:"Өзгерістерді растаңыз",
     confirmDesc:"Төмендегі мәндер журналға сіздің атыңызбен жазылады.", oldV:"Ескі мән", newV:"Жаңа мән",
     req:"Міндетті өріс", int:"Бүтін сан енгізіңіз (0 немесе одан көп)", tooBig:"Мән тым үлкен",
-    jump:"Алдыңғы тоқсанмен салыстырғанда {a}% өзгеріс — мәнді тексеріңіз", saved:"Сақталды",
-    nochange:"Өзгеріс жоқ — ештеңе сақталмады", queued:"Байланыс жоқ: өзгеріс кезекке қойылды, кейін өзі жіберіледі",
+    jump:"Алдыңғы тоқсанмен салыстырғанда {a}% өзгеріс – мәнді тексеріңіз", saved:"Сақталды",
+    nochange:"Өзгеріс жоқ – ештеңе сақталмады", queued:"Байланыс жоқ: өзгеріс кезекке қойылды, кейін өзі жіберіледі",
     outbox:"Жіберілмеген өзгерістер: {a}. Байланыс қалпына келгенде өзі жіберіледі.", sendNow:"Қазір жіберу",
     qHistory:"Тоқсандар тарихы", staticT:"Тұрақты деректер (тек бас әкімші)", staticSave:"Тұрақты деректерді сақтау",
     histDesc:"Өз аймағыңыздағы кітапханалардың деректерін кім, қашан, қай өрісін өзгерткені.",
@@ -100,8 +100,8 @@ const CTX = {
     institution:"Мекемесі", phone:"Телефон", loginName:"Логин", status:"Күйі", lastLogin:"Соңғы кіру",
     active:"Белсенді", blocked:"Бұғатталған", edit:"Өзгерту", setPass:"Пароль", block:"Бұғаттау", unblock:"Ашу",
     passMode:"Пароль", passAuto:"Жүйе жасасын (бір реттік)", passManual:"Өзім енгіземін",
-    passOnce:"Парольді қазір көшіріп алып, әдіскерге беріңіз — ол қайта көрсетілмейді.", copy:"Көшіру", copied:"Көшірілді",
-    newPassQ:"Жаңа парольді енгізіңіз (бос қалдырсаңыз — жүйе жасайды):", blockQ:"{n} аккаунтын бұғаттау керек пе? Журнал жазбалары сақталады.",
+    passOnce:"Парольді қазір көшіріп алып, әдіскерге беріңіз – ол қайта көрсетілмейді.", copy:"Көшіру", copied:"Көшірілді",
+    newPassQ:"Жаңа парольді енгізіңіз (бос қалдырсаңыз – жүйе жасайды):", blockQ:"{n} аккаунтын бұғаттау керек пе? Журнал жазбалары сақталады.",
     bulkRes:"Нәтиже: {a} жасалды, {b} қате", bulkDl:"Парольдер тізімін жүктеу (CSV)", choose:"Таңдаңыз…",
     rAdmin:"Бас әкімші", rStaff:"Бас орталық маманы", rOblast:"Облыстық әдіскер", rDistrict:"Аудандық әдіскер", rCity:"Қалалық әдіскер", rRepublic:"Республикалық кітапхана әдіскері",
     sessionEnd:"Сессия уақыты аяқталды. Қайта кіріңіз.", netErr:"Серверге қосылу мүмкін болмады. Интернетті тексеріңіз.",
@@ -114,33 +114,33 @@ const CTX = {
     noAccount:"Нет аккаунта? Обратитесь к главному администратору: НБ РК, научно-методическая служба.",
     tLibs:"Библиотеки", tHistory:"История изменений", tReports:"Отчёты", tUsers:"Аккаунты", tLog:"Журнал", tArch:"Архив",
     privNote:"Входя в кабинет, вы соглашаетесь, что данные обрабатываются только для аналитики и статистики библиотечной отрасли:", privLink:"политика конфиденциальности",
-    tBooks:"Книги", bkDesc:"Для рубрики «Что читают и рекомендуют библиотеки?»: книги, рекомендуемые читателям, и самые читаемые книги — до 10 книг на каждую категорию читателей. В список области включите данные районных, городских и сельских библиотек. Список можно обновлять в любое время.",
+    tBooks:"Книги", bkDesc:"Для рубрики «Что читают и рекомендуют библиотеки?»: книги, рекомендуемые читателям, и самые читаемые книги – до 10 книг на каждую категорию читателей. В список области включите данные районных, городских и сельских библиотек. Список можно обновлять в любое время.",
     bkNone:"За вами не закреплён список книг: его вносит методист областной, городской или республиканской библиотеки.", bkRec:"Рекомендуют", bkTop:"Самые читаемые",
     bkAuthor:"Автор", bkTitle:"Название книги", bkLang:"Язык", bkGenre:"Жанр", bkCount:"Выдач", bkClear:"Очистить",
     bkSaved:"Список сохранён: {a} книг", bkUpd:"Последнее обновление: {d} · {n}",
-    bkHintRec:"Укажите в порядке рекомендации: на 1-м месте — главная рекомендация.", bkHintTop:"Укажите число выдач — при сохранении список упорядочится автоматически.",
+    bkHintRec:"Укажите в порядке рекомендации: на 1-м месте – главная рекомендация.", bkHintTop:"Укажите число выдач – при сохранении список упорядочится автоматически.",
     stDraft:"Черновик", stSub:"На утверждении", stOk:"Утверждён", stRet:"Возвращён на доработку", state:"Статус",
     saveDraft:"Сохранить черновик", submit:"Отправить на утверждение", saveApprove:"Сохранить и утвердить", returnBtn:"Вернуть на доработку",
     returnQ:"Укажите причину возврата (её увидит методист):", returned:"Отчёт возвращён на доработку", approvedOk:"Отчёт утверждён",
     submittedOk:"Отчёт отправлен на утверждение", draftOk:"Черновик сохранён", ruleSum:"за квартал", ruleLast:"на конец квартала",
     subBy:"Отправил: {n}, {d}", apBy:"Утвердил: {n}, {d}", retBy:"Возвращён: {c}", prevQ:"пред.: {v} ({p})",
-    formNote:"«За квартал» — значение за этот квартал (в годовом отчёте 4 квартала суммируются). «На конец квартала» — состояние на последний день квартала (в годовом — значение IV квартала). Если значения нет — укажите 0. Неполный отчёт можно сохранить как черновик.",
-    fixErr:"Исправьте поля с ошибками", reqSubmit:"Для отправки заполните все числовые поля (если значения нет — 0)",
+    formNote:"«За квартал» – значение за этот квартал (в годовом отчёте 4 квартала суммируются). «На конец квартала» – состояние на последний день квартала (в годовом – значение IV квартала). Если значения нет – укажите 0. Неполный отчёт можно сохранить как черновик.",
+    fixErr:"Исправьте поля с ошибками", reqSubmit:"Для отправки заполните все числовые поля (если значения нет – 0)",
     ofErr:"Значение «в том числе» не может превышать {p}", num:"Введите число (0 или больше)",
-    annualT:"Годовой отчёт за {y} год", annualFull:"Утверждены 4 квартала — годовой отчёт готов", annualPart:"Утверждённые кварталы: {q} (годовой отчёт предварительный)",
+    annualT:"Годовой отчёт за {y} год", annualFull:"Утверждены 4 квартала – годовой отчёт готов", annualPart:"Утверждённые кварталы: {q} (годовой отчёт предварительный)",
     annualNone:"В этом году утверждённых кварталов пока нет", yearCol:"Год",
-    annualNote:"Годовой отчёт собирается только из утверждённых кварталов: показатели «за квартал» суммируются, «на конец квартала» — из последнего утверждённого квартала.",
-    tQueue:"Утверждение", queueDesc:"Отчёты, ожидающие утверждения. Откройте и проверьте: если всё верно — «Сохранить и утвердить», если нет — верните на доработку с указанием причины.",
+    annualNote:"Годовой отчёт собирается только из утверждённых кварталов: показатели «за квартал» суммируются, «на конец квартала» – из последнего утверждённого квартала.",
+    tQueue:"Утверждение", queueDesc:"Отчёты, ожидающие утверждения. Откройте и проверьте: если всё верно – «Сохранить и утвердить», если нет – верните на доработку с указанием причины.",
     queueNone:"Нет отчётов на утверждении", sentAt:"Отправлен", check:"Проверить",
     tSum:"Свод", sumDesc:"Сдача отчётов и суммы основных показателей по регионам. Полные данные всех библиотек можно выгрузить в Excel.",
     perYear:"Год", cntLibs:"Библиотек", cntOk:"Утверждено", cntSub:"На утверждении", cntOther:"Черновик / возвращено", cntNone:"Не сдали",
     cntFull:"Полный год", xlsFull:"Excel: все данные", wordSum:"Word: свод", sumTitle:"Свод квартальных отчётов библиотек",
-    sumNote:"В суммы входят только утверждённые отчёты. «Год» — свод утверждённых кварталов с начала года.", unitCol:"Район / город",
-    apCol:"Утвердил", onlyDraft:"Черновик / возвращённые", onlySub:"На утверждении", repPerY:"{y} год — с начала года (утверждённые кварталы)",
+    sumNote:"В суммы входят только утверждённые отчёты. «Год» – свод утверждённых кварталов с начала года.", unitCol:"Район / город",
+    apCol:"Утвердил", onlyDraft:"Черновик / возвращённые", onlySub:"На утверждении", repPerY:"{y} год – с начала года (утверждённые кварталы)",
     periodYtd:"{y} год, с начала года (утверждённые кварталы)",
     annual:"итоги года", archRow:"Архив", periodArch:"{y} год, годовые итоги (архив)",
-    repPer:"Период", repPerQ:"Квартал (выбран выше)", repPerA:"{y} год — годовые итоги (архив)",
-    archDesc:"По окончании года все паспорта из листа «Тізілім» сохраняются в архив как полная копия этого года. Для показателей 6.1–6.3 берётся значение последнего квартала года. Архивные данные не меняются: их можно смотреть на сайте по годам, выгружать в отчёты и сравнивать.",
+    repPer:"Период", repPerQ:"Квартал (выбран выше)", repPerA:"{y} год – годовые итоги (архив)",
+    archDesc:"По окончании года все паспорта из листа «Тізім» сохраняются в архив как полная копия этого года. Для показателей 6.1–6.3 берётся значение последнего квартала года. Архивные данные не меняются: их можно смотреть на сайте по годам, выгружать в отчёты и сравнивать.",
     archYears:"Годы в архиве", archNone:"Архив пока пуст", archCount:"Библиотек", archAt:"Время сохранения",
     archDo:"Закрыть год в архив", archYear:"Год", archOver:"Заменить прежний архив (только если нужна корректировка)",
     archQ:"Все паспорта за {y} год будут сохранены в архив. Продолжить?", archQOver:"Прежний архив за {y} год будет ЗАМЕНЁН новыми данными. Это запишется в журнал. Продолжить?",
@@ -155,8 +155,8 @@ const CTX = {
     save:"Сохранить", cancel:"Отмена", confirm:"Подтвердить", confirmTitle:"Подтвердите изменения",
     confirmDesc:"Эти значения будут записаны в журнал от вашего имени.", oldV:"Было", newV:"Стало",
     req:"Обязательное поле", int:"Введите целое число (0 или больше)", tooBig:"Слишком большое значение",
-    jump:"Изменение на {a}% к предыдущему кварталу — проверьте значение", saved:"Сохранено",
-    nochange:"Изменений нет — ничего не сохранено", queued:"Нет связи: изменение поставлено в очередь и будет отправлено позже",
+    jump:"Изменение на {a}% к предыдущему кварталу – проверьте значение", saved:"Сохранено",
+    nochange:"Изменений нет – ничего не сохранено", queued:"Нет связи: изменение поставлено в очередь и будет отправлено позже",
     outbox:"Неотправленных изменений: {a}. Будут отправлены при восстановлении связи.", sendNow:"Отправить сейчас",
     qHistory:"История по кварталам", staticT:"Постоянные данные (только главный администратор)", staticSave:"Сохранить постоянные данные",
     histDesc:"Кто, когда и какое поле изменил в библиотеках вашего региона.",
@@ -176,8 +176,8 @@ const CTX = {
     institution:"Учреждение", phone:"Телефон", loginName:"Логин", status:"Статус", lastLogin:"Последний вход",
     active:"Активен", blocked:"Заблокирован", edit:"Изменить", setPass:"Пароль", block:"Заблокировать", unblock:"Разблокировать",
     passMode:"Пароль", passAuto:"Сгенерировать (одноразовый)", passManual:"Ввести вручную",
-    passOnce:"Скопируйте пароль сейчас и передайте методисту — повторно он не показывается.", copy:"Копировать", copied:"Скопировано",
-    newPassQ:"Введите новый пароль (если оставить пустым — будет сгенерирован):", blockQ:"Заблокировать аккаунт {n}? Записи журнала сохранятся.",
+    passOnce:"Скопируйте пароль сейчас и передайте методисту – повторно он не показывается.", copy:"Копировать", copied:"Скопировано",
+    newPassQ:"Введите новый пароль (если оставить пустым – будет сгенерирован):", blockQ:"Заблокировать аккаунт {n}? Записи журнала сохранятся.",
     bulkRes:"Итог: создано {a}, ошибок {b}", bulkDl:"Скачать список паролей (CSV)", choose:"Выберите…",
     rAdmin:"Главный администратор", rStaff:"Специалист головного центра", rOblast:"Областной методист", rDistrict:"Районный методист", rCity:"Городской методист", rRepublic:"Методист республиканской библиотеки",
     sessionEnd:"Сессия истекла. Войдите снова.", netErr:"Не удалось подключиться к серверу. Проверьте интернет.",
@@ -240,8 +240,8 @@ function flushOutbox(){
     return api(item.body.action, data)
       .then(() => { setOutbox(outbox().slice(1)); S.libs = null; return next(); },
             err => {
-              if(err && err.net){ flushing = false; refreshBanner(); return; }        // байланыс жоқ — кейін қайталаймыз
-              setOutbox(outbox().slice(1));                                           // сервер қабылдамады — себебін көрсетеміз
+              if(err && err.net){ flushing = false; refreshBanner(); return; }        // байланыс жоқ – кейін қайталаймыз
+              setOutbox(outbox().slice(1));                                           // сервер қабылдамады – себебін көрсетеміз
               toast((item.label || "") + ": " + (err.msg || err.error), "bad");
               return next();
             });
@@ -319,12 +319,12 @@ function loadScript(src){
 const needXLSX = () => window.XLSX ? Promise.resolve() : loadScript("vendor/xlsx-0.18.5.full.min.js");
 const needDOCX = () => window.docx ? Promise.resolve() : loadScript("vendor/docx-8.5.0.umd.js");
 const needEXCEL = () => window.ExcelJS ? Promise.resolve() : loadScript("vendor/exceljs-4.4.0.min.js");
-/* Логотип: барлық жүктелетін құжаттың жоғарғы жағында. Жүктелмесе — құжат логотипсіз жасалады */
+/* Логотип: барлық жүктелетін құжаттың жоғарғы жағында. Жүктелмесе – құжат логотипсіз жасалады */
 const LOGO = {src: "img/laba-logo.png", w: 480, h: 315};
 let logoBuf = null;
 const needLogo = () => logoBuf ? Promise.resolve(logoBuf)
   : fetch(LOGO.src).then(r => r.ok ? r.arrayBuffer() : null).then(b => (logoBuf = b), () => null);
-/* Excel кітабы: жоғарыда логотип (1–4 жолдар), сосын кесте. rows — жолдар массиві, opts: {title, cols, head (тақырып жолының индексі)} */
+/* Excel кітабы: жоғарыда логотип (1–4 жолдар), сосын кесте. rows – жолдар массиві, opts: {title, cols, head (тақырып жолының индексі)} */
 function excelBook(sheetName, rows, opts){
   opts = opts || {};
   return Promise.all([needEXCEL(), needLogo()]).then(arr => {
@@ -501,7 +501,7 @@ const FLD = c => FIELDS().find(x => x.c === c);
 const flabel = x => (PFL && PFL[x.c] ? pl(x.c) : x.l);
 const numOf = (v, frac) => { const s = String(v == null ? "" : v).replace(/[\s ]/g, "").replace(",", "."); return (frac ? /^\d+(\.\d+)?$/ : /^\d+$/).test(s) ? +s : null; };
 const fmtV = (x, v) => {
-  if(v === "" || v == null) return "—";
+  if(v === "" || v == null) return "–";
   if(x && (x.t === "int" || x.t === "num")){ const n = numOf(v, true); if(n === null) return String(v); return x.t === "num" && n % 1 ? String(n).replace(".", ",") : nf(n); }
   return String(v);
 };
@@ -545,7 +545,7 @@ VIEWS.lib.after = (p) => {
 };
 function fieldInput(x, v){
   const nm = esc(x.c);
-  if(x.t === "sel") return `<select class="inp" name="${nm}"><option value="">—</option>${x.opt.map(o => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+  if(x.t === "sel") return `<select class="inp" name="${nm}"><option value="">–</option>${x.opt.map(o => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
   if(x.t === "text") return `<textarea class="inp" name="${nm}" rows="${String(v).length > 60 ? 3 : 1}">${esc(v)}</textarea>`;
   const shown = v === "" ? "" : x.t === "int" ? (numOf(v) === null ? v : nf(numOf(v))) : String(v).replace(".", ",");
   return `<input class="inp num" data-t="${x.t}" name="${nm}" inputmode="${x.t === "int" ? "numeric" : "decimal"}" autocomplete="off" value="${esc(shown)}">`;
@@ -637,7 +637,7 @@ function drawEdit(d){
         S.libs = null; go("cabinet");
       }, err => {
         busy(btn, false);
-        if(err && err.net){                                // байланыс жоқ — кезекке
+        if(err && err.net){                                // байланыс жоқ – кезекке
           const a = outbox(); a.push({body: body, ts: Date.now(), label: d.lib.name + " · " + d.year + "/" + ROMAN[d.quarter]}); setOutbox(a);
           toast(ct("queued"), "warn"); refreshBanner(); return;
         }
@@ -665,7 +665,7 @@ function drawEdit(d){
     const fields = {}, ch = [];
     sf.querySelectorAll("[data-code]").forEach(i => { const c = i.dataset.code; if(i.value.trim() !== String(fx[c] || "").trim()){ fields[c] = i.value.trim(); ch.push(c); } });
     if(!ch.length){ toast(ct("nochange"), "warn"); return; }
-    modal(ct("confirmTitle"), `<table class="tbl"><tbody>${ch.map(c => `<tr><td>${esc(fName(c))}</td><td>${esc(fx[c] || "—")}</td><td><b>${esc(fields[c] || "—")}</b></td></tr>`).join("")}</tbody></table>
+    modal(ct("confirmTitle"), `<table class="tbl"><tbody>${ch.map(c => `<tr><td>${esc(fName(c))}</td><td>${esc(fx[c] || "–")}</td><td><b>${esc(fields[c] || "–")}</b></td></tr>`).join("")}</tbody></table>
       <p class="cab-note">${esc(ct("confirmDesc"))}</p>`, [[ct("cancel"), "", "ghost"], [ct("confirm"), "ok", "primary"]]).then(v => {
       if(v !== "ok") return;
       api("saveStatic", {id: d.lib.id, fields: fields}).then(() => { toast(ct("saved")); render(location.hash.slice(1)); }, err => toast(err.msg || err.error, "bad"));
@@ -682,7 +682,7 @@ function annualBlock(d){
     <div class="scroll-x"><table class="tbl cab-ann"><thead><tr><th>${esc(ct("field"))}</th>${[1, 2, 3, 4].map(q => `<th style="text-align:right">${ROMAN[q]}${qs[q] ? `<br>${stPill(qs[q].status)}` : ""}</th>`).join("")}<th style="text-align:right">${esc(ct("yearCol"))}</th></tr></thead>
     <tbody>${(S.form || []).map(sec => `<tr class="cab-ann-s"><td colspan="6">${esc(sec.n + ". " + (PF.find(g => g.n === sec.n) ? tx(PF.find(g => g.n === sec.n).t) : sec.t))}</td></tr>` + sec.f.map(x => `<tr${x.of ? ' class="sub"' : ""}>
       <td>${esc(x.c + " " + flabel(x))}</td>${[1, 2, 3, 4].map(q => `<td class="v${qs[q] && qs[q].status !== "approved" ? " dim" : ""}">${esc(qs[q] ? fmtV(x, qs[q].v[x.c]) : "")}</td>`).join("")}
-      <td class="v"><b>${esc(a ? fmtV(x, a.v[x.c]) : "—")}</b></td></tr>`).join("")).join("")}</tbody></table></div>
+      <td class="v"><b>${esc(a ? fmtV(x, a.v[x.c]) : "–")}</b></td></tr>`).join("")).join("")}</tbody></table></div>
     <p class="cab-note">${esc(ct("annualNote"))}</p></details>`;
 }
 function bindAnnual(d){
@@ -738,7 +738,7 @@ function buildLibXlsx(d){
     .then(wb => saveBook(wb, "laba-jyldyq-" + d.lib.id + "-" + d.year + ".xlsx"));
 }
 /* Excel-ге сан ретінде: «1 250» → 1250 */
-const xnum = v => { const n = numOf(v, true); return n === null ? (v === "—" ? "" : v) : n; };
+const xnum = v => { const n = numOf(v, true); return n === null ? (/^[–\u2014]$/.test(v) ? "" : v) : n; };
 function logoHeader(D){
   return {default: new D.Header({children: logoBuf ? [new D.Paragraph({children: [new D.ImageRun({data: logoBuf,
     transformation: {width: 110, height: Math.round(110 * LOGO.h / LOGO.w)}})], spacing: {after: 60}})] : []})};
@@ -787,8 +787,8 @@ function bindHist(full){
       <tbody>${st.rows.map(r => `<tr><td class="nw">${esc(fmtTs(r.ts))}</td>
         <td><b>${esc(r.user)}</b><br><small class="cab-k">${esc(r.role)} · ${esc(r.inst)}</small></td>
         <td>${r.lib_id ? `${esc(r.lib)}<br><small class="cab-k">${esc(r.region)}</small>` : `<small class="cab-k">${esc(r.region)}</small>`}</td>
-        <td class="nw">${esc(r.year ? r.year + " · " + r.quarter : "—")}</td><td>${esc(r.field)}</td>
-        ${full ? `<td class="v">${esc(r.old || "—")}</td><td class="v"><b>${esc(r.val || "—")}</b></td>` : ""}<td>${esc(r.action)}</td></tr>`).join("")}</tbody></table></div>
+        <td class="nw">${esc(r.year ? r.year + " · " + r.quarter : "–")}</td><td>${esc(r.field)}</td>
+        ${full ? `<td class="v">${esc(r.old || "–")}</td><td class="v"><b>${esc(r.val || "–")}</b></td>` : ""}<td>${esc(r.action)}</td></tr>`).join("")}</tbody></table></div>
       ${st.more ? `<button class="more-btn" id="hMore">${esc(ct("more"))}</button>` : ""}`;
     const m = document.getElementById("hMore"); if(m) m.addEventListener("click", () => load(false));
   };
@@ -881,8 +881,8 @@ function buildDocx(rep, p, lbl){
   rep.rows.forEach((r, i) => {
     const vals = rep.fields.map((f, j) => { const v = r.v ? r.v[f[0]] : ""; const n = +String(v || "").replace(/\s/g, ""); if(n) sums[j] += n; return num0(v); });
     rows.push(new D.TableRow({cantSplit: true, children: [cell(i + 1), cell(r.name), cell(r.district || r.region)]
-      .concat(vals.map(v => cell(v || "—", {right: true})))
-      .concat([cell((r.updated_at ? fmtTs(r.updated_at) : ct("noData")) + (r.qstatus ? "\n" + r.qstatus : ""), {small: true}), cell(r.user_name ? r.user_name + "\n" + [r.user_institution, r.user_phone].filter(Boolean).join(", ") : "—", {bold: true, small: true})])}));
+      .concat(vals.map(v => cell(v || "–", {right: true})))
+      .concat([cell((r.updated_at ? fmtTs(r.updated_at) : ct("noData")) + (r.qstatus ? "\n" + r.qstatus : ""), {small: true}), cell(r.user_name ? r.user_name + "\n" + [r.user_institution, r.user_phone].filter(Boolean).join(", ") : "–", {bold: true, small: true})])}));
   });
   rows.push(new D.TableRow({children: [cell(""), cell(ct("total"), {bold: true}), cell("")].concat(sums.map(s => cell(nf(s), {right: true, bold: true}))).concat([cell(""), cell("")])}));
   const doc = new D.Document({
@@ -903,9 +903,9 @@ function buildDocx(rep, p, lbl){
         new D.Table({width: {size: 100, type: D.WidthType.PERCENTAGE}, columnWidths: widths.map(w => Math.round(w * 140)), rows: rows}),
         par(txt(""), {spacing: {after: 200}}),
         par(txt(ct("respList"), {bold: true, size: 22})),
-        ...m.people.map(x => par(txt("• " + x.n + (x.i ? " — " + x.i : "") + (x.p ? ", тел.: " + x.p : "") + " (" + x.c + ")", {size: 20}), {indent: {left: 300}})),
-        ...(m.people.length ? [] : [par(txt("—"))]),
-        par(txt(ct("lastDate", {d: m.last ? fmtTs(m.last) : "—"}), {size: 22}), {spacing: {before: 160}}),
+        ...m.people.map(x => par(txt("• " + x.n + (x.i ? " – " + x.i : "") + (x.p ? ", тел.: " + x.p : "") + " (" + x.c + ")", {size: 20}), {indent: {left: 300}})),
+        ...(m.people.length ? [] : [par(txt("–"))]),
+        par(txt(ct("lastDate", {d: m.last ? fmtTs(m.last) : "–"}), {size: 22}), {spacing: {before: 160}}),
         par(txt(ct("genDate", {d: fmtTs(stamp())}), {size: 22})),
         par(txt(ct("genBy", {n: S.me.full_name + (S.me.institution ? ", " + S.me.institution : "") + (S.me.phone ? ", тел.: " + S.me.phone : "")}), {size: 22}))
       ]
@@ -921,7 +921,7 @@ function buildXlsx(rep, p, lbl){
       .concat(rep.fields.map(f => { const v = r.v ? String(r.v[f[0]] || "").replace(/\s/g, "") : ""; return v === "" ? "" : +v; }))
       .concat([r.updated_at, r.qstatus || "", r.user_name, r.user_institution, r.user_phone])))
     .concat([[], [ct("respList")]]).concat(m.people.map(x => ["", x.n, x.i, x.p]))
-    .concat([[], [ct("lastDate", {d: m.last ? fmtTs(m.last) : "—"})], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
+    .concat([[], [ct("lastDate", {d: m.last ? fmtTs(m.last) : "–"})], [ct("genDate", {d: fmtTs(stamp())})], [ct("genBy", {n: S.me.full_name})]]);
   const cols = [5, 50, 24, 24, 14].concat(rep.fields.map(() => 14)).concat([18, 16, 28, 28, 16]);
   return excelBook("Есеп", aoa, {title: 0, head: 4, cols: cols})
     .then(wb => saveBook(wb, "laba-esep-" + rep.year + "-" + (rep.archive || rep.annual ? "jyl" : ROMAN[rep.quarter]) + "-" + stamp().slice(0, 10) + ".xlsx"));
@@ -980,7 +980,7 @@ function drawUsers(){
   box.innerHTML = `<div class="card scroll-x" style="padding:8px"><table class="tbl cab-users"><thead><tr><th>${esc(ct("fio"))}</th><th>${esc(ct("role"))}</th><th>${esc(ct("unit"))}</th><th>${esc(ct("phone"))}</th><th>${esc(ct("status"))}</th><th>${esc(ct("lastLogin"))}</th><th></th></tr></thead>
   <tbody>${rows.map(u => `<tr class="${u.status === "blocked" ? "off" : ""}"><td><b>${esc(u.full_name)}</b><br><small class="cab-k">${esc(u.login)}${u.position ? " · " + esc(u.position) : ""}</small></td>
     <td>${esc(roleName(u.role))}</td><td>${esc(u.unit_name)}${u.institution ? `<br><small class="cab-k">${esc(u.institution)}</small>` : ""}</td><td class="nw">${esc(u.phone || "")}</td>
-    <td><span class="pill ${u.status === "active" ? "ok" : "bad"}">${esc(ct(u.status === "active" ? "active" : "blocked"))}</span></td><td class="nw">${esc(fmtTs(u.last_login) || "—")}</td>
+    <td><span class="pill ${u.status === "active" ? "ok" : "bad"}">${esc(ct(u.status === "active" ? "active" : "blocked"))}</span></td><td class="nw">${esc(fmtTs(u.last_login) || "–")}</td>
     <td class="nw"><button class="cbtn ghost sm" data-act="edit" data-id="${esc(u.user_id)}">${esc(ct("edit"))}</button>
       <button class="cbtn ghost sm" data-act="pass" data-id="${esc(u.user_id)}">${esc(ct("setPass"))}</button>
       ${u.role !== "admin" || u.user_id !== S.me.user_id ? `<button class="cbtn ghost sm" data-act="status" data-id="${esc(u.user_id)}">${esc(ct(u.status === "active" ? "block" : "unblock"))}</button>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
@@ -1040,7 +1040,7 @@ function bulkImport(file){
   return needXLSX().then(() => file.arrayBuffer()).then(buf => {
     const wb = XLSX.read(buf, {type: "array"});
     const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, raw: false, defval: ""});
-    /* Тақырып жолы — «Логин» бағаны бар алғашқы жол (үлгінің басында логотип үшін бос жолдар бар) */
+    /* Тақырып жолы – «Логин» бағаны бар алғашқы жол (үлгінің басында логотип үшін бос жолдар бар) */
     let hi = aoa.findIndex((r, i) => i < 20 && r.some(c => /^\s*(логин|login)\s*$/i.test(String(c))));
     if(hi < 0) hi = 0;
     const hdr = (aoa[hi] || []).map(h => String(h).trim().toLowerCase());
@@ -1150,7 +1150,7 @@ function drawSum(r){
       <th style="text-align:right">${esc(ct("cntOther"))}</th><th style="text-align:right">${esc(ct("cntNone"))}</th>${r.quarter ? "" : `<th style="text-align:right">${esc(ct("cntFull"))}</th>`}<th></th>
       ${r.fields.map(f => `<th style="text-align:right" title="${esc(f[1])}">${esc(f[0])}</th>`).join("")}</tr></thead>
       <tbody>${r.rows.map(x => line(x, true)).join("")}${line(Object.assign({}, t, {name: ct("total")}), false)}</tbody></table></div>
-    <p class="cab-note">${r.fields.map(f => esc(f[0] + " — " + (PFL[f[0]] ? pl(f[0]) : f[1]))).join(" · ")}</p>
+    <p class="cab-note">${r.fields.map(f => esc(f[0] + " – " + (PFL[f[0]] ? pl(f[0]) : f[1]))).join(" · ")}</p>
     <p class="cab-note">${esc(ct("sumNote"))}</p>`;
 }
 function buildExportXlsx(r){
@@ -1215,7 +1215,7 @@ function drawBooks(){
   for(let i = 0; i < d.max; i++) rows.push(cur[i] || {author: "", title: "", lang: "", genre: "", count: ""});
   const sel = (n, opts, v) => `<select class="inp" name="${n}"><option value=""></option>${opts.map(o => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
   box.innerHTML = `<div class="card cab-period bk-bar">
-      ${d.owners.length > 1 ? `<select class="pick" id="bkOwner">${d.owners.map(o => `<option value="${esc(o.id)}" ${o.id === st.owner ? "selected" : ""}>${esc((o.st === "rep" ? "" : o.region + " — ") + o.name.slice(0, 80))}</option>`).join("")}</select>`
+      ${d.owners.length > 1 ? `<select class="pick" id="bkOwner">${d.owners.map(o => `<option value="${esc(o.id)}" ${o.id === st.owner ? "selected" : ""}>${esc((o.st === "rep" ? "" : o.region + " – ") + o.name.slice(0, 80))}</option>`).join("")}</select>`
         : `<b class="bk-own">${esc(d.owners[0].name)}</b>`}
       <div class="seg">${["rec", "top"].map(k => `<button data-bk="${k}" class="${st.kind === k ? "on" : ""}">${esc(ct(k === "rec" ? "bkRec" : "bkTop"))}</button>`).join("")}</div>
     </div>
@@ -1252,7 +1252,7 @@ function drawBooks(){
     }, err => {
       busy(btn, false);
       if(err && err.fields){
-        // сервер тек толтырылған жолдарды санайды — нөмірін формадағы жолға сәйкестендіреміз
+        // сервер тек толтырылған жолдарды санайды – нөмірін формадағы жолға сәйкестендіреміз
         const filled = [...f.querySelectorAll("tbody tr")].filter(tr => tr.querySelector('[name="author"]').value.trim() || tr.querySelector('[name="title"]').value.trim());
         Object.keys(err.fields).forEach(k => { const p = k.split("."), tr = filled[+p[0]]; if(!tr) return;
           const el = f.querySelector('[data-err="' + tr.dataset.i + "." + p[1] + '"]'); if(el) el.textContent = err.fields[k]; });
@@ -1262,7 +1262,7 @@ function drawBooks(){
   });
 }
 
-/* Тізілім: жаңа кітапхана қосу және жабылған кітапхананы шығару ұсыныстары.
+/* Тізім: жаңа кітапхана қосу және жабылған кітапхананы шығару ұсыныстары.
    Облыстық/қалалық әдіскер ұсынады, бас әкімші немесе бас орталық маманы бекітеді (рұқсат серверде тексеріледі) */
 const RQ_PILL = {pending: "warn", approved: "ok", rejected: "bad"};
 VIEWS.registry = () => shell("cabinet/registry", `
@@ -1375,7 +1375,7 @@ function regDecide(id, decision){
     }, err => toast(err.msg || err.error, "bad"));
   });
 }
-/* Салыстыру файлынан (өңірлер қайтарған Excel): «жаңа» жолдар — қосу, «Ескерту»-де жабылды/біріктірілді/қайталанған — шығару */
+/* Салыстыру файлынан (өңірлер қайтарған Excel): «жаңа» жолдар – қосу, «Ескерту»-де жабылды/біріктірілді/қайталанған – шығару */
 function regImport(file){
   const d = S.rgData;
   Promise.all([needEXCEL(), file.arrayBuffer()]).then(arr => {
@@ -1407,7 +1407,7 @@ function regImport(file){
         if(no.indexOf("жаңа") === 0 || (!no && name)){
           if(!name) return;
           const cat = d.cats.find(c => c[2].toLowerCase() === g("cat").toLowerCase());
-          if(!region || !cat){ skipped.push(name + " — " + ct(!region ? "rgNoRegion" : "rgNoCat")); return; }
+          if(!region || !cat){ skipped.push(name + " – " + ct(!region ? "rgNoRegion" : "rgNoCat")); return; }
           items.push({kind: "add", region: region, district: g("d"), lvl: cat[0], name: name, address: g("addr"), phone: g("ph"), note: note || ct("rgFromFile"), _t: name});
         } else if(/^\d+$/.test(no) && /жабыл|біріктір|қайтал|жоқ|закры|объедин|дубл/i.test(note)){
           items.push({kind: "close", lib_id: no, note: note, _t: "№" + no + " " + name});
@@ -1418,7 +1418,7 @@ function regImport(file){
     const li = a => a.map(x => `<li>${esc(x)}</li>`).join("");
     const adds = items.filter(x => x.kind === "add"), cls = items.filter(x => x.kind === "close");
     modal(ct("rgImport"), `${adds.length ? `<p class="cab-p"><b>${esc(ct("rgAdd"))}: ${adds.length}</b></p><ul class="rg-ul">${li(adds.map(x => x._t + " (" + x.district + ")"))}</ul>` : ""}
-      ${cls.length ? `<p class="cab-p"><b>${esc(ct("rgClose"))}: ${cls.length}</b></p><ul class="rg-ul">${li(cls.map(x => x._t + " — " + x.note))}</ul>` : ""}
+      ${cls.length ? `<p class="cab-p"><b>${esc(ct("rgClose"))}: ${cls.length}</b></p><ul class="rg-ul">${li(cls.map(x => x._t + " – " + x.note))}</ul>` : ""}
       ${skipped.length ? `<p class="cab-p"><b>${esc(ct("rgSkipped"))}: ${skipped.length}</b></p><ul class="rg-ul">${li(skipped)}</ul>` : ""}`,
       [[ct("cancel"), "", "ghost"]].concat(items.length ? [[ct(d.canDecide ? "rgAddNow" : "rgSend") + " (" + items.length + ")", "ok", "primary"]] : [])).then(v => {
       if(v !== "ok") return;
@@ -1433,7 +1433,7 @@ function regImport(file){
     });
   }).catch(() => toast(ct("rgFileBad"), "bad"));
 }
-/* Кітапхана бетінен: тізілімнен шығаруды ұсыну */
+/* Кітапхана бетінен: тізімнен шығаруды ұсыну */
 function regCloseLib(lib){
   const adm = ["admin", "staff"].indexOf(S.me.role) > -1;
   modal(ct("rgCloseBtn"), `<p class="cab-p"><b>${esc(lib.name)}</b><br><small class="cab-k">№${esc(lib.id)} · ${esc(lib.region + (lib.district ? ", " + lib.district : ""))}</small></p>
