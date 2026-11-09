@@ -339,4 +339,14 @@ ok(lr.rows.length === 2 && lr.rows.every(o => o.region === 'Астана қал�
 ok(g.post({ action: 'log', token: admin, q: 'Ұсыныс' }).rows.length >= 8 && g.verifyLog().indexOf('бүтін') > -1, 'Барлық ұсыныс пен шешім журналда');
 ok(g.post({ action: 'archive', token: admin, year: 2026, overwrite: true }).count === 3876, 'Мұрағатқа жабылған кітапхана кірмейді');
 
+step('12. Аккаунтты жою');
+const del = mk({ login: 'del.me', full_name: 'Жойылатын Әдіскер', role: 'oblast', unit_id: U('Абай облысы'), password: 'Delete2026x' });
+const tDel = login('del.me', 'Delete2026x');
+const nUsers = g.post({ action: 'users', token: admin }).users.length;
+ok(g.post({ action: 'userDelete', token: tS, user_id: del.user.user_id }).error === 'forbidden', 'Маман аккаунт жоя алмайды');
+ok(!g.post({ action: 'userDelete', token: admin, user_id: g.post({ action: 'me', token: admin }).user.user_id }).ok, 'Өз аккаунтын жоюға болмайды');
+ok(g.post({ action: 'userDelete', token: admin, user_id: del.user.user_id }).ok, 'Бас әкімші аккаунтты жойды');
+ok(g.post({ action: 'users', token: admin }).users.length === nUsers - 1 && g.post({ action: 'me', token: tDel }).error === 'auth', 'Аккаунт тізімнен жойылды, ашық сессиясы жабылды');
+ok(!g.post({ action: 'login', login: 'del.me', password: 'Delete2026x' }).ok, 'Жойылған аккаунтпен кіруге болмайды');
+ok(g.post({ action: 'log', token: admin, q: 'жойылды (del.me)' }).rows.length === 1 && g.verifyLog().indexOf('бүтін') > -1, 'Жою журналға жазылды');
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');
