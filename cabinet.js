@@ -18,6 +18,27 @@ const CTX = {
     noAccount:"Аккаунт жоқ па? Бас әкімшіге хабарласыңыз: ҚР Ұлттық кітапханасы, Ғылыми-әдістемелік қызмет.",
     tLibs:"Кітапханалар", tHistory:"Өзгерістер тарихы", tReports:"Есептер", tUsers:"Аккаунттар", tLog:"Журнал", tArch:"Мұрағат",
     privNote:"Кабинетке кіру арқылы деректердің тек кітапхана саласының аналитикасы мен статистикасы үшін өңделетінімен келісесіз:", privLink:"құпиялық саясаты",
+    tReg:"Тізілім", required:"Міндетті өріс",
+    rgDesc:"Тізілімге жаңа кітапхана қосу немесе жабылған (біріктірілген, қайталанған) кітапхананы тізілімнен шығару. Облыстық және қалалық әдіскер ұсынады, бас әкімші немесе бас орталық маманы бекіткенде тізілім өзгереді. Жабылған кітапхананың жазбасы өшірілмейді: сайттан және есептерден шығады, бұрынғы жылдардың мұрағатында сақталады.",
+    rgCmp:"Кітапханалар саны: ресми статистика ({y}) және LABA тізілімі", rgCmpNote:"Минус — тізілімде кітапхана жетіспейді (қосу керек), плюс — тізілімде артық жазба бар (жабылғанын немесе қайталанғанын тексеру керек).",
+    rgRegion:"Өңір", rgOff:"Ресми саны", rgReg:"Тізілімде", rgDiff:"Айырма",
+    rgPending:"Қаралуда", rgAll:"Барлық ұсыныс", rgNew:"Жаңа кітапхана ұсыну", rgImport:"Excel-ден жүктеу",
+    rgKind:"Ұсыныс", rgLib:"Кітапхана", rgNote:"Негіздеме", rgAdd:"Қосу", rgClose:"Тізілімнен шығару",
+    rgApprove:"Бекіту", rgReject:"Қабылдамау", rgNone:"Ұсыныс әлі жоқ", rgNonePending:"Қаралуды күтіп тұрған ұсыныс жоқ",
+    rgFormNote:"Ұсыныс бас орталыққа жіберіледі. Бекітілгенде кітапхана тізілімге №-мен қосылады, оның паспортын кабинеттен толтыра аласыз.",
+    rgFormNoteAdm:"Сіз бекітуші болғандықтан, кітапхана тізілімге бірден қосылады.",
+    rgDistrict:"Аудан / қала", rgDistrictPh:"мысалы, Сайрам ауданы", rgCat:"Санаты", rgName:"Кітапхананың толық атауы", rgAddr:"Мекенжайы",
+    rgPhone:"Телефон", rgEmail:"E-mail", rgDir:"Басшысының аты-жөні, байланыс телефоны", rgBasis:"Негіздеме / ескерту", rgBasisPh:"мысалы, 2025 жылдың статистикасында бар, тізілімге енбей қалған",
+    rgSend:"Ұсыныс жіберу", rgAddNow:"Тізілімге қосу", rgSent:"Ұсыныс жіберілді: бас орталық қарайды", rgAdded:"Кітапхана тізілімге қосылды: №{n}",
+    rgClosed:"Кітапхана тізілімнен шығарылды", rgRejected:"Ұсыныс қабылданбады",
+    rgQAdd:"Кітапхана тізілімге жаңа №-мен қосылады және сайтта көрсетіледі.", rgQClose:"Кітапхана тізілімнен шығады: сайтта, кабинетте және жаңа есептерде көрсетілмейді. Жазбасы өшірілмейді.",
+    rgQReject:"Ұсыныс берген әдіскер себебін көреді.", rgComment:"Түсініктеме (міндетті емес)", rgReason:"Себебі", rgReasonReq:"Себебін жазыңыз",
+    rgCloseBtn:"Тізілімнен шығаруды ұсыну", rgCloseNote:"Кітапхана жабылған, басқа кітапханамен біріктірілген немесе тізілімде қайталанған болса, ұсыныс жіберіңіз. Бас орталық бекіткенде тізілімнен шығады.",
+    rgCloseNoteAdm:"Кітапхана тізілімнен бірден шығады (жазбасы өшірілмейді, журналға жазылады).", rgCloseNow:"Тізілімнен шығару",
+    rgWhyPh:"мысалы, 2025 жылы жабылды; №1754 кітапханамен қайталанған",
+    rgNoRegion:"өңірі анықталмады", rgNoCat:"санаты тізілімдегі санаттарға сай емес", rgFromFile:"Салыстыру файлынан", rgSkipped:"Қабылданбағандар",
+    rgFileNone:"Файлдан ұсыныс табылмады: жаңа кітапханаларды «жаңа» деп белгіленген жолдарға, жабылғандарын «Ескерту» бағанына жазыңыз",
+    rgFileDone:"Жіберілді: {a}, қабылданбады: {b}", rgFileBad:"Файлды оқу мүмкін болмады (.xlsx болуы керек)",
     tBooks:"Кітаптар", bkDesc:"«Кітапханалар не оқып, не ұсынып жатыр?» рубрикасына: оқырманға ұсынатын кітаптар және ең көп оқылған кітаптар — әр оқырман санатына 10 кітапқа дейін. Облыстың тізіміне аудан, қала және ауыл кітапханаларының деректерін қосып енгізіңіз. Тізімді кез келген уақытта жаңартуға болады.",
     bkNone:"Сізге кітап тізімі бекітілмеген: оны облыстық, қалалық және республикалық кітапхананың әдіскері енгізеді.", bkRec:"Оқырманға ұсынады", bkTop:"Ең көп оқылған",
     bkAuthor:"Автор", bkTitle:"Кітаптың атауы", bkLang:"Тілі", bkGenre:"Жанры", bkCount:"Оқылу саны", bkClear:"Тазарту",
@@ -140,6 +161,7 @@ const CTX = {
     qHistory:"История по кварталам", staticT:"Постоянные данные (только главный администратор)", staticSave:"Сохранить постоянные данные",
     histDesc:"Кто, когда и какое поле изменил в библиотеках вашего региона.",
     logDesc:"Полный журнал всех изменений со старыми и новыми значениями. Журнал нельзя удалить или изменить.",
+    tReg:"Реестр", required:"Обязательное поле",
     from:"С", to:"По", find:"Поиск", when:"Время", who:"Кто", inst:"Учреждение", lib:"Библиотека",
     field:"Поле", action:"Действие", level:"Уровень", region:"Регион", excel:"Excel", word:"Word (.docx)",
     repDesc:"Отчёт формируется только по библиотекам вашего региона. В конце указываются ответственные, дата обновления и время выгрузки.",
@@ -360,6 +382,7 @@ function shell(active, inner){
   if(["admin","staff","oblast"].indexOf(me.role) > -1) tabs.push(["cabinet/queue", "tQueue"]);
   tabs.push(["cabinet/summary", "tSum"]);
   if(["admin","staff","oblast","city","republic"].indexOf(me.role) > -1) tabs.push(["cabinet/books", "tBooks"]);
+  if(["admin","staff","oblast","city"].indexOf(me.role) > -1) tabs.push(["cabinet/registry", "tReg"]);
   tabs.push(["cabinet/reports", "tReports"]);
   if(adm) tabs.push(["admin/users", "tUsers"], ["admin/log", "tLog"], ["admin/archive", "tArch"]);
   return `<div class="cab">
@@ -546,6 +569,7 @@ function drawEdit(d){
       <p class="cab-upd ${cur ? "" : "warn"}">${cur ? esc(ct("lastUpd", {d: fmtTs(cur.updated_at), n: cur.user_name, i: cur.user_institution || ""})) : esc(ct("neverUpd"))}</p>
       ${meta.length ? `<p class="cab-k">${meta.join(" · ")}</p>` : ""}
       ${cur && cur.status === "returned" && cur.comment ? `<div class="cab-warn">↩ ${esc(ct("retBy", {c: cur.comment}))}</div>` : ""}</div>
+    ${["admin","staff","oblast","city"].indexOf(S.me.role) > -1 ? `<button class="cbtn ghost sm rg-close" type="button" id="rgCloseLib">${esc(ct("rgCloseBtn"))}</button>` : ""}
   </div>
   <form class="card cab-form" id="qForm" novalidate>
     <h3>${esc(ct("qFields"))}</h3>
@@ -570,6 +594,8 @@ function drawEdit(d){
       <td>${esc(fmtTs(h.updated_at))}</td><td>${esc(h.user_name)}${h.user_institution ? `<br><small class="cab-k">${esc(h.user_institution)}</small>` : ""}</td></tr>`).join("")}
       ${(d.archive || []).map(a => `<tr class="cab-arch"><td>${esc(a.year + " · " + ct("annual"))}</td><td><span class="pill gray">${esc(ct("archRow"))}</span></td>${S.main.map(f => `<td class="v">${esc(fmtV(FLD(f), a.v[f]))}</td>`).join("")}
       <td>${esc(fmtTs(a.archived_at))}</td><td></td></tr>`).join("")}</tbody></table></div></div>`;
+  const rcl = document.getElementById("rgCloseLib");
+  if(rcl) rcl.addEventListener("click", () => regCloseLib(d.lib));
   const form = document.getElementById("qForm");
   form.querySelectorAll(".num").forEach(i => i.addEventListener("input", () => {
     if(i.dataset.t === "int"){
@@ -1236,6 +1262,194 @@ function drawBooks(){
   });
 }
 
+/* Тізілім: жаңа кітапхана қосу және жабылған кітапхананы шығару ұсыныстары.
+   Облыстық/қалалық әдіскер ұсынады, бас әкімші немесе бас орталық маманы бекітеді (рұқсат серверде тексеріледі) */
+const RQ_PILL = {pending: "warn", approved: "ok", rejected: "bad"};
+VIEWS.registry = () => shell("cabinet/registry", `
+  <div class="ph"><h2>${esc(ct("tReg"))}</h2><p>${esc(ct("rgDesc"))}</p></div>
+  <div id="rgBox"><div class="card p-empty">${esc(ct("wait"))}</div></div>`);
+VIEWS.registry.after = () => {
+  S.rg = S.rg || {show: "pending", form: false};
+  const load = () => api("libReqs").then(r => { S.rgData = r; drawRegistry(); },
+    err => { const b = document.getElementById("rgBox"); if(b) b.innerHTML = `<div class="card p-empty">${esc(err.msg || err.error)}</div>`; });
+  S.rgReload = load;
+  load();
+};
+function drawRegistry(){
+  const box = document.getElementById("rgBox"), d = S.rgData, st = S.rg;
+  if(!box) return;
+  const diffCls = n => n === 0 ? "ok" : "bad";
+  const sgn = n => (n > 0 ? "+" : "") + nf(n);
+  const totals = d.counts.reduce((a, c) => ({o: a.o + c.official, r: a.r + c.registry}), {o: 0, r: 0});
+  const rows = d.rows.filter(o => st.show === "all" || o.status === "pending");
+  const npend = d.rows.filter(o => o.status === "pending").length;
+  const canDo = d.canDecide;
+  box.innerHTML = `
+  <div class="card"><h3 class="cab-h3">${esc(ct("rgCmp", {y: d.official.year}))}</h3>
+    <p class="cab-note" style="margin-bottom:10px">${esc(ct("rgCmpNote"))}</p>
+    <div class="scroll-x"><table class="tbl cab-sumt"><thead><tr><th>${esc(ct("rgRegion"))}</th><th style="text-align:right">${esc(ct("rgOff"))}</th><th style="text-align:right">${esc(ct("rgReg"))}</th><th style="text-align:right">${esc(ct("rgDiff"))}</th></tr></thead>
+    <tbody>${d.counts.map(c => `<tr><td>${esc(c.region)}</td><td class="v">${nf(c.official)}</td><td class="v">${nf(c.registry)}</td><td class="v ${diffCls(c.diff)}">${c.diff ? sgn(c.diff) : "✓"}</td></tr>`).join("")}
+      ${d.counts.length > 1 ? `<tr><td><b>${esc(ct("total"))}</b></td><td class="v"><b>${nf(totals.o)}</b></td><td class="v"><b>${nf(totals.r)}</b></td><td class="v ${diffCls(totals.r - totals.o)}"><b>${totals.r - totals.o ? sgn(totals.r - totals.o) : "✓"}</b></td></tr>` : ""}</tbody></table></div>
+  </div>
+  <div class="card cab-period bk-bar">
+    <div class="seg">${["pending", "all"].map(k => `<button data-rs="${k}" class="${st.show === k ? "on" : ""}">${esc(ct(k === "pending" ? "rgPending" : "rgAll"))}${k === "pending" && npend ? ` (${npend})` : ""}</button>`).join("")}</div>
+    <span style="flex:1"></span>
+    <label class="cbtn ghost" for="rgFile">⤒ ${esc(ct("rgImport"))}</label><input type="file" id="rgFile" accept=".xlsx" hidden>
+    <button class="cbtn primary" id="rgNew">+ ${esc(ct("rgNew"))}</button>
+  </div>
+  ${st.form ? regForm(d) : ""}
+  <div class="card">
+    ${rows.length ? `<div class="scroll-x"><table class="tbl rg-tbl"><thead><tr><th>${esc(ct("when"))}</th><th>${esc(ct("rgKind"))}</th><th>${esc(ct("rgLib"))}</th><th>${esc(ct("rgNote"))}</th><th>${esc(ct("who"))}</th><th>${esc(ct("state"))}</th>${canDo ? "<th></th>" : ""}</tr></thead>
+    <tbody>${rows.map(o => `<tr>
+      <td class="nw">${esc(fmtTs(o.created_at))}</td>
+      <td><span class="pill ${o.kind === "add" ? "" : "gray"}">${esc(ct(o.kind === "add" ? "rgAdd" : "rgClose"))}</span></td>
+      <td><b>${esc(o["1.1"])}</b>${o.lib_id ? ` <small class="cab-k">№${esc(o.lib_id)}</small>` : ""}<br><small class="cab-k">${esc(o.region + (o.district ? ", " + o.district : ""))}${o.cat ? " · " + esc(o.cat) : ""}</small>
+        ${o.kind === "add" && o["1.3"] ? `<br><small class="cab-k">${esc(o["1.3"])}${o["1.4"] ? " · " + esc(o["1.4"]) : ""}</small>` : ""}</td>
+      <td>${esc(o.note)}</td>
+      <td>${esc(o.user_name)}<br><small class="cab-k">${esc(o.user_role)}</small></td>
+      <td><span class="pill ${RQ_PILL[o.status] || "gray"}">${esc(o.status_name)}</span>${o.decided_at ? `<br><small class="cab-k">${esc(fmtTs(o.decided_at) + " · " + o.decided_by)}</small>` : ""}${o.comment ? `<br><small class="cab-k">${esc(o.comment)}</small>` : ""}</td>
+      ${canDo ? `<td class="nw">${o.status === "pending" ? `<button class="cbtn primary sm" data-ok="${esc(o.req_id)}">${esc(ct("rgApprove"))}</button> <button class="cbtn ghost sm" data-no="${esc(o.req_id)}">${esc(ct("rgReject"))}</button>` : ""}</td>` : ""}
+    </tr>`).join("")}</tbody></table></div>` : `<p class="cab-p">${esc(ct(st.show === "pending" ? "rgNonePending" : "rgNone"))}</p>`}
+  </div>`;
+  box.querySelectorAll("[data-rs]").forEach(b => b.addEventListener("click", () => { st.show = b.dataset.rs; drawRegistry(); }));
+  document.getElementById("rgNew").addEventListener("click", () => { st.form = !st.form; drawRegistry(); });
+  document.getElementById("rgFile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if(f) regImport(f); });
+  box.querySelectorAll("[data-ok]").forEach(b => b.addEventListener("click", () => regDecide(b.dataset.ok, "approved")));
+  box.querySelectorAll("[data-no]").forEach(b => b.addEventListener("click", () => regDecide(b.dataset.no, "rejected")));
+  if(st.form) bindRegForm(d);
+}
+const regRegions = d => d.region ? [d.region] : d.counts.map(c => c.region).filter(r => r !== "Республикалық деңгей");
+const regCats = (d, region) => d.cats.filter(c => / облысы$/.test(region) ? (c[0] <= 5 || c[0] >= 11) : (c[0] >= 7 && c[0] <= 10));
+function regForm(d){
+  const regs = regRegions(d), r0 = S.rg.region && regs.indexOf(S.rg.region) > -1 ? S.rg.region : regs[0];
+  const dist = (d.counts.find(c => c.region === r0) || {districts: []}).districts;
+  const fld = (n, label, req, wide, extra) => `<label class="fld${wide ? " wide" : ""}"><span>${esc(ct(label))}${req ? ' <i class="req">*</i>' : ""}</span>${extra || `<input class="inp" name="${n}">`}<small class="fld-err" data-err="${n}"></small></label>`;
+  return `<form class="card cab-form" id="rgForm" novalidate>
+    <h3>${esc(ct("rgNew"))}</h3>
+    <p class="cab-note">${esc(ct(d.canDecide ? "rgFormNoteAdm" : "rgFormNote"))}</p>
+    <div class="cab-fgrid">
+      ${fld("region", "rgRegion", 1, 0, regs.length > 1 ? `<select class="inp" name="region">${regs.map(r => `<option ${r === r0 ? "selected" : ""}>${esc(r)}</option>`).join("")}</select>` : `<input class="inp" name="region" value="${esc(r0)}" readonly>`)}
+      ${fld("district", "rgDistrict", 1, 0, `<input class="inp" name="district" list="rgDl" autocomplete="off" placeholder="${esc(ct("rgDistrictPh"))}"><datalist id="rgDl">${dist.map(x => `<option value="${esc(x)}">`).join("")}</datalist>`)}
+      ${fld("lvl", "rgCat", 1, 1, `<select class="inp" name="lvl"><option value=""></option>${regCats(d, r0).map(c => `<option value="${c[0]}">${esc(c[2])} (${esc(c[1])})</option>`).join("")}</select>`)}
+      ${fld("name", "rgName", 1, 1)}
+      ${fld("address", "rgAddr", 1, 1)}
+      ${fld("phone", "rgPhone")}${fld("email", "rgEmail")}
+      ${fld("director", "rgDir", 0, 1)}
+      ${fld("note", "rgBasis", 0, 1, `<textarea class="inp" name="note" rows="2" placeholder="${esc(ct("rgBasisPh"))}"></textarea>`)}
+    </div>
+    <div class="cab-actions"><button class="cbtn ghost" type="button" id="rgCancel">${esc(ct("cancel"))}</button><button class="cbtn primary" type="submit">${esc(ct(d.canDecide ? "rgAddNow" : "rgSend"))}</button></div>
+  </form>`;
+}
+function bindRegForm(d){
+  const f = document.getElementById("rgForm");
+  document.getElementById("rgCancel").addEventListener("click", () => { S.rg.form = false; drawRegistry(); });
+  if(f.region.tagName === "SELECT") f.region.addEventListener("change", () => { S.rg.region = f.region.value; drawRegistry(); });
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    f.querySelectorAll(".fld-err").forEach(x => { x.textContent = ""; });
+    const v = {}; ["region", "district", "lvl", "name", "address", "phone", "email", "director", "note"].forEach(n => { v[n] = f[n].value.trim(); });
+    let bad = 0;
+    ["district", "lvl", "name", "address"].forEach(n => { if(!v[n]){ f.querySelector(`[data-err="${n}"]`).textContent = ct("required"); bad++; } });
+    if(bad) return toast(ct("fixErr"), "bad");
+    const btn = f.querySelector("button[type=submit]"); busy(btn, true);
+    api("libReqSave", Object.assign({kind: "add"}, v)).then(r => {
+      busy(btn, false); S.rg.form = false;
+      toast(r.req.status === "approved" ? ct("rgAdded", {n: r.req.lib_id}) : ct("rgSent"));
+      S.rgReload();
+    }, err => { busy(btn, false); toast(err.msg || err.error, "bad"); });
+  });
+}
+function regDecide(id, decision){
+  const o = S.rgData.rows.find(x => x.req_id === id);
+  if(!o) return;
+  const body = `<p class="cab-p"><b>${esc(ct(o.kind === "add" ? "rgAdd" : "rgClose"))}:</b> ${esc(o["1.1"])}<br><small class="cab-k">${esc(o.region + (o.district ? ", " + o.district : ""))}</small></p>
+    <p class="cab-p">${esc(ct(decision === "approved" ? (o.kind === "add" ? "rgQAdd" : "rgQClose") : "rgQReject"))}</p>
+    <label class="fld"><span>${esc(ct(decision === "approved" ? "rgComment" : "rgReason"))}</span><input class="inp" id="rgCmt"></label>`;
+  modal(ct(decision === "approved" ? "rgApprove" : "rgReject"), body, [[ct("cancel"), "", "ghost"], [ct(decision === "approved" ? "rgApprove" : "rgReject"), "ok", "primary"]]).then(v => {
+    if(v !== "ok") return;
+    const c = (modal.vals.rgCmt || "").trim();
+    if(decision === "rejected" && !c) return toast(ct("rgReasonReq"), "bad");
+    api("libReqDecide", {req_id: id, decision: decision, comment: c}).then(r => {
+      toast(decision === "approved" ? (r.req.kind === "add" ? ct("rgAdded", {n: r.req.lib_id}) : ct("rgClosed")) : ct("rgRejected"));
+      S.libs = null; S.rgReload();
+    }, err => toast(err.msg || err.error, "bad"));
+  });
+}
+/* Салыстыру файлынан (өңірлер қайтарған Excel): «жаңа» жолдар — қосу, «Ескерту»-де жабылды/біріктірілді/қайталанған — шығару */
+function regImport(file){
+  const d = S.rgData;
+  Promise.all([needEXCEL(), file.arrayBuffer()]).then(arr => {
+    const wb = new ExcelJS.Workbook();
+    return wb.xlsx.load(arr[1]).then(() => wb);
+  }).then(wb => {
+    const regs = regRegions(d), items = [], skipped = [];
+    const txt = c => { const v = c && c.value; if(v == null) return ""; if(typeof v === "object") return String(v.text || (v.richText ? v.richText.map(t => t.text).join("") : v.result || "")).trim(); return String(v).trim(); };
+    wb.eachSheet(ws => {
+      const head = txt(ws.getCell(1, 1)).split(":")[0].trim().toLowerCase(), sn = ws.name.trim().toLowerCase();
+      const region = regs.find(r => { const l = r.toLowerCase(); return l === head || l === sn || l.replace(/ облысы$| қаласы$/, "") === sn || l.replace(/ облысы$| қаласы$/, "") === head; });
+      let hr = 0, col = {};
+      ws.eachRow((row, i) => {
+        if(hr) return;
+        const vals = []; row.eachCell({includeEmpty: true}, (c, j) => { vals[j] = txt(c).toLowerCase(); });
+        if(vals.some(v => v && v.indexOf("кітапхана атауы") > -1)){
+          hr = i;
+          vals.forEach((v, j) => { if(!v) return;
+            if(v.indexOf("№") > -1) col.no = j; else if(v.indexOf("аудан") > -1) col.d = j; else if(v.indexOf("санат") > -1) col.cat = j;
+            else if(v.indexOf("атауы") > -1) col.name = j; else if(v.indexOf("мекенжай") > -1) col.addr = j; else if(v.indexOf("телефон") > -1) col.ph = j;
+            else if(v.indexOf("ескерту") > -1) col.note = j; });
+        }
+      });
+      if(!hr || !col.name) return;
+      ws.eachRow((row, i) => {
+        if(i <= hr) return;
+        const g = k => col[k] ? txt(row.getCell(col[k])) : "";
+        const no = g("no").toLowerCase(), name = g("name"), note = g("note");
+        if(no.indexOf("жаңа") === 0 || (!no && name)){
+          if(!name) return;
+          const cat = d.cats.find(c => c[2].toLowerCase() === g("cat").toLowerCase());
+          if(!region || !cat){ skipped.push(name + " — " + ct(!region ? "rgNoRegion" : "rgNoCat")); return; }
+          items.push({kind: "add", region: region, district: g("d"), lvl: cat[0], name: name, address: g("addr"), phone: g("ph"), note: note || ct("rgFromFile"), _t: name});
+        } else if(/^\d+$/.test(no) && /жабыл|біріктір|қайтал|жоқ|закры|объедин|дубл/i.test(note)){
+          items.push({kind: "close", lib_id: no, note: note, _t: "№" + no + " " + name});
+        }
+      });
+    });
+    if(!items.length && !skipped.length) return toast(ct("rgFileNone"), "warn");
+    const li = a => a.map(x => `<li>${esc(x)}</li>`).join("");
+    const adds = items.filter(x => x.kind === "add"), cls = items.filter(x => x.kind === "close");
+    modal(ct("rgImport"), `${adds.length ? `<p class="cab-p"><b>${esc(ct("rgAdd"))}: ${adds.length}</b></p><ul class="rg-ul">${li(adds.map(x => x._t + " (" + x.district + ")"))}</ul>` : ""}
+      ${cls.length ? `<p class="cab-p"><b>${esc(ct("rgClose"))}: ${cls.length}</b></p><ul class="rg-ul">${li(cls.map(x => x._t + " — " + x.note))}</ul>` : ""}
+      ${skipped.length ? `<p class="cab-p"><b>${esc(ct("rgSkipped"))}: ${skipped.length}</b></p><ul class="rg-ul">${li(skipped)}</ul>` : ""}`,
+      [[ct("cancel"), "", "ghost"]].concat(items.length ? [[ct(d.canDecide ? "rgAddNow" : "rgSend") + " (" + items.length + ")", "ok", "primary"]] : [])).then(v => {
+      if(v !== "ok") return;
+      let okN = 0; const errs = [];
+      toast(ct("wait"), "warn");
+      items.reduce((p, x) => p.then(() => { const b = Object.assign({}, x); delete b._t;
+        return api("libReqSave", b).then(() => { okN++; }, err => { errs.push(x._t + ": " + (err.msg || err.error)); }); }), Promise.resolve()).then(() => {
+        toast(ct("rgFileDone", {a: okN, b: errs.length}), errs.length ? "warn" : "ok");
+        if(errs.length) modal(ct("rgSkipped"), `<ul class="rg-ul">${li(errs)}</ul>`);
+        S.libs = null; S.rgReload();
+      });
+    });
+  }).catch(() => toast(ct("rgFileBad"), "bad"));
+}
+/* Кітапхана бетінен: тізілімнен шығаруды ұсыну */
+function regCloseLib(lib){
+  const adm = ["admin", "staff"].indexOf(S.me.role) > -1;
+  modal(ct("rgCloseBtn"), `<p class="cab-p"><b>${esc(lib.name)}</b><br><small class="cab-k">№${esc(lib.id)} · ${esc(lib.region + (lib.district ? ", " + lib.district : ""))}</small></p>
+    <p class="cab-p">${esc(ct(adm ? "rgCloseNoteAdm" : "rgCloseNote"))}</p>
+    <label class="fld"><span>${esc(ct("rgReason"))} <i class="req">*</i></span><input class="inp" id="rgWhy" placeholder="${esc(ct("rgWhyPh"))}"></label>`,
+    [[ct("cancel"), "", "ghost"], [ct(adm ? "rgCloseNow" : "rgSend"), "ok", "primary"]]).then(v => {
+    if(v !== "ok") return;
+    const why = (modal.vals.rgWhy || "").trim();
+    if(why.length < 5) return toast(ct("rgReasonReq"), "bad");
+    api("libReqSave", {kind: "close", lib_id: lib.id, note: why}).then(r => {
+      S.libs = null;
+      if(r.req.status === "approved"){ toast(ct("rgClosed")); go("cabinet"); } else toast(ct("rgSent"));
+    }, err => toast(err.msg || err.error, "bad"));
+  });
+}
+
 /* Мұрағат (бас әкімші) */
 VIEWS.archive = () => {
   const cy = new Date().getFullYear(), ys = [];
@@ -1283,6 +1497,7 @@ function route(hash){
     if(p[1] === "queue") return ["queue", p];
     if(p[1] === "summary") return ["summary", p];
     if(p[1] === "books") return ["books", p];
+    if(p[1] === "registry") return ["registry", p];
     return ["cabinet", p];
   }
   if(p[0] === "admin") return [p[1] === "log" ? "log" : p[1] === "archive" ? "archive" : "users", p];

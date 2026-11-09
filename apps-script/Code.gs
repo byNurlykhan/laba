@@ -128,7 +128,10 @@ const PASSPORT_HEAD = [
   ['Пайдаланушылар саны', '6.1'], ['Берілген құжаттар', '6.2'], ['Келушілер саны', '6.3']
 ];
 /** Баған атауының балама жазылуы */
-const PASSPORT_ALIAS = { 'id': 'id', 'облыс': 'r', 'түрі': 't', 'сурет': '1.2', 'сурет (url)': '1.2', 'фото': '1.2' };
+const PASSPORT_ALIAS = { 'id': 'id', 'облыс': 'r', 'түрі': 't', 'сурет': '1.2', 'сурет (url)': '1.2', 'фото': '1.2',
+  'жағдайы': 'state', 'state': 'state' };
+/** «Жағдайы» бағаны толтырылған жол (мысалы, «жабылды: …») — жабылған кітапхана: сайтта, кабинетте және мұрағатта көрсетілмейді */
+const PASSPORT_STATE_HEAD = 'Жағдайы';
 /** Паспорттар осы парақтардың біріне жазылады (бірінші табылғаны оқылады) */
 const PASSPORT_SHEETS = ['Паспорттар', 'Тізілім'];
 const PASSPORT_REGIONS = ['Республикалық деңгей', 'Абай облысы', 'Ақмола облысы', 'Ақтөбе облысы', 'Алматы облысы',
@@ -410,6 +413,7 @@ const PASSPORT_REQUIRED_ = () => PASSPORT_FIELDS.map(f => f[0]).filter(c => PASS
 
 function passportRow_(row, map, rowNum, required) {
   const g = k => (k in map) ? String(row[map[k]] == null ? '' : row[map[k]]).trim() : '';
+  if (g('state')) return null;                      // жабылған кітапхана
   const f = {};
   PASSPORT_FIELDS.forEach(x => { const v = g(x[0]); if (v) f[x[0]] = v; });
   if (!f['1.1']) return null;
@@ -918,6 +922,9 @@ function cabDispatch_(b) {
     case 'export': return cabExport_(u, b);
     case 'books': return booksFor_(u);
     case 'booksSave': return booksSave_(u, b);
+    case 'libReqs': return libReqs_(u);
+    case 'libReqSave': return libReqSave_(u, b);
+    case 'libReqDecide': return libReqDecide_(u, b);
     case 'archive': cabNeed_(u, 'admin'); return archiveYear_(u, Number(b.year), !!b.overwrite);
     default: throw cabErr_('bad_action', 'Белгісіз әрекет');
   }
@@ -1962,7 +1969,7 @@ function archiveYear_(u, year, overwrite) {
     const now = cabNow_(), rows = [];
     values.forEach((r, i) => {
       const g = k => (k in L.map) ? String(r[L.map[k]] == null ? '' : r[L.map[k]]).trim() : '';
-      if (!g('1.1')) return;
+      if (!g('1.1') || g('state')) return;
       const id = g('id') || String(L.headRow + 1 + i);
       const a = agg[id];
       rows.push([year, now, u.full_name].concat(ARCH_KEYS.map(k => {
@@ -1990,6 +1997,192 @@ function archiveDeleteYear_(sh, year) {
     const hit = i >= 0 && Number(ys[i][0]) === year;
     if (hit && end < 0) end = i;
     if (!hit && end >= 0) { sh.deleteRows(i + 3, end - i); end = -1; }
+  }
+}
+
+// ───────── Тізілімді жаңарту: кітапхана қосу және жабу ұсыныстары ─────────
+/** Облыстық/қалалық әдіскер ұсынады → бас әкімші немесе бас орталық маманы бекітеді → тізілім өзгереді.
+ *  Бас әкімші мен маманның өз ұсынысы бірден бекітіледі. Барлық әрекет журналға жазылады. */
+const REQ_SHEET = 'Ұсыныстар';
+const REQ_COLS = ['req_id', 'kind', 'status', 'region', 'district', 'lvl', 't', 'cat', '1.1', '1.3', '1.4', '1.5', '5.2', 'note',
+  'lib_id', 'created_at', 'user_id', 'user_name', 'user_role', 'decided_at', 'decided_by', 'comment'];
+const REQ_KINDS = { add: 'Жаңа кітапхана қосу', close: 'Кітапхананы тізілімнен шығару (жабылды)' };
+const REQ_STATUS = { pending: 'Қаралуда', approved: 'Бекітілді', rejected: 'Қабылданбады' };
+/** Тізілімнің санаттары: [деңгей коды, мәртебесі, санаты] */
+const LIB_CATS = [
+  [3, 'Облыстық', 'Облыстық әмбебап ғылыми кітапхана'],
+  [4, 'Облыстық', 'Облыстық балалар және жасөспірімдер кітапханасы'],
+  [5, 'Облыстық', 'Облыстық арнаулы кітапхана (зағип және нашар көретіндерге)'],
+  [7, 'Республикалық маңызы бар қала', 'Қаланың орталық кітапханасы / ОКЖ'],
+  [8, 'Республикалық маңызы бар қала', 'Қаланың орталық балалар кітапханасы'],
+  [9, 'Республикалық маңызы бар қала', 'Қаланың арнаулы кітапханасы'],
+  [10, 'Республикалық маңызы бар қала', 'Қалалық кітапхана-филиал'],
+  [11, 'Қалалық', 'Қалалық орталық кітапхана / ОКЖ'],
+  [12, 'Қалалық', 'Қалалық балалар кітапханасы'],
+  [13, 'Қалалық', 'Қалалық арнаулы кітапхана'],
+  [14, 'Қалалық', 'Қалалық кітапхана-филиал'],
+  [15, 'Аудандық', 'Аудандық орталық кітапхана / ОКЖ'],
+  [16, 'Аудандық', 'Аудандық балалар кітапханасы'],
+  [17, 'Ауылдық', 'Кенттік кітапхана'],
+  [18, 'Ауылдық', 'Ауылдық кітапхана']
+];
+/** «Қазақстан кітапханалары – 2025» шолуы (01.01.2026, №2 кесте): өңірлердегі кітапханалардың ресми саны */
+const LIB_OFFICIAL = { year: 2025, total: 3889, regions: {
+  'Республикалық деңгей': 3, 'Абай облысы': 137, 'Ақмола облысы': 329, 'Ақтөбе облысы': 234, 'Алматы облысы': 144,
+  'Атырау облысы': 138, 'Батыс Қазақстан облысы': 357, 'Жамбыл облысы': 275, 'Жетісу облысы': 150, 'Қарағанды облысы': 256,
+  'Қостанай облысы': 336, 'Қызылорда облысы': 209, 'Маңғыстау облысы': 70, 'Павлодар облысы': 225,
+  'Солтүстік Қазақстан облысы': 318, 'Түркістан облысы': 388, 'Ұлытау облысы': 52, 'Шығыс Қазақстан облысы': 170,
+  'Астана қаласы': 25, 'Алматы қаласы': 30, 'Шымкент қаласы': 43 } };
+
+const libReqCan_ = u => cabFull_(u) || u.role === 'oblast' || u.role === 'city';
+/** Пайдаланушы ұсыныс бере алатын өңір ('' — барлық өңір) */
+const libReqRegion_ = u => cabFull_(u) ? '' : String(u.unit_id || '').slice(2);
+const libCatsFor_ = region => LIB_CATS.filter(c => OBLAST_SUFFIX.test(region) ? (c[0] <= 5 || c[0] >= 11) : (c[0] >= 7 && c[0] <= 10));
+
+function libReqRows_() {
+  const sh = cabSheet_(REQ_SHEET, REQ_COLS), last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, REQ_COLS.length).getDisplayValues().map((r, i) => {
+    const o = { _row: i + 2 }; REQ_COLS.forEach((c, j) => { o[c] = String(r[j] == null ? '' : r[j]); });
+    return o;
+  }).filter(o => o.req_id);
+}
+function libReqPublic_(o) {
+  const x = {}; REQ_COLS.forEach(c => { x[c] = o[c]; });
+  x.kind_name = REQ_KINDS[o.kind] || o.kind; x.status_name = REQ_STATUS[o.status] || o.status;
+  return x;
+}
+/** Өңірлер бойынша тізілімдегі сан, ресми сан және аудандар тізімі */
+function libReqCounts_(region) {
+  const meta = cabLibMeta_(), by = {};
+  PASSPORT_REGIONS.forEach(r => { by[r] = { region: r, official: LIB_OFFICIAL.regions[r] || 0, registry: 0, districts: {} }; });
+  Object.keys(meta).forEach(k => {
+    const m = meta[k], r = m.region || 'Республикалық деңгей';
+    if (!by[r]) by[r] = { region: r, official: 0, registry: 0, districts: {} };
+    by[r].registry++;
+    if (m.district) by[r].districts[m.district] = 1;
+  });
+  return PASSPORT_REGIONS.concat(Object.keys(by).filter(r => PASSPORT_REGIONS.indexOf(r) < 0))
+    .filter(r => !region || r === region).map(r => {
+      const o = by[r];
+      return { region: r, official: o.official, registry: o.registry, diff: o.registry - o.official,
+               districts: Object.keys(o.districts).sort() };
+    });
+}
+function libReqs_(u) {
+  if (!libReqCan_(u)) throw cabErr_('forbidden', 'Рұқсат жоқ');
+  const region = libReqRegion_(u);
+  const rows = libReqRows_().filter(o => !region || o.region === region).reverse().map(libReqPublic_);
+  const counts = libReqCounts_(region);
+  return { ok: true, rows: rows, counts: counts, cats: LIB_CATS, kinds: REQ_KINDS, statuses: REQ_STATUS,
+           official: { year: LIB_OFFICIAL.year, total: LIB_OFFICIAL.total }, region: region, canDecide: cabFull_(u),
+           registryTotal: Object.keys(cabLibMeta_()).length };
+}
+const reqClean_ = (v, n) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, n || 500);
+/** Жаңа ұсыныс. b = {kind:'add', region, district, lvl, name, address, phone, email, director, note}
+ *  немесе {kind:'close', lib_id, note} */
+function libReqSave_(u, b) {
+  if (!libReqCan_(u)) throw cabErr_('forbidden', 'Рұқсат жоқ');
+  const kind = String(b.kind || '');
+  if (!REQ_KINDS[kind]) throw cabErr_('invalid', 'Ұсыныс түрі дұрыс емес');
+  const own = libReqRegion_(u), note = reqClean_(b.note, 1000);
+  const row = { kind: kind, note: note };
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const pending = libReqRows_().filter(o => o.status === 'pending');
+    if (kind === 'add') {
+      const region = reqClean_(b.region, 100), district = reqClean_(b.district, 150), name = reqClean_(b.name, 500);
+      if (PASSPORT_REGIONS.indexOf(region) < 1) throw cabErr_('invalid', 'Өңірді таңдаңыз');
+      if (own && region !== own) throw cabErr_('forbidden', 'Тек өз өңіріңізге ұсыныс бере аласыз');
+      const cat = libCatsFor_(region).find(c => String(c[0]) === String(b.lvl));
+      if (!cat) throw cabErr_('invalid', 'Санатын таңдаңыз');
+      if (!district) throw cabErr_('invalid', 'Ауданын немесе қаласын көрсетіңіз');
+      if (name.length < 5) throw cabErr_('invalid', 'Кітапхананың толық атауын енгізіңіз');
+      const address = reqClean_(b.address, 500);
+      if (!address) throw cabErr_('invalid', 'Мекенжайын енгізіңіз');
+      const low = name.toLowerCase(), meta = cabLibMeta_();
+      const same = Object.keys(meta).map(k => meta[k]).find(m => m.region === region && m.district === district && String(m.name).toLowerCase() === low);
+      if (same) throw cabErr_('invalid', 'Тізілімде осы атаумен кітапхана бар (№' + same.id + ')');
+      if (pending.some(o => o.kind === 'add' && o.region === region && o['1.1'].toLowerCase() === low)) throw cabErr_('invalid', 'Бұл кітапхана бойынша ұсыныс қаралуда');
+      Object.assign(row, { region: region, district: district, lvl: String(cat[0]), t: cat[1], cat: cat[2], '1.1': name, '1.3': address,
+        '1.4': reqClean_(b.phone, 200), '1.5': reqClean_(b.email, 200), '5.2': reqClean_(b.director, 300) });
+    } else {
+      const m = cabLibMeta_()[String(b.lib_id || '')];
+      if (!m) throw cabErr_('not_found', 'Кітапхана табылмады');
+      if (!cabCan_(u, m)) throw cabErr_('forbidden', 'Бұл кітапхана сіздің аймағыңызға кірмейді');
+      if (note.length < 5) throw cabErr_('invalid', 'Себебін жазыңыз (мысалы, «2025 жылы жабылды», «№… кітапханамен біріктірілді», «қайталанған жазба»)');
+      if (pending.some(o => o.kind === 'close' && o.lib_id === String(m.id))) throw cabErr_('invalid', 'Бұл кітапхана бойынша ұсыныс қаралуда');
+      Object.assign(row, { region: m.region || 'Республикалық деңгей', district: m.district, lvl: String(m.lvl === 99 ? '' : m.lvl),
+        t: m.status, cat: m.cat, '1.1': m.name, lib_id: String(m.id) });
+    }
+    Object.assign(row, { req_id: 'q' + randHex_(10), status: 'pending', created_at: cabNow_(), user_id: u.user_id,
+                         user_name: u.full_name, user_role: ROLES[u.role] || u.role });
+    const sh = cabSheet_(REQ_SHEET, REQ_COLS);
+    row._row = Math.max(sh.getLastRow(), 1) + 1;
+    writeRows_(sh, row._row, [REQ_COLS.map(c => row[c] == null ? '' : row[c])]);
+    cabLogAppend_(u, [{ lib: libReqLib_(row), year: '', quarter: 0, field: 'Тізілім', old: '', val: row['1.1'] + (note ? ' · ' + note : ''),
+                        action: 'Ұсыныс: ' + REQ_KINDS[kind] }]);
+    if (cabFull_(u)) libReqApply_(u, row, 'approved', 'Бекітуші өзі ұсынды');
+    return { ok: true, req: libReqPublic_(row) };
+  } finally { lock.releaseLock(); }
+}
+/** Бас әкімші немесе маман: b = {req_id, decision:'approved'|'rejected', comment} */
+function libReqDecide_(u, b) {
+  if (!cabFull_(u)) throw cabErr_('forbidden', 'Ұсынысты тек бас әкімші немесе бас орталық маманы бекітеді');
+  const decision = String(b.decision || ''), comment = reqClean_(b.comment, 1000);
+  if (['approved', 'rejected'].indexOf(decision) < 0) throw cabErr_('invalid', 'Шешім дұрыс емес');
+  if (decision === 'rejected' && !comment) throw cabErr_('invalid', 'Қабылданбау себебін жазыңыз');
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const o = libReqRows_().find(x => x.req_id === String(b.req_id || ''));
+    if (!o) throw cabErr_('not_found', 'Ұсыныс табылмады');
+    if (o.status !== 'pending') throw cabErr_('invalid', 'Бұл ұсыныс бұрын қаралған: ' + (REQ_STATUS[o.status] || o.status));
+    libReqApply_(u, o, decision, comment);
+    return { ok: true, req: libReqPublic_(o) };
+  } finally { lock.releaseLock(); }
+}
+function libReqLib_(o) {
+  const r = o.region || '';
+  const oblast = !r || r === 'Республикалық деңгей' ? '' : (OBLAST_SUFFIX.test(r) ? 'O:' : 'C:') + r;
+  return { id: o.lib_id || '', name: o['1.1'], region: r, district: o.district || '', oblast: oblast };
+}
+/** Шешімді жазу; бекітілсе — тізілімге жаңа жол қосу немесе «Жағдайы» бағанын толтыру */
+function libReqApply_(u, o, decision, comment) {
+  if (decision === 'approved') {
+    const L = passportLayout_();
+    if (!L) throw cabErr_('server', 'Тізілім парағы табылмады');
+    const last = L.sh.getLastRow(), lastCol = L.sh.getLastColumn();
+    const ids = last > L.headRow && 'id' in L.map ? L.sh.getRange(L.headRow + 1, L.map.id + 1, last - L.headRow, 1).getDisplayValues() : [];
+    if (o.kind === 'add') {
+      const id = ids.reduce((mx, r) => Math.max(mx, Number(r[0]) || 0), last - L.headRow) + 1;
+      const vals = { id: String(id), lvl: o.lvl, t: o.t, cat: o.cat, r: o.region, d: o.district, '1.1': o['1.1'], '1.3': o['1.3'],
+                     '1.4': o['1.4'], '1.5': o['1.5'], '5.2': o['5.2'] };
+      const row = []; for (let i = 0; i < lastCol; i++) row.push('');
+      Object.keys(vals).forEach(k => { if (k in L.map && vals[k]) row[L.map[k]] = vals[k]; });
+      writeRows_(L.sh, last + 1, [row]);
+      o.lib_id = String(id);
+    } else {
+      const at = ids.findIndex(r => String(r[0]).trim() === o.lib_id);
+      if (at < 0) throw cabErr_('not_found', 'Кітапхана тізілімнен табылмады (№' + o.lib_id + ')');
+      let col = L.map.state;
+      if (col == null) {
+        col = lastCol;
+        if (L.sh.getMaxColumns() < col + 1) L.sh.insertColumnsAfter(L.sh.getMaxColumns(), col + 1 - L.sh.getMaxColumns());
+        L.sh.getRange(L.headRow, col + 1).setValue(PASSPORT_STATE_HEAD).setFontWeight('bold');
+      }
+      L.sh.getRange(L.headRow + 1 + at, col + 1).setNumberFormat('@')
+        .setValue('жабылды: ' + (o.note || '—') + ' (' + cabNow_().slice(0, 10) + ', ұсыныс ' + o.req_id + ')');
+    }
+  }
+  o.status = decision; o.decided_at = cabNow_(); o.decided_by = u.full_name; o.comment = comment || '';
+  const sh = cabSheet_(REQ_SHEET, REQ_COLS);
+  writeRows_(sh, o._row, [REQ_COLS.map(c => o[c] == null ? '' : o[c])]);
+  cabLogAppend_(u, [{ lib: libReqLib_(o), year: '', quarter: 0, field: 'Тізілім',
+    old: o.kind === 'close' && decision === 'approved' ? 'тізілімде' : '',
+    val: decision === 'approved' ? (o.kind === 'add' ? 'тізілімге қосылды (№' + o.lib_id + ')' : 'жабылды, тізілімнен шықты') : 'қабылданбады' + (comment ? ': ' + comment : ''),
+    action: (decision === 'approved' ? 'Ұсыныс бекітілді: ' : 'Ұсыныс қабылданбады: ') + REQ_KINDS[o.kind] }]);
+  if (decision === 'approved') {
+    CacheService.getScriptCache().removeAll(['payload', 'pidx_n', 'cab_meta_n', 'cab_q_n', 'pub_latest_n', 'books_pub_n']);
   }
 }
 

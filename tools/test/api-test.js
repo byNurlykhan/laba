@@ -282,4 +282,55 @@ ok(g.post({ action: 'userSave', token: tS, user: { login: 'xx1', full_name: 'X',
 x = g.post({ action: 'userBulk', token: admin, rows: [{ login: 'maman2', full_name: 'Маман Екі', role: 'staff', unit_name: '' }] });
 ok(x.results[0].ok, 'Файлдан жүктеу: «бас орталық маманы» деңгейі');
 
+step('11. Тізілімді жаңарту: кітапхана қосу және жабу ұсыныстары');
+let lr = g.post({ action: 'libReqs', token: admin });
+const turkC = lr.counts.find(c => c.region === 'Түркістан облысы');
+ok(lr.ok && lr.official.total === 3889 && lr.registryTotal === 3875 && turkC.official === 388 && turkC.registry === 373 && turkC.diff === -15,
+   'Ресми сан (3 889) мен тізілім (3 875) өңірлер бойынша салыстырылады');
+lr = g.post({ action: 'libReqs', token: tO });
+ok(lr.counts.length === 1 && lr.region === 'Түркістан облысы' && !lr.canDecide && lr.counts[0].districts.length > 5, 'Облыстық әдіскер: тек өз облысы, аудандар тізімі');
+ok(g.post({ action: 'libReqs', token: tD }).error === 'forbidden', 'Аудандық әдіскер ұсыныс бере алмайды');
+const addReq = { action: 'libReqSave', token: tO, kind: 'add', region: 'Түркістан облысы', district: 'Сайрам ауданы', lvl: 18,
+  name: 'Ақсу ауылдық кітапханасы', address: 'Сайрам ауданы, Ақсу а., Абай к., 1', phone: '8 725 000 00 00', note: 'Тізілімге енбей қалған' };
+ok(g.post(Object.assign({}, addReq, { region: 'Абай облысы' })).error === 'forbidden', 'Басқа облысқа ұсыныс беруге болмайды');
+ok(!g.post(Object.assign({}, addReq, { lvl: 8 })).ok, 'Облысқа сай емес санат қабылданбайды');
+ok(!g.post(Object.assign({}, addReq, { address: '' })).ok, 'Мекенжайы міндетті');
+x = g.post(addReq);
+ok(x.ok && x.req.status === 'pending' && x.req.cat === 'Ауылдық кітапхана' && x.req.t === 'Ауылдық', 'Облыстық әдіскер жаңа кітапхананы ұсынды (қаралуда)');
+const addId = x.req.req_id;
+ok(!g.post(addReq).ok, 'Қайталанған ұсыныс қабылданбайды');
+ok(libs(admin).length === 3875, 'Бекітілмей тізілімге кірмейді');
+ok(g.post({ action: 'libReqDecide', token: tO, req_id: addId, decision: 'approved' }).error === 'forbidden', 'Әдіскер өз ұсынысын бекіте алмайды');
+x = g.post({ action: 'libReqDecide', token: tS, req_id: addId, decision: 'approved' });
+ok(x.ok && x.req.status === 'approved' && Number(x.req.lib_id) > 3875, 'Маман бекітті: кітапханаға жаңа № берілді');
+const newId = x.req.lib_id;
+ok(libs(admin).length === 3876 && libs(tO).some(l => String(l.id) === newId), 'Жаңа кітапхана кабинетте (облыстық әдіскердің тізімінде де)');
+let pp2 = JSON.parse(g.get({ action: 'passport', id: newId })).passport;
+ok(pp2 && pp2.f['1.1'] === 'Ақсу ауылдық кітапханасы' && pp2.d === 'Сайрам ауданы' && pp2.lvl === '18' && pp2.f['1.3'], 'Ашық сайтта жаңа паспорт');
+ok(JSON.parse(g.get({ action: 'passports' })).rows.length === 3876, 'Ашық тізімде 3 876 кітапхана');
+ok(!g.post({ action: 'libReqDecide', token: admin, req_id: addId, decision: 'rejected', comment: 'x' }).ok, 'Қаралған ұсынысты қайта шешуге болмайды');
+// жабу
+const tC2 = login('astana2', mk({ login: 'astana2', full_name: 'Қала Әдіскері 2', role: 'city', unit_id: U('Астана қаласы'), password: 'Astana2026x' }).ok && 'Astana2026x');
+const victim = libs(tO).find(l => String(l.id) !== newId && l.st !== 'obl');
+ok(!g.post({ action: 'libReqSave', token: tO, kind: 'close', lib_id: victim.id, note: '' }).ok, 'Жабу себебі міндетті');
+ok(g.post({ action: 'libReqSave', token: tC2, kind: 'close', lib_id: victim.id, note: '2025 жылы жабылды' }).error === 'forbidden', 'Басқа өңірдің кітапханасын жабуды ұсынуға болмайды');
+x = g.post({ action: 'libReqSave', token: tO, kind: 'close', lib_id: victim.id, note: '2025 жылы жабылды' });
+ok(x.ok && x.req.status === 'pending', 'Жабу туралы ұсыныс қаралуда');
+const closeId = x.req.req_id;
+ok(!g.post({ action: 'libReqDecide', token: admin, req_id: closeId, decision: 'rejected' }).ok, 'Қабылдамау себебі міндетті');
+x = g.post({ action: 'libReqDecide', token: admin, req_id: closeId, decision: 'approved' });
+ok(x.ok && libs(admin).length === 3875 && !libs(admin).some(l => String(l.id) === String(victim.id)), 'Бекітілді: кітапхана тізілімнен шықты');
+ok(JSON.parse(g.get({ action: 'passport', id: victim.id })).passport == null, 'Жабылған кітапхананың паспорты ашық сайтта жоқ');
+const regSh = g.ss.getSheetByName('Тізілім'), rh = regSh.getRange(1, 1, 1, regSh.getLastColumn()).getValues()[0];
+ok(rh.indexOf('Жағдайы') > -1 && regSh.getLastRow() === 3877, 'Жол өшірілмейді: «Жағдайы» бағанында «жабылды» деп белгіленеді');
+// бас әкімшінің өз ұсынысы бірден бекітіледі
+x = g.post({ action: 'libReqSave', token: admin, kind: 'add', region: 'Астана қаласы', district: 'Есіл ауданы', lvl: 10, name: 'Астана қалалық №50 кітапхана-филиалы', address: 'Астана қ., Тұран д., 1' });
+ok(x.ok && x.req.status === 'approved' && libs(tC2).some(l => String(l.id) === x.req.lib_id), 'Бас әкімшінің ұсынысы бірден бекітілді');
+x = g.post({ action: 'libReqSave', token: tC2, kind: 'add', region: 'Астана қаласы', district: 'Есіл ауданы', lvl: 10, name: 'Астана қалалық №51 кітапхана-филиалы', address: 'Астана қ., 2' });
+ok(x.ok && g.post({ action: 'libReqDecide', token: admin, req_id: x.req.req_id, decision: 'rejected', comment: 'Мекенжайы толық емес' }).req.status === 'rejected', 'Ұсыныс себебімен қабылданбады');
+lr = g.post({ action: 'libReqs', token: tC2 });
+ok(lr.rows.length === 2 && lr.rows.every(o => o.region === 'Астана қаласы') && lr.rows[0].status === 'rejected' && lr.rows[0].comment, 'Қалалық әдіскер өз ұсыныстарының шешімін көреді');
+ok(g.post({ action: 'log', token: admin, q: 'Ұсыныс' }).rows.length >= 8 && g.verifyLog().indexOf('бүтін') > -1, 'Барлық ұсыныс пен шешім журналда');
+ok(g.post({ action: 'archive', token: admin, year: 2026, overwrite: true }).count === 3876, 'Мұрағатқа жабылған кітапхана кірмейді');
+
 console.log('\nБарлығы өтті: ' + passed + ' тексеру');
