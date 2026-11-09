@@ -668,7 +668,7 @@ select.pick:hover{border-color:var(--faint)}
 /* ============ АВТОРЛЫҚ БЕЛГІ ============ */
 .site-foot{
   margin-top:auto;padding:26px 28px 34px;
-  display:flex;align-items:center;gap:16px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
 }
 .site-foot .sf-line{
   flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);
@@ -677,6 +677,25 @@ select.pick:hover{border-color:var(--faint)}
   font-size:11px;font-weight:500;color:var(--muted);
   letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
 }
+.site-foot .sf-link,.sb-priv{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.site-foot .sf-link{flex-basis:100%;text-align:center;font-size:12px;margin-top:-6px}
+.site-foot .sf-link:hover,.sb-priv:hover{color:var(--blue)}
+.pv{max-width:860px}
+.p-back{display:inline-block;margin:18px 0 6px;font-size:13.5px;font-weight:600;color:var(--blue);text-decoration:none}
+.p-back:hover{text-decoration:underline}
+.pv-upd{font-size:13px;color:var(--muted)}
+.pv-card{display:flex;flex-direction:column;gap:18px;line-height:1.6}
+.pv-lead{font-size:15px;color:var(--ink)}
+.pv-card h2{font-size:16px;color:var(--ink);margin:0 0 6px}
+.pv-card p,.pv-card li{font-size:14px;color:var(--text);margin:0 0 6px}
+.pv-card ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.pv-card b{color:var(--ink)}
+.pv-warn,.pv-dev{margin-top:16px;border-radius:14px;padding:14px 18px;line-height:1.55;font-size:14px}
+.pv-warn{background:#FFFBEB;border:1px solid #FDE68A;color:var(--ink)}
+.pv-dev{background:#EFF6FF;border:1px solid #BFDBFE;color:var(--ink)}
+:root[data-theme="dark"] .pv-dev{background:rgba(59,130,246,.12);border-color:rgba(96,165,250,.38)}
+.pv-warn p,.pv-dev p{margin:4px 0 0}
+:root[data-theme="dark"] .pv-warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35)}
 .site-foot .sf-mark b{font-weight:600;color:var(--ink);letter-spacing:.14em}
 @media(max-width:520px){
   .site-foot{padding:22px 16px 28px;gap:10px}
@@ -831,7 +850,8 @@ select.pick:hover{border-color:var(--faint)}
 
   <div class="sb-foot">
     <span data-i18n="owner">ҚР Ұлттық кітапханасы</span><br>
-    <span data-i18n="dept">Ғылыми-әдістемелік қызмет</span>
+    <span data-i18n="dept">Ғылыми-әдістемелік қызмет</span><br>
+    <a href="#privacy" class="sb-priv" data-i18n="privacy">Құпиялық саясаты</a>
   </div>
 </aside>
 <div class="scrim" id="scrim"></div>
@@ -865,6 +885,7 @@ select.pick:hover{border-color:var(--faint)}
     <span class="sf-line"></span>
     <span class="sf-mark">Crafted by <b>Nurlykhan Zhumakhan</b></span>
     <span class="sf-line"></span>
+    <a href="#privacy" class="sf-link" data-i18n="privacy">Құпиялық саясаты</a>
   </footer>
 </div>
 
@@ -4166,6 +4187,11 @@ const TXT = {
 "ru":"Паспорта библиотек",
 "en":"Library passports"
 },
+"privacy":{
+"kk":"Құпиялық саясаты",
+"ru":"Политика конфиденциальности",
+"en":"Privacy policy"
+},
 "s16":{
 "kk":"Кітапханалар не оқып, не ұсынып жатыр?",
 "ru":"Что читают и рекомендуют библиотеки?",
@@ -6491,6 +6517,93 @@ document.addEventListener("input",e=>{
 });
 document.addEventListener("change",e=>{ if(e.target.id==="rdOwner"){ READS.owner = e.target.value; READS.open = {}; render("reads"); } });
 
+/* ─────────────── ҚҰПИЯЛЫҚ САЯСАТЫ (#privacy) ───────────────
+   Мәтін сайттың шын жұмысына сай: не жиналады, қайда сақталады, кім көреді. Өзгерсе — UPD күнін жаңартыңыз. */
+const PRIVACY_UPD = "09.11.2026";
+const PRIVACY = {
+kk:{t:"Құпиялық саясаты", upd:"Соңғы жаңартылған күні: ",
+ lead:"LABA (Library and Book Analytics) — Қазақстан Республикасының Ұлттық кітапханасы Ғылыми-әдістемелік қызметінің платформасы. Ол Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп, талдап, көрнекі түрде ұсыну үшін әзірленген. Бұл бетте платформа қандай деректерді, қандай мақсатпен жинайтыны және оларды қалай қорғайтыны жазылған.",
+ s:[
+ ["1. Деректер қалай жиналады",["Кітапханалар туралы мәліметтерді кітапханалардың өз келісімімен, ал жауапты тұлғалар өз еркімен ұсынады: облыстық, аудандық, қалалық және республикалық әдіскерлер оларды бас әдістемелік орталық берген аккаунт арқылы енгізеді.","Оқырмандардың дербес деректері жиналмайды. Кітапхана есептерінде тек жиынтық сандар болады (мысалы, пайдаланушылар саны, берілген құжат саны)."]],
+ ["2. Қандай деректер жиналады",[
+  "**Кітапхана туралы:** паспорт деректері (атауы, мекенжайы, байланыс телефоны, e-mail, сайты, ғимараты, жабдықталуы, қоры, кадрлары), тоқсандық және жылдық есептердің көрсеткіштері, ұсынылған және ең көп оқылған кітаптардың тізімдері.",
+  "**Жауапты тұлғалар туралы:** кітапхана басшысының аты-жөні мен қызметтік телефоны паспортта ашық көрсетіледі. Әдіскерлердің аккаунт деректері (аты-жөні, лауазымы, мекемесі, қызметтік телефоны, логині) ашық сайтта жарияланбайды — олар тек кабинетте және жүктелген есептерде жауапты мамандар ретінде көрінеді.",
+  "**Кабинеттегі әрекеттер:** кім, қашан, қай кітапхананың қай өрісін өзгерткені (ескі және жаңа мәні) өзгертілмейтін журналға жазылады. Журналды тек бас әкімші көреді.",
+  "**Сайтты пайдалану статистикасы:** қай бет ашылғаны, сайттың тілі, келушінің қай сайттан келгені, экранның ені, уақыт белдеуі және уақыты. IP мекенжайы, аты-жөн және cookie жазылмайды — бұл деректер бойынша нақты адамды анықтау мүмкін емес.",
+  "**Құрылғыңызда (браузерде):** тіл мен күн/түн режимінің таңдауы; кабинетке кіргенде — сессия белгісі (браузер қойындысы жабылғанда өшеді) және интернет үзілгенде әлі жіберілмеген өзгерістер."]],
+ ["3. Деректер не үшін пайдаланылады",["Деректер тек кітапхана саласының аналитикалық зерттеулері, статистикасы және әдістемелік жұмысы үшін пайдаланылады: сала туралы шолулар мен баяндамалар дайындау, өңірлерді салыстыру, кітапханаларға әдістемелік көмек көрсету.","Деректер коммерциялық мақсатқа, жарнамаға пайдаланылмайды, сатылмайды және бөгде тұлғаларға берілмейді."]],
+ ["4. Деректер қалай қорғалады",[
+  "Кабинетке тек бас әдістемелік орталық ашқан аккаунтпен кіруге болады; әр пайдаланушы тек өз аймағының деректерін көреді — бұл серверде тексеріледі.",
+  "Парольдер ашық сақталмайды (тек хэш түрінде); 5 рет қате кіргенде аккаунт уақытша бұғатталады; 2 сағат әрекетсіз тұрса, сессия жабылады.",
+  "Барлық өзгеріс өшірілмейтін журналға жазылады, оның тұтастығы хэш тізбегімен тексеріледі.",
+  "Деректер ҚР Ұлттық кітапханасының Google Sheets кестесінде сақталады; сайт GitHub Pages-те орналасқан; беттерде Google Fonts және cdnjs қызметтері қолданылады. Бұл қызметтер өз саясатына сәйкес техникалық деректерді (мысалы, IP мекенжайын) өңдеуі мүмкін."]],
+ ["5. Сақтау мерзімі",["Кітапханалар туралы деректер мен жылдық мұрағат сала тарихы ретінде ұзақ мерзімге сақталады. Сайтты пайдалану статистикасының соңғы 50 000 жазбасы ғана сақталады. Әдіскер жұмыстан кетсе, аккаунты өшірілмей бұғатталады — журналдағы жазбалар сақталуы үшін."]],
+ ["6. Сіздің құқықтарыңыз",["Қазақстан Республикасының «Дербес деректер және оларды қорғау туралы» Заңына сәйкес деректеріңізбен танысуға, оларды түзетуге, ал заң рұқсат ететін жағдайда жоюды немесе келісімді кері қайтарып алуды сұрауға құқығыңыз бар. Ол үшін ҚР Ұлттық кітапханасының Ғылыми-әдістемелік қызметіне хабарласыңыз. Әдіскерлер өз деректерін бас әкімші арқылы түзете алады."]]],
+ warnT:"Деректерді пайдаланушыларға маңызды ескерту",
+ warn:"LABA-дағы мәліметтерді баспасөзде, баяндамада, ғылыми жұмыста немесе өзге де ресми құжатта пайдаланар алдында әрқашан жауапты мекемеге (тиісті кітапханаға немесе ҚР Ұлттық кітапханасының Ғылыми-әдістемелік қызметіне) хабарласып, ақпаратты растаңыз. Дереккөз ретінде «LABA, ҚР Ұлттық кітапханасы» деп көрсетіңіз.",
+ devT:"Жоба даму үстінде",
+ dev:"LABA Қазақстандағы кітапхана саласына қатысты ақпаратты жүйелеп отыру үшін әзірленген және әлі де даму үстінде. Деректер толықтырылып, түзетіліп отырады, жаңа бөлімдер қосылады. Сондықтан кейбір мәліметтер толық емес немесе алдын ала болуы мүмкін. Бұл саясат та жаңартылуы мүмкін — соңғы жаңартылған күні беттің басында көрсетіледі.",
+ back:"← Басты бетке"},
+ru:{t:"Политика конфиденциальности", upd:"Дата последнего обновления: ",
+ lead:"LABA (Library and Book Analytics) — платформа Научно-методической службы Национальной библиотеки Республики Казахстан. Она создана для систематизации, анализа и наглядного представления информации о библиотечной отрасли Казахстана. На этой странице описано, какие данные собирает платформа, с какой целью и как они защищены.",
+ s:[
+ ["1. Как собираются данные",["Сведения о библиотеках предоставляются с согласия самих библиотек и по доброй воле ответственных лиц: областные, районные, городские и республиканские методисты вносят их через аккаунт, выданный головным методическим центром.","Персональные данные читателей не собираются. В отчётах библиотек есть только сводные числа (например, число пользователей, количество выданных документов)."]],
+ ["2. Какие данные собираются",[
+  "**О библиотеке:** данные паспорта (название, адрес, телефон, e-mail, сайт, здание, оснащение, фонд, кадры), показатели квартальных и годовых отчётов, списки рекомендуемых и самых читаемых книг.",
+  "**Об ответственных лицах:** ФИО и служебный телефон руководителя библиотеки открыто указываются в паспорте. Данные аккаунтов методистов (ФИО, должность, учреждение, служебный телефон, логин) на открытом сайте не публикуются — они видны только в кабинете и в выгружаемых отчётах как ответственные специалисты.",
+  "**Действия в кабинете:** кто, когда и какое поле какой библиотеки изменил (старое и новое значение) записывается в неизменяемый журнал. Журнал видит только главный администратор.",
+  "**Статистика посещений сайта:** открытая страница, язык сайта, сайт, с которого пришёл посетитель, ширина экрана, часовой пояс и время. IP-адрес, ФИО и cookie не записываются — по этим данным невозможно установить конкретного человека.",
+  "**На вашем устройстве (в браузере):** выбор языка и дневного/ночного режима; при входе в кабинет — метка сессии (удаляется при закрытии вкладки) и изменения, ещё не отправленные при обрыве связи."]],
+ ["3. Для чего используются данные",["Данные используются только для аналитических исследований, статистики и методической работы в библиотечной отрасли: подготовки обзоров и докладов, сравнения регионов, методической помощи библиотекам.","Данные не используются в коммерческих и рекламных целях, не продаются и не передаются третьим лицам."]],
+ ["4. Как защищаются данные",[
+  "Вход в кабинет — только по аккаунту, выданному головным методическим центром; каждый пользователь видит только данные своего региона — это проверяется на сервере.",
+  "Пароли не хранятся в открытом виде (только хэш); после 5 неверных попыток аккаунт временно блокируется; после 2 часов бездействия сессия закрывается.",
+  "Все изменения записываются в неудаляемый журнал, его целостность проверяется цепочкой хэшей.",
+  "Данные хранятся в таблице Google Sheets Национальной библиотеки РК; сайт размещён на GitHub Pages; на страницах используются сервисы Google Fonts и cdnjs. Эти сервисы могут обрабатывать технические данные (например, IP-адрес) согласно своим политикам."]],
+ ["5. Срок хранения",["Данные о библиотеках и годовой архив хранятся долгосрочно как история отрасли. Из статистики посещений хранятся только последние 50 000 записей. Если методист увольняется, его аккаунт не удаляется, а блокируется — чтобы сохранились записи журнала."]],
+ ["6. Ваши права",["В соответствии с Законом Республики Казахстан «О персональных данных и их защите» вы вправе ознакомиться со своими данными, исправить их, а в случаях, допускаемых законом, — потребовать удаления или отозвать согласие. Для этого обратитесь в Научно-методическую службу Национальной библиотеки РК. Методисты могут исправить свои данные через главного администратора."]]],
+ warnT:"Важное предупреждение для пользователей данных",
+ warn:"Перед использованием сведений LABA в прессе, докладах, научных работах или иных официальных документах всегда связывайтесь с ответственным учреждением (соответствующей библиотекой или Научно-методической службой Национальной библиотеки РК) и подтверждайте информацию. В качестве источника указывайте «LABA, Национальная библиотека РК».",
+ devT:"Проект в стадии развития",
+ dev:"LABA создана для систематизации информации о библиотечной отрасли Казахстана и продолжает развиваться. Данные пополняются и уточняются, добавляются новые разделы, поэтому часть сведений может быть неполной или предварительной. Политика также может обновляться — дата последнего обновления указана в начале страницы.",
+ back:"← На главную"},
+en:{t:"Privacy policy", upd:"Last updated: ",
+ lead:"LABA (Library and Book Analytics) is a platform of the Research and Methodology Service of the National Library of the Republic of Kazakhstan. It was built to organize, analyse and present information about Kazakhstan's library sector. This page explains what data the platform collects, why, and how it is protected.",
+ s:[
+ ["1. How data is collected",["Information about libraries is provided with the consent of the libraries themselves and voluntarily by the responsible persons: regional, district, city and national methodologists enter it through accounts issued by the central methodology centre.","No personal data of readers is collected. Library reports contain only aggregate figures (for example, the number of users or documents issued)."]],
+ ["2. What data is collected",[
+  "**About libraries:** passport data (name, address, phone, e-mail, website, building, equipment, collection, staff), quarterly and annual report figures, and lists of recommended and most-read books.",
+  "**About responsible persons:** the name and work phone of the library director are shown in the public passport. Methodologists' account data (name, position, institution, work phone, login) is not published on the public site — it is visible only in the workspace and in downloaded reports as the responsible specialist.",
+  "**Workspace actions:** who changed which field of which library and when (old and new value) is recorded in a tamper-evident log, visible only to the chief administrator.",
+  "**Site usage statistics:** the page opened, site language, referring website, screen width, time zone and time. No IP address, names or cookies are recorded, so no individual can be identified from this data.",
+  "**On your device (browser):** your language and light/dark theme choice; when signed in, a session token (removed when the tab is closed) and changes not yet sent if the connection drops."]],
+ ["3. How data is used",["Data is used only for analytical research, statistics and methodological work in the library sector: preparing reviews and reports, comparing regions and supporting libraries.","Data is not used for commercial or advertising purposes, is not sold and is not shared with third parties."]],
+ ["4. How data is protected",[
+  "The workspace is accessible only with an account issued by the central methodology centre; each user sees only their own region's data, enforced on the server.",
+  "Passwords are stored only as hashes; an account is temporarily locked after 5 failed attempts; sessions close after 2 hours of inactivity.",
+  "Every change is written to a log that cannot be deleted, and its integrity is verified with a hash chain.",
+  "Data is stored in a Google Sheets spreadsheet of the National Library; the site is hosted on GitHub Pages and uses Google Fonts and cdnjs. These services may process technical data (such as IP addresses) under their own policies."]],
+ ["5. Retention",["Library data and the annual archive are kept long-term as a record of the sector. Only the latest 50,000 site-usage records are kept. When a methodologist leaves, their account is blocked rather than deleted, so that log entries are preserved."]],
+ ["6. Your rights",["Under the Law of the Republic of Kazakhstan on Personal Data and Its Protection, you may access and correct your data and, where the law allows, request its deletion or withdraw your consent. Please contact the Research and Methodology Service of the National Library. Methodologists can have their data corrected through the chief administrator."]]],
+ warnT:"Important notice for data users",
+ warn:"Before using LABA information in the press, reports, research or other official documents, always contact the responsible institution (the library concerned or the Research and Methodology Service of the National Library) to confirm it. Cite the source as “LABA, National Library of Kazakhstan”.",
+ devT:"A project in development",
+ dev:"LABA was created to systematise information about Kazakhstan's library sector and is still being developed. Data is being added and refined and new sections are being introduced, so some information may be incomplete or preliminary. This policy may also be updated; the date of the latest update is shown at the top of the page.",
+ back:"← Home"}
+};
+const mdBold = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+function privacyPage(){
+  const t = PRIVACY[LANG] || PRIVACY.kk;
+  return `<div class="pv">
+    <div class="ph"><div class="eyebrow">LABA</div><h1>${esc(t.t)}</h1><p class="pv-upd">${esc(t.upd + PRIVACY_UPD)}</p></div>
+    <div class="card pv-card"><p class="pv-lead">${esc(t.lead)}</p>
+      ${t.s.map(s=>`<section><h2>${esc(s[0])}</h2>${s[1].length>1 && /^\*\*/.test(s[1][0]) ? `<ul>${s[1].map(p=>`<li>${mdBold(p)}</li>`).join("")}</ul>` : s[1].map(p=>`<p>${mdBold(p)}</p>`).join("")}</section>`).join("")}
+    </div>
+    <div class="pv-warn"><b>⚠ ${esc(t.warnT)}</b><p>${esc(t.warn)}</p></div>
+    <div class="pv-dev"><b>${esc(t.devT)}</b><p>${esc(t.dev)}</p></div>
+    <a class="p-back" href="#home">${esc(t.back)}</a></div>`;
+}
+
 /* ─────────────── APPS SCRIPT БАЙЛАНЫСЫ ─────────────── */
 let jsonpSeq = 0;
 function jsonp(params, cb, timeout, fail){
@@ -6555,7 +6668,7 @@ function loadCabinet(){
   if(window.CAB) return Promise.resolve();
   if(!cabLoading) cabLoading = new Promise((res, rej)=>{
     const sc = document.createElement("script");
-    sc.src = "cabinet.js?v=6"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
+    sc.src = "cabinet.js?v=7"; sc.onload = res; sc.onerror = () => { cabLoading = null; rej(); };
     document.head.appendChild(sc);
   });
   return cabLoading;
@@ -6571,6 +6684,15 @@ function render(id){
     return;
   }
   const parts = String(id||"").split("/");
+  if(parts[0]==="privacy"){
+    Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
+    document.getElementById("content").innerHTML = `<div class="page on">${privacyPage()}</div>`;
+    document.getElementById("crumb").textContent = T("privacy");
+    document.querySelectorAll("#nav a").forEach(a=>a.classList.remove("on"));
+    document.title = T("privacy")+" · LABA";
+    window.scrollTo(0,0); closeSidebar(); track("privacy");
+    return;
+  }
   const sec = SECTIONS.find(s=>s.id===parts[0]) || SECTIONS[0];
   const sub = sec.id===parts[0] ? decodeURIComponent(parts.slice(1).join("/")) : "";
   Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
